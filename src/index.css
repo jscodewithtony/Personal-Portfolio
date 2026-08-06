@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* Manual (class-based) dark mode instead of Tailwind v4's default
+   prefers-color-scheme-only variant, so the toggle in Header can persist
+   a choice that overrides the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #5953b0;
+  --color-primary-dark: #46408c;
+  --color-bg: #f1f0fa;
+  --color-ink: #0d0c14;
+  --color-cream: #f3efe3;
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+
+  /* Strong custom eases (weak CSS built-ins lack punch). Generates
+     ease-snap / ease-glide / ease-drawer Tailwind utilities. */
+  --ease-snap: cubic-bezier(0.23, 1, 0.32, 1); /* enter / exit, ease-out */
+  --ease-glide: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* iOS-like drawer/overlay */
+}
+
+/* Every section's 72px grid overlay reads its line color from this one
+   variable instead of hardcoding rgba per section — since the whole site
+   flips polarity together under the theme toggle, a light section's
+   dark-on-light lines and a dark section's light-on-dark lines both
+   resolve from the same flip. */
+:root {
+  --grid-line-color: rgba(13, 12, 20, 0.18);
+}
+.dark {
+  --grid-line-color: rgba(255, 255, 255, 0.18);
+}
+
+html {
+  background: var(--color-bg);
+  transition: background-color 0.3s ease;
+}
+html.dark {
+  background: #0c0a14;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* Slight vertical bias (scaleY > scaleX) reads as an inhale/exhale
+   rather than a uniform pulse. Kept subtle so it doesn't compete with
+   the mascot's cursor-tracking eyes. Reduced-motion is already handled
+   globally below (animation-duration clamped to ~0). */
+@keyframes mascot-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.015, 1.035);
+  }
+}
+
+.animate-mascot-breathe {
+  animation: mascot-breathe 4.5s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

@@ -1,0 +1,221 @@
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import FitGroup from "./FitGroup";
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Visually the sentence is broken into mixed-scale fragments with a
+// trailing aside ("Don't have to make one.") sitting after the last
+// line. That reads fine to the eye but garbles for a screen reader, so
+// the fragments are hidden from the accessibility tree and the coherent
+// sentence is exposed once via the wrapper's aria-label.
+const FULL_SENTENCE =
+  "Design is a series of decisions so you don't have to make one.";
+
+const SMALL =
+  "font-display text-base font-semibold leading-snug text-ink/80 dark:text-white/90 sm:text-2xl md:text-4xl lg:text-5xl";
+const BIG =
+  "select-none font-display font-black uppercase leading-[1.0] tracking-tight text-ink dark:text-white";
+
+// How much extra scroll distance (relative to the viewport) the section
+// stays pinned for while the heading settles and the aside arrives.
+const PIN_DISTANCE_VH = 1.2;
+// Final scale of the heading once the aside has fully arrived.
+const HEADING_END_SCALE = 0.72;
+// Number of stacked poster lines the heading font-size budget is split
+// across.
+const LINE_COUNT = 4;
+
+// FitGroup fits font-size to the container's WIDTH only — it has no idea
+// how many lines it's stacking, so a flat pixel cap (tried twice already)
+// either overflows on shorter viewports or under-fills on taller ones.
+// Deriving the cap from the actual viewport height instead means 4
+// stacked lines always fit within the section's available vertical
+// space (roughly what's left after its own top/bottom padding), on any
+// screen, at scale 1 — before the scroll-driven shrink to
+// HEADING_END_SCALE even starts.
+function computeHeadingMaxFontSize() {
+  if (typeof window === "undefined") return 160;
+  // Rough worst-case section padding (md:py-32 = 128px top + bottom) plus
+  // room for the trailing aside now sitting inline on the last line.
+  const verticalChrome = 300;
+  const available = Math.max(290, window.innerHeight - verticalChrome);
+  const perLine = available / LINE_COUNT;
+  // 0.9 safety margin — leading-[1.0] still has a hair of natural
+  // overshoot beyond the nominal font-size box. +10 bumps the whole
+  // headline up a size notch per request.
+  return Math.round(Math.min(290, Math.max(82, perLine * 0.9 + 10)));
+}
+
+function Statement() {
+  const sectionRef = useRef(null);
+  const scaleWrapRef = useRef(null);
+  const trailingAsideRef = useRef(null);
+  const bgLayerRef = useRef(null);
+  const line1RowRef = useRef(null);
+  const line2RowRef = useRef(null);
+  const line3RowRef = useRef(null);
+  const line4RowRef = useRef(null);
+  const [headingMaxFontSize, setHeadingMaxFontSize] = useState(
+    computeHeadingMaxFontSize
+  );
+
+  useEffect(() => {
+    const handle = () => setHeadingMaxFontSize(computeHeadingMaxFontSize());
+    window.addEventListener("resize", handle);
+    return () => window.removeEventListener("resize", handle);
+  }, []);
+
+  const ROW_CLASS =
+    "flex flex-wrap items-center justify-start gap-x-3 gap-y-1 sm:gap-x-4";
+
+  const lines = [
+    { key: "line1", rowClassName: ROW_CLASS, rowRef: line1RowRef, content: "Design is a" },
+    { key: "line2", rowClassName: ROW_CLASS, rowRef: line2RowRef, content: "series of" },
+    { key: "line3", rowClassName: ROW_CLASS, rowRef: line3RowRef, content: "decisions" },
+    {
+      key: "line4",
+      rowClassName: ROW_CLASS,
+      rowRef: line4RowRef,
+      content: "so you",
+      after: (
+        <span
+          ref={trailingAsideRef}
+          aria-hidden="true"
+          className={`max-w-[11rem] sm:max-w-[16rem] md:max-w-[24rem] ${SMALL}`}
+        >
+          Don't have to make one.
+        </span>
+      ),
+    },
+  ];
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const right = trailingAsideRef.current;
+    const scaleWrap = scaleWrapRef.current;
+    const rowRefs = [line1RowRef, line2RowRef, line3RowRef, line4RowRef];
+    const rows = rowRefs.map((r) => r.current);
+    const words = rows.map((row) => row?.children[0]);
+    if (!section || !right || !scaleWrap || rows.some((r) => !r) || words.some((w) => !w))
+      return;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reduceMotion) return;
+
+    const ctx = gsap.context(() => {
+      const setRestingPositions = () => {
+        gsap.set(right, { x: window.innerWidth, opacity: 0 });
+        rows.forEach((row, i) => {
+          const word = words[i];
+          const fakeCenterOffset = Math.max(
+            0,
+            (row.clientWidth - word.offsetWidth) / 2
+          );
+          gsap.set(word, { x: fakeCenterOffset });
+        });
+      };
+      setRestingPositions();
+      gsap.set(scaleWrap, { scale: 1, opacity: 1 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${window.innerHeight * PIN_DISTANCE_VH}`,
+          pin: true,
+          scrub: 0.6,
+          anticipatePin: 1,
+        },
+      });
+
+      // azizkhaldi.com style smooth background color morphing from mascot purple (#5953b0) to target theme background
+      const isDark = document.documentElement.classList.contains("dark");
+      const targetBgColor = isDark ? "#0c0a14" : "#f1f0fa";
+
+      if (bgLayerRef.current) {
+        tl.fromTo(
+          bgLayerRef.current,
+          { backgroundColor: "#5953b0" },
+          { backgroundColor: targetBgColor, ease: "power1.out", duration: 0.5 },
+          0
+        );
+      }
+
+      tl.to(scaleWrap, { scale: HEADING_END_SCALE, ease: "none", duration: 1 }, 0);
+      words.forEach((word) => {
+        tl.to(word, { x: 0, ease: "none", duration: 1 }, 0);
+      });
+      tl.to(right, { x: 0, opacity: 1, ease: "none", duration: 1 }, 0);
+
+      const handleResize = () => {
+        if (tl.scrollTrigger && tl.scrollTrigger.progress === 0) {
+          setRestingPositions();
+        }
+      };
+      window.addEventListener("resize", handleResize);
+
+      document.fonts?.ready?.then(() => {
+        ScrollTrigger.refresh();
+        handleResize();
+      });
+      const settleTimer = setTimeout(() => {
+        ScrollTrigger.refresh();
+        handleResize();
+      }, 300);
+      return () => {
+        clearTimeout(settleTimer);
+        window.removeEventListener("resize", handleResize);
+      };
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative z-10 -mt-px flex min-h-[100dvh] flex-col justify-center overflow-hidden px-6 py-24 text-ink transition-colors duration-300 sm:px-10 sm:py-28 md:px-14 md:py-32 dark:text-white"
+    >
+      {/* Whole-screen background morphing layer */}
+      <div
+        ref={bgLayerRef}
+        className="pointer-events-none absolute inset-0 z-0 bg-[#5953b0]"
+      />
+
+      {/* Subtle Grid Background Pattern */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px)
+          `,
+          backgroundSize: "72px 72px",
+        }}
+      />
+      {/* Extra inset (on top of the section's own padding) so the fitted
+          text reads as a contained block with breathing room on every
+          side, instead of stretching flush to the section's edge. */}
+      <div
+        role="text"
+        aria-label={FULL_SENTENCE}
+        className="mx-auto w-full max-w-7xl px-[6%] sm:px-[8%]"
+      >
+        <div ref={scaleWrapRef}>
+          <FitGroup
+            className={BIG}
+            maxFontSize={headingMaxFontSize}
+            minFontSize={40}
+            lines={lines}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default Statement;

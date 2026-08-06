@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node debug.mjs)",
+      "Bash(node crop.mjs)",
+      "Bash(npm run *)",
+      "Bash(node \"/c/Users/Admin/AppData/Local/Temp/claude/g--Portfolio-build/6ab43918-7dd6-4e14-b304-4e258788a8df/scratchpad/heromobile.mjs\")",
+      "Bash(rm -f /tmp/hero2_rest.png /tmp/hero2_mid.png /tmp/hero2_end.png /tmp/hero_mobile.png)"
+    ],
+    "additionalDirectories": [
+      "g:\\tmp"
+    ]
+  }
+}
