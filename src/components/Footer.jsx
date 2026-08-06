@@ -483,9 +483,92 @@ function Footer() {
   }, [triggerNoteOn, triggerNoteOff]);
 
   return (
-    <footer className="relative z-10 w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white border-t border-black/10 dark:border-white/10 select-none py-6">
+    <footer id="contact" className="relative z-10 w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white select-none">
+      {/* --- GRAND PIANO BODY SILHOUETTE WITH CONTACT INFO --- */}
+      <div className="relative w-full bg-bg dark:bg-[#0c0a14] pt-6">
+        <div className="relative w-full overflow-hidden min-h-[320px] sm:min-h-[380px] md:min-h-[420px] flex flex-col justify-end pt-12 sm:pt-16 md:pt-20 pb-8 sm:pb-12">
+          {/* Edge-to-Edge Grand Piano Body Silhouette SVG */}
+          <svg
+            viewBox="0 0 1200 500"
+            preserveAspectRatio="none"
+            className="absolute inset-0 h-full w-full fill-black dark:fill-[#08070e] pointer-events-none"
+          >
+            <path d="M 0,0 L 260,0 C 460,0 580,260 840,330 C 980,365 1080,380 1200,390 L 1200,500 L 0,500 Z" />
+          </svg>
+
+          {/* Content inside Grand Piano Body */}
+          <div className="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-12 md:px-16 flex flex-col justify-between gap-10 md:flex-row md:items-end my-auto">
+            {/* Left side: Contact header, email, phone, social links */}
+            <div className="flex flex-col gap-4 text-white max-w-xl">
+              <h2 className="font-display text-5xl font-black uppercase tracking-tight sm:text-6xl md:text-7xl lg:text-8xl leading-none text-white select-none">
+                CONTACT
+              </h2>
+
+              <div className="flex flex-col gap-1.5 font-display text-sm sm:text-base md:text-lg font-medium text-white/90">
+                <a
+                  href="mailto:Tony2742000@gmail.com"
+                  className="transition-colors hover:text-[#8055fe] w-fit"
+                >
+                  Tony2742000@gmail.com
+                </a>
+                <a
+                  href="tel:+916283860380"
+                  className="transition-colors hover:text-[#8055fe] w-fit"
+                >
+                  +916283860380
+                </a>
+              </div>
+
+              <div className="flex items-center gap-6 font-display text-sm sm:text-base font-semibold text-white mt-1">
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline underline-offset-4 transition-opacity hover:opacity-80"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href="https://behance.net"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline underline-offset-4 transition-opacity hover:opacity-80"
+                >
+                  Behance
+                </a>
+              </div>
+            </div>
+
+            {/* Right side: Nav links aligned under the piano lid curve */}
+            <div className="flex flex-col gap-2.5 font-display text-sm sm:text-base font-bold uppercase tracking-widest text-white/90 md:pb-2 md:text-right">
+              <a
+                href="#about"
+                className="transition-colors hover:text-[#8055fe]"
+              >
+                ABOUT
+              </a>
+              <a
+                href="#projects"
+                className="transition-colors hover:text-[#8055fe]"
+              >
+                PROJECTS
+              </a>
+              <a
+                href="#contact"
+                className="transition-colors hover:text-[#8055fe]"
+              >
+                CONTACT
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- ACCENT SEPARATOR LINE --- */}
+      <div className="w-full border-t border-[#8b0000]/60 dark:border-white/20" />
+
       {/* --- 100% FULL WIDTH EDGE-TO-EDGE TALL PIANO KEYBOARD --- */}
-      <div className="relative w-full overflow-hidden border-t border-b border-[#a0aab8] bg-[#f8f9fa] shadow-2xl dark:border-white/20 dark:bg-[#12101b]">
+      <div className="relative w-full overflow-hidden border-b border-[#a0aab8] bg-[#f8f9fa] shadow-2xl dark:border-white/20 dark:bg-[#12101b]">
         <div className="overflow-x-auto overflow-y-hidden no-scrollbar w-full">
           <div
             onPointerDown={handlePointerDown}
