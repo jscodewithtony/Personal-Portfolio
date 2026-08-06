@@ -485,15 +485,15 @@ function Footer() {
   return (
     <footer id="contact" className="relative z-10 w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white select-none">
       {/* --- GRAND PIANO BODY SILHOUETTE WITH CONTACT INFO --- */}
-      <div className="relative w-full bg-bg dark:bg-[#0c0a14] pt-6">
-        <div className="relative w-full overflow-hidden min-h-[320px] sm:min-h-[380px] md:min-h-[420px] flex flex-col justify-end pt-12 sm:pt-16 md:pt-20 pb-8 sm:pb-12">
-          {/* Edge-to-Edge Grand Piano Body Silhouette SVG */}
+      <div className="relative w-full bg-bg dark:bg-[#0c0a14] pt-8">
+        <div className="relative w-full overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[480px] flex flex-col justify-end pt-16 sm:pt-20 md:pt-24 pb-10 sm:pb-14 md:pb-16">
+          {/* Authentic Grand Piano Lid Silhouette Curve SVG */}
           <svg
-            viewBox="0 0 1200 500"
+            viewBox="0 0 1000 600"
             preserveAspectRatio="none"
             className="absolute inset-0 h-full w-full fill-black dark:fill-[#08070e] pointer-events-none"
           >
-            <path d="M 0,0 L 260,0 C 460,0 580,260 840,330 C 980,365 1080,380 1200,390 L 1200,500 L 0,500 Z" />
+            <path d="M 0,140 C 0,40 120,0 320,0 C 480,0 580,100 760,200 C 880,260 950,275 1000,280 L 1000,600 L 0,600 Z" />
           </svg>
 
           {/* Content inside Grand Piano Body */}
@@ -539,8 +539,8 @@ function Footer() {
               </div>
             </div>
 
-            {/* Right side: Nav links aligned under the piano lid curve */}
-            <div className="flex flex-col gap-2.5 font-display text-sm sm:text-base font-bold uppercase tracking-widest text-white/90 md:pb-2 md:text-right">
+            {/* Right side: Nav links safely positioned inside the black piano body */}
+            <div className="flex flex-col gap-3 font-display text-sm sm:text-base md:text-lg font-bold uppercase tracking-widest text-white/90 md:pb-4 md:text-right">
               <a
                 href="#about"
                 className="transition-colors hover:text-[#8055fe]"
@@ -554,7 +554,7 @@ function Footer() {
                 PROJECTS
               </a>
               <a
-                href="#contact"
+                href="#hero"
                 className="transition-colors hover:text-[#8055fe]"
               >
                 CONTACT
@@ -564,8 +564,8 @@ function Footer() {
         </div>
       </div>
 
-      {/* --- ACCENT SEPARATOR LINE --- */}
-      <div className="w-full border-t border-[#8b0000]/60 dark:border-white/20" />
+      {/* --- THIN ACCENT SEPARATOR LINE --- */}
+      <div className="w-full border-t border-[#8b0000]/70 dark:border-white/20" />
 
       {/* --- 100% FULL WIDTH EDGE-TO-EDGE TALL PIANO KEYBOARD --- */}
       <div className="relative w-full overflow-hidden border-b border-[#a0aab8] bg-[#f8f9fa] shadow-2xl dark:border-white/20 dark:bg-[#12101b]">
