@@ -26,10 +26,10 @@
    dark-on-light lines and a dark section's light-on-dark lines both
    resolve from the same flip. */
 :root {
-  --grid-line-color: rgba(13, 12, 20, 0.18);
+  --grid-line-color: transparent;
 }
 .dark {
-  --grid-line-color: rgba(255, 255, 255, 0.18);
+  --grid-line-color: transparent;
 }
 
 html {
@@ -40,9 +40,30 @@ html.dark {
   background: #0c0a14;
 }
 
-body {
+/* Magic UI View Transitions for AnimatedThemeToggler */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 9999;
+}
+html[data-magicui-theme-vt="active"] ::view-transition-new(root) {
+  clip-path: var(--magicui-theme-vt-clip-from, circle(0% at 50% 50%));
+}
+
+body,
+button,
+input,
+textarea,
+select {
   margin: 0;
   overflow-x: hidden;
+  text-transform: uppercase;
 }
 
 * {
@@ -73,6 +94,73 @@ body {
   transform-origin: 50% 85%;
 }
 
+/* True seamless 100% infinite marquee text animation (Slowed down to 20s for legibility) */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Slow single-word horizontal marquee slide (enters right, long readable pause center, exits left) */
+@keyframes single-word-marquee {
+  0% {
+    transform: translateX(80%);
+    opacity: 0;
+  }
+  20% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-80%);
+    opacity: 0;
+  }
+}
+
+.animate-single-word-marquee {
+  animation: single-word-marquee 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Play button attention-grabbing shake motion (subtle rotation + micro wiggle) */
+@keyframes play-shake {
+  0%, 65%, 100% {
+    transform: rotate(0deg);
+  }
+  70% {
+    transform: rotate(-14deg);
+  }
+  75% {
+    transform: rotate(14deg);
+  }
+  80% {
+    transform: rotate(-10deg);
+  }
+  85% {
+    transform: rotate(10deg);
+  }
+  90% {
+    transform: rotate(-5deg);
+  }
+  95% {
+    transform: rotate(5deg);
+  }
+}
+
+.animate-shake {
+  animation: play-shake 3.5s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -91,4 +179,3 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-

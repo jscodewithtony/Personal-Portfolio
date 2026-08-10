@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import PianoLidContact from "./PianoLidContact";
 
 // --- 3 OCTAVES PIANO NOTES (C3 to C6: 22 White Keys, 15 Black Keys) ---
 const PIANO_NOTES = [
@@ -75,10 +76,23 @@ function getMidiFrequency(midi) {
 
 function Footer() {
   const [activeKeys, setActiveKeys] = useState(new Set());
+  const [isIdle, setIsIdle] = useState(true);
 
   const canvasRef = useRef(null);
+  const keyContainerRef = useRef(null);
   const particlesRef = useRef([]);
   const animFrameRef = useRef(null);
+
+  const lastInteractionRef = useRef(Date.now());
+  const isIdleRef = useRef(true);
+
+  const registerInteraction = useCallback(() => {
+    lastInteractionRef.current = Date.now();
+    if (isIdleRef.current) {
+      isIdleRef.current = false;
+      setIsIdle(false);
+    }
+  }, []);
 
   const audioCtxRef = useRef(null);
   const masterGainRef = useRef(null);
@@ -298,18 +312,23 @@ function Footer() {
   const spawnParticleBurst = useCallback(
     (note) => {
       const canvas = canvasRef.current;
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      const width = rect.width || canvas.width;
-      const height = rect.height || canvas.height;
+      const keyContainer = keyContainerRef.current;
+      if (!canvas || !keyContainer) return;
+      const canvasRect = canvas.getBoundingClientRect();
+      const keyRect = keyContainer.getBoundingClientRect();
 
       const leftPercent =
         note.type === "white"
           ? (note.whiteIndex + 0.5) / TOTAL_WHITE_KEYS
           : (note.blackAfter + 1) / TOTAL_WHITE_KEYS;
 
-      const startX = leftPercent * width;
-      const startY = note.type === "black" ? height * 0.45 : height * 0.7;
+      const keyOffsetX = keyRect.left - canvasRect.left;
+      const keyOffsetY = keyRect.top - canvasRect.top;
+
+      const startX = keyOffsetX + leftPercent * keyRect.width;
+      const startY =
+        keyOffsetY +
+        (note.type === "black" ? keyRect.height * 0.35 : keyRect.height * 0.65);
 
       // Burst of 4 to 6 particles (notes + sparkling dots)
       const count = 4 + Math.floor(Math.random() * 3);
@@ -322,8 +341,8 @@ function Footer() {
           x: startX + (Math.random() - 0.5) * 16,
           y: startY,
           vx: (Math.random() - 0.5) * 4.5,
-          vy: -3.5 - Math.random() * 4.5,
-          gravity: -0.06, // floating buoyancy
+          vy: -3.5 - Math.random() * 3.5,
+          gravity: -0.04, // floating buoyancy up through contact section
           rot: (Math.random() - 0.5) * 0.6,
           rotSpeed: (Math.random() - 0.5) * 0.1,
           size: isSparkle ? 6 + Math.random() * 8 : 22 + Math.random() * 14,
@@ -331,7 +350,7 @@ function Footer() {
           symbol,
           isSparkle,
           alpha: 1.0,
-          decay: 0.016 + Math.random() * 0.014,
+          decay: 0.005 + Math.random() * 0.004, // longer lifespan to float up through contact section
         });
       }
 
@@ -344,6 +363,7 @@ function Footer() {
 
   const triggerNoteOn = useCallback(
     (note) => {
+      registerInteraction();
       setActiveKeys((prev) => {
         const next = new Set(prev);
         next.add(note.id);
@@ -352,7 +372,7 @@ function Footer() {
       spawnParticleBurst(note);
       playNoteAudio(note);
     },
-    [playNoteAudio, spawnParticleBurst]
+    [playNoteAudio, registerInteraction, spawnParticleBurst]
   );
 
   const triggerNoteOff = useCallback((note) => {
@@ -376,6 +396,7 @@ function Footer() {
 
   const handlePointerDown = useCallback(
     (e) => {
+      registerInteraction();
       isPointerDownRef.current = true;
       const note = getKeyFromPoint(e.clientX, e.clientY);
       if (note) {
@@ -383,12 +404,13 @@ function Footer() {
         triggerNoteOn(note);
       }
     },
-    [getKeyFromPoint, triggerNoteOn]
+    [getKeyFromPoint, registerInteraction, triggerNoteOn]
   );
 
   const handlePointerMove = useCallback(
     (e) => {
       if (!isPointerDownRef.current) return;
+      registerInteraction();
       const note = getKeyFromPoint(e.clientX, e.clientY);
       if (note && note.id !== lastPlayedNoteIdRef.current) {
         if (lastPlayedNoteIdRef.current) {
@@ -407,7 +429,7 @@ function Footer() {
         lastPlayedNoteIdRef.current = null;
       }
     },
-    [getKeyFromPoint, triggerNoteOn, triggerNoteOff]
+    [getKeyFromPoint, registerInteraction, triggerNoteOn, triggerNoteOff]
   );
 
   const handlePointerUp = useCallback(() => {
@@ -422,6 +444,61 @@ function Footer() {
       lastPlayedNoteIdRef.current = null;
     }
   }, [triggerNoteOff]);
+
+  // --- IDLE FLOATING NOTES SPAWNER (SOARING UP THROUGH CONTACT SECTION) ---
+  useEffect(() => {
+    const IDLE_TIMEOUT_MS = 1500;
+    const SPAWN_INTERVAL_MS = 400;
+
+    const interval = setInterval(() => {
+      const timeSinceInteraction = Date.now() - lastInteractionRef.current;
+      if (timeSinceInteraction > IDLE_TIMEOUT_MS) {
+        if (!isIdleRef.current) {
+          isIdleRef.current = true;
+          setIsIdle(true);
+        }
+
+        const canvas = canvasRef.current;
+        const keyContainer = keyContainerRef.current;
+        if (canvas && keyContainer) {
+          const canvasRect = canvas.getBoundingClientRect();
+          const keyRect = keyContainer.getBoundingClientRect();
+
+          const keyOffsetX = keyRect.left - canvasRect.left;
+          const keyOffsetY = keyRect.top - canvasRect.top;
+
+          const startX = keyOffsetX + (0.05 + Math.random() * 0.9) * keyRect.width;
+          const startY = keyOffsetY + keyRect.height * (0.3 + Math.random() * 0.5);
+
+          const noteSymbols = ["♪", "♫", "🎵", "🎶", "🎼", "♩"];
+          const symbol = noteSymbols[Math.floor(Math.random() * noteSymbols.length)];
+          const color = MELODY_COLORS[Math.floor(Math.random() * MELODY_COLORS.length)];
+
+          particlesRef.current.push({
+            x: startX,
+            y: startY,
+            vx: (Math.random() - 0.5) * 1.8,
+            vy: -2.0 - Math.random() * 2.5,
+            gravity: -0.035,
+            rot: (Math.random() - 0.5) * 0.4,
+            rotSpeed: (Math.random() - 0.5) * 0.02,
+            size: symbol === "🎵" || symbol === "🎶" ? 24 + Math.random() * 10 : 28 + Math.random() * 14,
+            color,
+            symbol,
+            isSparkle: false,
+            alpha: 0.95,
+            decay: 0.004 + Math.random() * 0.0035, // floats gracefully all the way up through PianoLidContact
+          });
+
+          if (!animFrameRef.current) {
+            animFrameRef.current = requestAnimationFrame(animateParticles);
+          }
+        }
+      }
+    }, SPAWN_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [animateParticles]);
 
   // Global pointer up / move listener for seamless glissando swipe across keys
   useEffect(() => {
@@ -483,104 +560,27 @@ function Footer() {
   }, [triggerNoteOn, triggerNoteOff]);
 
   return (
-    <footer id="contact" className="relative z-10 w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white select-none">
-      {/* --- GRAND PIANO BODY SILHOUETTE WITH CONTACT INFO --- */}
-      <div className="relative w-full bg-bg dark:bg-[#0c0a14] pt-8">
-        <div className="relative w-full overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[480px] flex flex-col justify-end pt-16 sm:pt-20 md:pt-24 pb-10 sm:pb-14 md:pb-16">
-          {/* Authentic Grand Piano Lid Silhouette Curve SVG */}
-          <svg
-            viewBox="0 0 1000 600"
-            preserveAspectRatio="none"
-            className="absolute inset-0 h-full w-full fill-black dark:fill-[#08070e] pointer-events-none"
-          >
-            <path d="M 0,140 C 0,40 120,0 320,0 C 480,0 580,100 760,200 C 880,260 950,275 1000,280 L 1000,600 L 0,600 Z" />
-          </svg>
+    <footer className="relative z-10 w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white select-none pt-20 pb-6 sm:pt-24 md:pt-28">
+      {/* REAL-TIME CANVAS PARTICLE LAYER (COVERS FULL FOOTER INCLUDING PianoLidContact) */}
+      <canvas
+        ref={canvasRef}
+        className="pointer-events-none absolute inset-0 z-30 h-full w-full"
+      />
 
-          {/* Content inside Grand Piano Body */}
-          <div className="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-12 md:px-16 flex flex-col justify-between gap-10 md:flex-row md:items-end my-auto">
-            {/* Left side: Contact header, email, phone, social links */}
-            <div className="flex flex-col gap-4 text-white max-w-xl">
-              <h2 className="font-display text-5xl font-black uppercase tracking-tight sm:text-6xl md:text-7xl lg:text-8xl leading-none text-white select-none">
-                CONTACT
-              </h2>
-
-              <div className="flex flex-col gap-1.5 font-display text-sm sm:text-base md:text-lg font-medium text-white/90">
-                <a
-                  href="mailto:Tony2742000@gmail.com"
-                  className="transition-colors hover:text-[#8055fe] w-fit"
-                >
-                  Tony2742000@gmail.com
-                </a>
-                <a
-                  href="tel:+916283860380"
-                  className="transition-colors hover:text-[#8055fe] w-fit"
-                >
-                  +916283860380
-                </a>
-              </div>
-
-              <div className="flex items-center gap-6 font-display text-sm sm:text-base font-semibold text-white mt-1">
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline underline-offset-4 transition-opacity hover:opacity-80"
-                >
-                  LinkedIn
-                </a>
-                <a
-                  href="https://behance.net"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline underline-offset-4 transition-opacity hover:opacity-80"
-                >
-                  Behance
-                </a>
-              </div>
-            </div>
-
-            {/* Right side: Nav links safely positioned inside the black piano body */}
-            <div className="flex flex-col gap-3 font-display text-sm sm:text-base md:text-lg font-bold uppercase tracking-widest text-white/90 md:pb-4 md:text-right">
-              <a
-                href="#about"
-                className="transition-colors hover:text-[#8055fe]"
-              >
-                ABOUT
-              </a>
-              <a
-                href="#projects"
-                className="transition-colors hover:text-[#8055fe]"
-              >
-                PROJECTS
-              </a>
-              <a
-                href="#hero"
-                className="transition-colors hover:text-[#8055fe]"
-              >
-                CONTACT
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* --- THIN ACCENT SEPARATOR LINE --- */}
-      <div className="w-full border-t border-[#8b0000]/70 dark:border-white/20" />
+      {/* Contact / outro panel, sitting flush above the keyboard below it. */}
+      <PianoLidContact />
 
       {/* --- 100% FULL WIDTH EDGE-TO-EDGE TALL PIANO KEYBOARD --- */}
-      <div className="relative w-full overflow-hidden border-b border-[#a0aab8] bg-[#f8f9fa] shadow-2xl dark:border-white/20 dark:bg-[#12101b]">
+      <div className="relative w-full overflow-hidden border-t border-b border-[#4c45aa] bg-[#5E56C5] shadow-2xl dark:border-white/20 dark:bg-[#12101b]">
         <div className="overflow-x-auto overflow-y-hidden no-scrollbar w-full">
           <div
+            ref={keyContainerRef}
             onPointerDown={handlePointerDown}
+            onPointerEnter={registerInteraction}
+            onPointerMove={registerInteraction}
             className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] min-w-[760px] w-full flex touch-none overflow-hidden"
           >
-            {/* REAL-TIME CANVAS PARTICLE LAYER */}
-            <canvas
-              ref={canvasRef}
-              className="pointer-events-none absolute inset-0 z-30 h-full w-full"
-            />
-
-            {/* WHITE KEYS LAYER */}
+            {/* NATURAL NOTES LAYER */}
             {whiteKeys.map((note) => {
               const isActive = activeKeys.has(note.id);
               return (
@@ -589,16 +589,16 @@ function Footer() {
                   type="button"
                   data-note-id={note.id}
                   aria-label={`Piano key ${note.name}`}
-                  className={`relative flex-1 h-full border-r border-[#bac4d0] dark:border-white/20 rounded-b-[6px] transition-colors duration-75 outline-none ${
+                  className={`relative flex-1 h-full border-r border-[#4c45aa] dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${
                     isActive
-                      ? "bg-[#e2e8f0] dark:bg-[#342b58] shadow-inner translate-y-[3px]"
-                      : "bg-white dark:bg-[#1a1728] hover:bg-[#f1f5f9] dark:hover:bg-[#25203a]"
+                      ? "bg-[#4a43a8] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
+                      : "bg-[#5E56C5] hover:bg-[#524ab8] dark:bg-white dark:hover:bg-[#f1f5f9]"
                   }`}
                 />
               );
             })}
 
-            {/* BLACK KEYS LAYER */}
+            {/* SHARP NOTES LAYER */}
             {blackKeys.map((note) => {
               const isActive = activeKeys.has(note.id);
               // Position black key over the boundary line of its corresponding white key index
@@ -615,8 +615,8 @@ function Footer() {
                   }}
                   className={`absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${
                     isActive
-                      ? "bg-[#2c2c2c] dark:bg-[#524484] translate-y-[3px]"
-                      : "bg-black dark:bg-[#05040a] hover:bg-[#1a1a1a]"
+                      ? "bg-[#2a2640] dark:bg-[#332f48] translate-y-[3px]"
+                      : "bg-[#12101b] dark:bg-black hover:bg-[#1f1c2d] dark:hover:bg-[#1a1a1a]"
                   }`}
                 />
               );

@@ -7,6 +7,26 @@ gsap.registerPlugin(ScrollTrigger);
 
 const PIN_DISTANCE_VH = 2.5;
 
+// Fewer cubes on smaller viewports (perf), and — critically — the
+// col:row RATIO now tracks the actual device aspect ratio instead of
+// defaulting to roughly square. A square grid mapped onto a tall phone
+// screen can't both avoid overflow AND fill every edge: fitting its
+// width leaves gaps top/bottom, fitting its height overflows left/right.
+// Shaping the grid itself to match the viewport (more rows than cols on
+// a tall portrait phone) is what lets a "cover" camera fit (below) reach
+// every edge without huge empty margins.
+function getResponsiveGridDims(width, height) {
+  if (width >= 1024) return { cols: 12, rows: 8 }; // desktop: unchanged
+
+  const aspect = width / height;
+  const tileBudget = width < 640 ? 42 : 72;
+  let cols = Math.round(Math.sqrt(tileBudget * aspect));
+  let rows = Math.round(tileBudget / cols);
+  cols = Math.max(3, cols);
+  rows = Math.max(3, rows);
+  return { cols, rows };
+}
+
 const STAT_ITEMS = [
   {
     id: "exp",
@@ -124,9 +144,27 @@ function Stats({ theme }) {
     const scene = new THREE.Scene();
     scene.background = null; // transparent to show section background beneath
 
-    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
-    camera.position.set(0, 0, 11);
+    const CAMERA_FOV = 42;
+    const camera = new THREE.PerspectiveCamera(CAMERA_FOV, width / height, 0.1, 100);
     camera.lookAt(0, 0, 0);
+
+    // "Cover" distance (like CSS background-size: cover), not "contain":
+    // takes the SMALLER of the two candidate distances so the grid is
+    // guaranteed to fill both the frustum's width and height, allowing a
+    // small, deliberate overflow/crop in whichever dimension has room to
+    // spare — rather than the MAX, which guarantees no overflow in
+    // either dimension but, for a grid whose aspect ratio doesn't
+    // exactly match the viewport's, guarantees a visible gap in the
+    // other. Paired with getResponsiveGridDims shaping the grid's own
+    // col:row ratio to roughly track the device aspect, the resulting
+    // overflow stays small instead of needing this at all.
+    const computeCameraZ = (aspect, worldWidth, worldHeight) => {
+      const vFovRad = (CAMERA_FOV * Math.PI) / 180;
+      const distanceForHeight = worldHeight / (2 * Math.tan(vFovRad / 2));
+      const distanceForWidth =
+        worldWidth / (2 * Math.tan(vFovRad / 2) * aspect);
+      return Math.min(distanceForHeight, distanceForWidth) * 0.96;
+    };
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -165,6 +203,8 @@ function Stats({ theme }) {
       color: isInitialDark ? 0x1a1a1f : 0x5953b0,
       roughness: 0.98,
       metalness: 0.0,
+      transparent: true,
+      opacity: 1,
     });
     greyFrontMatRef.current = greyFrontMat;
 
@@ -196,14 +236,24 @@ function Stats({ theme }) {
     });
     greyLineMatRef.current = greyLineMat;
 
-    // --- 3D GRID OF CUBES (12 cols x 8 rows, gap = 0 for seamless continuous grid) ---
+    // --- 3D GRID OF CUBES (col/row count scales down on smaller
+    // viewports — see getResponsiveGridDims — gap = 0 for a seamless
+    // continuous grid at every size) ---
     const gridCubes = [];
-    const cols = 12;
-    const rows = 8;
+    const { cols, rows } = getResponsiveGridDims(width, height);
     const spacingX = tileSize;
     const spacingY = tileSize;
     const startX = -((cols - 1) * spacingX) / 2;
     const startY = ((rows - 1) * spacingY) / 2;
+
+    // Desktop keeps the exact original z: 11, tuned specifically for
+    // that aspect ratio — left untouched per instruction. Mobile/tablet
+    // use the aspect-aware cover distance instead.
+    const cameraZ =
+      width < 1024
+        ? computeCameraZ(width / height, cols * spacingX, rows * spacingY)
+        : 11;
+    camera.position.set(0, 0, cameraZ);
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
@@ -236,6 +286,8 @@ function Stats({ theme }) {
         color: isInitialDark ? 0x120f24 : 0x5953b0,
         roughness: 0.5,
         metalness: 0.1,
+        transparent: true,
+        opacity: 1,
       });
       lightCardMatRef.current = lightCardMat;
 
@@ -280,7 +332,7 @@ function Stats({ theme }) {
           sideGreyMat,
           {
             opacity: 1,
-            duration: 0.3,
+            duration: 0.25,
             ease: "power1.out",
           },
           0.05
@@ -288,13 +340,13 @@ function Stats({ theme }) {
           greyLineMat,
           {
             opacity: 0.85,
-            duration: 0.3,
+            duration: 0.25,
             ease: "power1.out",
           },
           0.05
         );
 
-        // Extrude flat 2D grid tiles into 3D isometric cubes on scroll
+        // Extrude flat 2D grid tiles into 3D isometric cubes then fly far off-screen & scale down to 0
         gridCubes.forEach(({ mesh, baseX, baseY, col, row }) => {
           const diffX = col - (cols - 1) / 2;
           const diffY = row - (rows - 1) / 2;
@@ -306,10 +358,10 @@ function Stats({ theme }) {
             mesh.scale,
             {
               z: 1.0,
-              duration: 0.4,
+              duration: 0.35,
               ease: "power2.out",
             },
-            0.05 + (col + row) * 0.015
+            0.05 + (col + row) * 0.01
           )
             .to(
               mesh.position,
@@ -317,33 +369,55 @@ function Stats({ theme }) {
                 z: liftZ,
                 x: baseX + moveX * 0.4,
                 y: baseY + moveY * 0.4,
-                duration: 0.4,
+                duration: 0.35,
                 ease: "power2.out",
               },
-              0.05 + (col + row) * 0.015
+              0.05 + (col + row) * 0.01
             )
             .to(
               mesh.rotation,
               {
                 x: -diffY * 0.3,
                 y: diffX * 0.3,
-                duration: 0.4,
+                duration: 0.35,
                 ease: "power2.out",
               },
-              0.05 + (col + row) * 0.015
+              0.05 + (col + row) * 0.01
             )
             .to(
               mesh.position,
               {
-                x: baseX + moveX * 2.2,
-                y: baseY + moveY * 2.2,
-                z: liftZ + 4,
-                duration: 0.5,
+                x: baseX + moveX * 4.0,
+                y: baseY + moveY * 4.0,
+                z: liftZ + 10,
+                duration: 0.35,
                 ease: "power2.in",
               },
-              0.45
+              0.35
+            )
+            .to(
+              mesh.scale,
+              {
+                x: 0,
+                y: 0,
+                z: 0,
+                duration: 0.35,
+                ease: "power2.in",
+              },
+              0.35
             );
         });
+
+        // Fade all 3D mesh materials out to opacity 0 so all background 3D elements completely disappear
+        tl.to(
+          [greyFrontMat, sideGreyMat, greyLineMat],
+          {
+            opacity: 0,
+            duration: 0.25,
+            ease: "power1.inOut",
+          },
+          0.35
+        );
 
         // 2. Ambient Giant Numbers Shift
         bgNumbersRef.current.forEach((num, idx) => {
@@ -360,12 +434,12 @@ function Stats({ theme }) {
           );
         });
 
-        // 3. Stat Meshes Sweep & HTML Overlay Position Binding
+        // 3. 3D Stat Meshes Sweep in & Fly Off-Screen to Disappear
         statMeshes.forEach((mesh, idx) => {
           const item = STAT_ITEMS[idx];
-          const htmlCard = overlayCardRefs.current[idx];
+          const startTime = 0.1 + idx * 0.04;
 
-          tl.set(mesh, { visible: true }, 0.2 + idx * 0.05);
+          tl.set(mesh, { visible: true }, startTime);
 
           tl.to(
             mesh.position,
@@ -373,10 +447,10 @@ function Stats({ theme }) {
               x: item.targetPos.x,
               y: item.targetPos.y,
               z: item.targetPos.z,
-              duration: 0.35,
+              duration: 0.25,
               ease: "power2.out",
             },
-            0.2 + idx * 0.05
+            startTime
           )
             .to(
               mesh.rotation,
@@ -384,10 +458,10 @@ function Stats({ theme }) {
                 x: item.rot.x * 0.5,
                 y: item.rot.y * 0.5,
                 z: item.rot.z * 0.5,
-                duration: 0.35,
+                duration: 0.25,
                 ease: "power2.out",
               },
-              0.2 + idx * 0.05
+              startTime
             )
             .to(
               mesh.position,
@@ -395,29 +469,27 @@ function Stats({ theme }) {
                 x: item.exitPos.x,
                 y: item.exitPos.y,
                 z: item.exitPos.z,
-                duration: 0.35,
+                duration: 0.25,
                 ease: "power2.in",
               },
-              0.65 + idx * 0.04
+              startTime + 0.25
             )
-            .set(mesh, { visible: false }, 0.98);
-
-          // Sync HTML overlay opacity with 3D mesh movement
-          if (htmlCard) {
-            tl.fromTo(
-              htmlCard,
-              { opacity: 0, scale: 0.6 },
-              { opacity: 1, scale: 1, duration: 0.35, ease: "power2.out" },
-              0.2 + idx * 0.05
-            ).to(
-              htmlCard,
-              { opacity: 0, scale: 0.6, duration: 0.35, ease: "power2.in" },
-              0.65 + idx * 0.04
-            );
-          }
+            .set(mesh, { visible: false }, startTime + 0.5);
         });
 
-        // 4. Centerpiece 3D Tilt
+        // 4. HTML Stat Cards Sweep smoothly into place and STAY visible on clean background
+        overlayCardRefs.current.forEach((htmlCard, idx) => {
+          if (!htmlCard) return;
+          const startTime = 0.2 + idx * 0.05;
+          tl.fromTo(
+            htmlCard,
+            { opacity: 0, scale: 0.7, y: 30 },
+            { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" },
+            startTime
+          );
+        });
+
+        // 5. Centerpiece 3D Tilt
         if (mainCardRef.current) {
           tl.to(
             mainCardRef.current,
@@ -430,6 +502,19 @@ function Stats({ theme }) {
           );
         }
       }, section);
+    } else {
+      // Reduced motion fallback: hide all 3D meshes and keep stat cards visible on clean background
+      statMeshes.forEach((mesh) => {
+        mesh.visible = false;
+      });
+      gridCubes.forEach(({ mesh }) => {
+        mesh.visible = false;
+      });
+      overlayCardRefs.current.forEach((htmlCard) => {
+        if (htmlCard) {
+          gsap.set(htmlCard, { opacity: 1, scale: 1, y: 0 });
+        }
+      });
     }
 
     // --- RESIZE HANDLER ---
@@ -438,14 +523,37 @@ function Stats({ theme }) {
       const w = Math.max(mount.clientWidth || window.innerWidth, 300);
       const h = Math.max(mount.clientHeight || window.innerHeight, 300);
       camera.aspect = w / h;
+      // Same desktop-preserving rule as the initial setup: only
+      // mobile/tablet widths get the recalculated cover distance, so a
+      // resize/orientation change can't regress the desktop framing back
+      // to the "contain" math that caused the white margins.
+      camera.position.z =
+        w < 1024
+          ? computeCameraZ(w / h, cols * spacingX, rows * spacingY)
+          : 11;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
     window.addEventListener("resize", handleResize);
 
+    // The timeout-based re-measure wasn't reliable enough on mobile — a
+    // guessed delay can still land before `min-h-[100dvh]` has actually
+    // settled (webfont swap reflow, the address bar hiding and changing
+    // the dvh unit, etc.), and unlike CSS the canvas's actual pixel size
+    // is fixed at whatever `mount.clientWidth/clientHeight` happened to
+    // read at that exact moment. A ResizeObserver instead reacts to the
+    // mount element's REAL size the instant it changes, however many
+    // times that takes, rather than guessing at a fixed delay — this is
+    // what actually keeps the canvas matched to the section's true
+    // rendered box, without touching the camera-distance/motion logic.
+    const resizeObserver = new ResizeObserver(() => handleResize());
+    resizeObserver.observe(mount);
+    document.fonts?.ready?.then(handleResize);
+
     // --- CLEANUP ---
     return () => {
       cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
       ctx?.revert();
 
@@ -467,18 +575,6 @@ function Stats({ theme }) {
       ref={sectionRef}
       className="relative z-10 min-h-[100dvh] w-full overflow-hidden bg-bg text-ink transition-colors duration-300 select-none dark:bg-[#0c0a14] dark:text-white"
     >
-      {/* Subtle Grid Background Pattern */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-25"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px)
-          `,
-          backgroundSize: "72px 72px",
-        }}
-      />
-
       {/* Ambient Watermark Giant Numbers */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-6 sm:px-12 overflow-hidden">
         <span
@@ -511,47 +607,51 @@ function Stats({ theme }) {
           <div
             key={item.id}
             ref={(el) => (overlayCardRefs.current[i] = el)}
-            className={`absolute z-20 w-[72vw] max-w-[260px] sm:max-w-[290px] border border-black/15 bg-white/95 p-5 text-ink shadow-2xl backdrop-blur-md opacity-0 transition-colors duration-300 dark:border-white/20 dark:bg-[#161422]/95 dark:text-white ${i === 0
-              ? "left-[6%] top-[14%]"
+            className={`absolute z-20 w-[38vw] max-w-[160px] p-3 sm:w-[52vw] sm:max-w-[240px] sm:p-4 md:max-w-[270px] md:p-5 lg:max-w-[290px] rounded-none border border-ink/15 bg-white text-ink shadow-xl shadow-ink/10 opacity-0 transition-colors duration-300 dark:border-white/15 dark:bg-[#141416] dark:text-white dark:shadow-2xl ${i === 0
+              ? "left-[3%] top-[8%] sm:left-[6%] sm:top-[14%]"
               : i === 1
-                ? "right-[6%] top-[14%]"
+                ? "right-[3%] top-[8%] sm:right-[6%] sm:top-[14%]"
                 : i === 2
-                  ? "right-[6%] bottom-[14%]"
-                  : "left-[6%] bottom-[14%]"
+                  ? "right-[3%] bottom-[8%] sm:right-[6%] sm:bottom-[14%]"
+                  : "left-[3%] bottom-[8%] sm:left-[6%] sm:bottom-[14%]"
               }`}
           >
-            <div className="inline-block rounded-full border border-black/20 bg-[#f4f2fa] px-2.5 py-0.5 font-display text-[10px] font-bold tracking-widest text-ink/90 uppercase dark:border-white/30 dark:bg-white/10 dark:text-white/90">
+            <div className="inline-block rounded-none border border-ink/20 bg-[#f1f0fa] px-2 py-0.5 font-display text-[8px] sm:text-[10px] font-bold tracking-widest text-ink/90 uppercase dark:border-white/30 dark:bg-white/10 dark:text-white/90">
               {item.eyebrow}
             </div>
-            <div className="mt-2 font-display text-4xl font-black leading-none tracking-tight text-[#8055fe] sm:text-5xl dark:text-[#9875ff]">
+            <div className="mt-2 font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-none tracking-tight text-[#0D0C14] dark:text-white">
               {item.value}
             </div>
-            <div className="mt-2 font-display text-xs font-bold text-ink sm:text-sm dark:text-white">
+            <div className="mt-2 font-display text-[10px] sm:text-xs md:text-sm font-bold text-ink dark:text-white">
               {item.title}
             </div>
-            <p className="mt-2 font-display text-[11px] font-normal leading-relaxed text-ink/80 sm:text-xs dark:text-white/80">
+            {/* Copy line drops out below sm — at 38vw/160px wide it's too
+                narrow to keep this third line legible alongside the
+                eyebrow/value/title, so it's cut rather than shrunk to
+                unreadable size. */}
+            <p className="mt-2 hidden font-display text-[11px] font-normal leading-relaxed text-ink/80 sm:block sm:text-xs dark:text-white/80">
               {item.copy}
             </p>
           </div>
         ))}
 
-        {/* Main Pinned Centerpiece Light-Theme Card */}
+        {/* Main Pinned Centerpiece Theme-Adapted Card */}
         <div
           ref={mainCardRef}
-          className="relative z-30 w-[88vw] max-w-[340px] rounded-xl border border-black/15 bg-white p-6 text-ink shadow-2xl transition-colors duration-300 sm:max-w-[400px] sm:p-8 md:max-w-[440px] dark:border-white/20 dark:bg-[#161422] dark:text-white"
+          className="relative z-30 w-[82vw] max-w-[300px] rounded-none border border-ink/15 bg-white p-5 text-ink shadow-2xl transition-colors duration-300 sm:max-w-[400px] sm:p-8 md:max-w-[440px] dark:border-white/15 dark:bg-[#141416] dark:text-white"
         >
           {/* Bordered pill/badge with thin outline */}
-          <div className="inline-block rounded-full border border-black/20 bg-[#f4f2fa] px-3.5 py-1 font-display text-xs font-bold uppercase tracking-wider text-ink/90 dark:border-white/30 dark:bg-white/10 dark:text-white/90">
+          <div className="inline-block rounded-none border border-ink/20 bg-[#f1f0fa] px-3.5 py-1 font-display text-xs font-bold uppercase tracking-wider text-ink/90 dark:border-white/30 dark:bg-white/10 dark:text-white/90">
             Projects Shipped
           </div>
 
-          {/* Purple/Plum Accent Color for 20+ */}
-          <h2 className="mt-3 font-display text-6xl font-black leading-none tracking-tight text-[#8055fe] sm:text-7xl md:text-8xl dark:text-[#9875ff]">
+          {/* Big Stat Text Color #0D0C14 for 20+ */}
+          <h2 className="mt-3 font-display text-5xl font-black leading-none tracking-tight text-[#0D0C14] sm:text-7xl md:text-8xl dark:text-white">
             20+
           </h2>
 
-          {/* High contrast dark body text */}
-          <p className="mt-4 font-display text-xs font-normal leading-relaxed text-ink/80 sm:text-sm md:text-base dark:text-white/80">
+          {/* High contrast body text */}
+          <p className="mt-4 font-display text-[11px] font-normal leading-relaxed text-ink/80 sm:text-sm md:text-base dark:text-white/80">
             NudgeFile renames and sorts your files with a local AI — but it asks
             first, and it always has an undo button, because trusting an AI
             with your file system sight-unseen is how horror movies start.

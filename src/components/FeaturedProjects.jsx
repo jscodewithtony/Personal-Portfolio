@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import projectTekxera from "../assets/project-tekxera.png";
-import projectJewelry from "../assets/project-jewelry.png";
-import projectStrategy from "../assets/project-strategy.png";
+import projectTekxera from "../assets/project-tekxera.webp";
+import projectJewelry from "../assets/project-jewelry.webp";
+import projectStrategy from "../assets/project-strategy.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,9 +43,18 @@ const PROJECTS = [
   },
 ];
 
-// 47 Rows of background text covering full scroll height with 0 blank space
+// Row count covering the full scroll height with 0 blank space. 47 was
+// tuned against desktop's rendered row height. Since the font is sized
+// in vw, the SAME 47 rows render physically shorter on a narrow phone
+// (same percentage, smaller viewport) — not tall enough in total to
+// span the wall's fixed-pixel travel distance, which is why the text
+// never entered the visible window on mobile. Doubling the count is
+// purely additive: the extra rows just extend further into space that
+// was already off-screen and unused on desktop, so desktop's rendered
+// result is unchanged, while mobile now has enough stacked height to
+// cover the same travel distance.
 const BG_ROWS = Array.from(
-  { length: 47 },
+  { length: 94 },
   () => "FEATURED PROJECTS FEATURED PROJECTS FEATURED PROJECTS"
 );
 
@@ -181,18 +190,6 @@ function FeaturedProjects() {
       ref={sectionRef}
       className="relative z-10 h-screen w-full overflow-hidden bg-bg text-ink transition-colors duration-300 select-none dark:bg-[#0c0a14] dark:text-white"
     >
-      {/* Background Accent Grid */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-15"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px)
-          `,
-          backgroundSize: "80px 80px",
-        }}
-      />
-
       {/* -----------------------------------------------------------------
           REVERSE PARALLAX BACKGROUND TEXT WALL
           ----------------------------------------------------------------- */}
@@ -216,16 +213,20 @@ function FeaturedProjects() {
       {/* -----------------------------------------------------------------
           INDIVIDUAL CLEAN CARD STAGE (Zero Overlap / Stacking)
           ----------------------------------------------------------------- */}
-      <div className="relative z-10 flex h-full w-full items-center justify-center p-4 sm:p-6 lg:p-10 pointer-events-none">
+      <div className="relative z-10 flex h-full w-full items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-none">
         {PROJECTS.map((project, index) => (
           <div
             key={project.id}
             ref={(el) => (cardRefs.current[index] = el)}
-            className="absolute inset-0 flex items-center justify-center p-4 sm:p-6 lg:p-10 pointer-events-auto will-change-transform"
+            className="absolute inset-0 flex items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-auto will-change-transform"
           >
-            {/* Exact Card Shell matching Frame 32 reference */}
+            {/* Exact Card Shell matching Frame 32 reference. Mobile has
+                no side padding above (image bleeds to the true viewport
+                edge); the text column below keeps its own inner padding
+                so copy still reads with room to breathe even though the
+                card's own background now touches the screen edges. */}
             <div className="relative w-full max-w-5xl lg:max-w-6xl overflow-hidden rounded-none border-none bg-white shadow-2xl transition-colors duration-300 dark:bg-[#141418]">
-              <div className="grid grid-cols-1 md:grid-cols-12 min-h-[600px] lg:min-h-[640px]">
+              <div className="grid grid-cols-1 md:grid-cols-12 min-h-[480px] sm:min-h-[600px] lg:min-h-[640px]">
 
                 {/* Left Column: Full-Height Portrait Image */}
                 <div className="md:col-span-5 relative overflow-hidden h-72 sm:h-96 md:h-full w-full">
@@ -249,7 +250,16 @@ function FeaturedProjects() {
                       {project.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm lg:text-base text-ink/70 dark:text-white/70 leading-relaxed font-sans pt-2">
+                    {/* line-clamp only below sm: different projects have
+                        different description lengths, and an open-ended
+                        height meant a longer one (e.g. Meridian) could
+                        push that card's real height past the viewport
+                        entirely, eating all the margin the watermark
+                        text needs — leaving it invisible for that card
+                        specifically while shorter ones showed it fine.
+                        Capping the line count makes every card's height
+                        consistent regardless of copy length. */}
+                    <p className="line-clamp-3 text-xs sm:line-clamp-none sm:text-sm lg:text-base text-ink/70 dark:text-white/70 leading-relaxed font-sans pt-2">
                       {project.description}
                     </p>
                   </div>

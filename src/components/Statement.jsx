@@ -52,7 +52,6 @@ function Statement() {
   const sectionRef = useRef(null);
   const scaleWrapRef = useRef(null);
   const trailingAsideRef = useRef(null);
-  const bgLayerRef = useRef(null);
   const line1RowRef = useRef(null);
   const line2RowRef = useRef(null);
   const line3RowRef = useRef(null);
@@ -132,19 +131,6 @@ function Statement() {
         },
       });
 
-      // azizkhaldi.com style smooth background color morphing from mascot purple (#5953b0) to target theme background
-      const isDark = document.documentElement.classList.contains("dark");
-      const targetBgColor = isDark ? "#0c0a14" : "#f1f0fa";
-
-      if (bgLayerRef.current) {
-        tl.fromTo(
-          bgLayerRef.current,
-          { backgroundColor: "#5953b0" },
-          { backgroundColor: targetBgColor, ease: "power1.out", duration: 0.5 },
-          0
-        );
-      }
-
       tl.to(scaleWrap, { scale: HEADING_END_SCALE, ease: "none", duration: 1 }, 0);
       words.forEach((word) => {
         tl.to(word, { x: 0, ease: "none", duration: 1 }, 0);
@@ -178,25 +164,8 @@ function Statement() {
   return (
     <section
       ref={sectionRef}
-      className="relative z-10 -mt-px flex min-h-[100dvh] flex-col justify-center overflow-hidden px-6 py-24 text-ink transition-colors duration-300 sm:px-10 sm:py-28 md:px-14 md:py-32 dark:text-white"
+      className="relative z-10 -mt-px overflow-hidden bg-bg px-6 py-24 text-ink transition-colors duration-300 sm:px-10 sm:py-28 md:px-14 md:py-32 dark:bg-[#0c0a14] dark:text-white"
     >
-      {/* Whole-screen background morphing layer */}
-      <div
-        ref={bgLayerRef}
-        className="pointer-events-none absolute inset-0 z-0 bg-[#5953b0]"
-      />
-
-      {/* Subtle Grid Background Pattern */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-20"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px)
-          `,
-          backgroundSize: "72px 72px",
-        }}
-      />
       {/* Extra inset (on top of the section's own padding) so the fitted
           text reads as a contained block with breathing room on every
           side, instead of stretching flush to the section's edge. */}

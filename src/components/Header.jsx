@@ -1,3 +1,5 @@
+import AnimatedThemeToggler from "./AnimatedThemeToggler";
+
 function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
   const isDark = theme === "dark";
 
@@ -12,17 +14,17 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
       </span>
 
       <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
-        <button
-          type="button"
-          onClick={onToggleTheme}
-          aria-pressed={isDark}
+
+        <AnimatedThemeToggler
+          theme={theme}
+          onThemeChange={onToggleTheme}
+          variant="rectangle"
+          duration={500}
           aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-          className={`flex items-center gap-1.5 font-display font-black text-sm sm:text-base md:text-lg uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] ${
+          className={`flex items-center justify-center p-2 rounded-full transition-[color,transform,background-color] duration-200 active:scale-90 hover:bg-black/5 dark:hover:bg-white/10 ${
             menuOpen ? "text-white" : "text-ink dark:text-white"
           }`}
-        >
-          {isDark ? "Light" : "Dark"}
-        </button>
+        />
 
         <button
           ref={menuButtonRef}

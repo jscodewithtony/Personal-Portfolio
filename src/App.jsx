@@ -5,6 +5,8 @@ import About from "./components/About";
 import Statement from "./components/Statement";
 import FeaturedProjects from "./components/FeaturedProjects";
 import Stats from "./components/Stats";
+import MentorshipTestimonials from "./components/MentorshipTestimonials";
+import Insight from "./components/Insight";
 import Footer from "./components/Footer";
 import MenuOverlay from "./components/MenuOverlay";
 
@@ -30,7 +32,7 @@ function App() {
   }, [theme]);
 
   return (
-    <div className="relative min-h-[100dvh] bg-bg font-display text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white">
+    <div className="relative min-h-[100dvh] bg-bg font-display text-ink uppercase transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white">
       <Header
         menuButtonRef={menuButtonRef}
         menuOpen={menuOpen}
@@ -41,10 +43,12 @@ function App() {
         }
       />
       <Hero />
+      <About theme={theme} />
       <Statement />
-      <About />
       <FeaturedProjects />
       <Stats theme={theme} />
+      <MentorshipTestimonials theme={theme} />
+      <Insight />
       <Footer />
       <MenuOverlay
         open={menuOpen}

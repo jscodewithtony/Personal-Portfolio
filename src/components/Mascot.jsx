@@ -50,9 +50,10 @@ function Mascot({ faceRef }) {
   });
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const isA11y = document.documentElement.classList.contains("a11y-mode");
+    const reduceMotion =
+      isA11y ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const handleMouseMove = (e) => {
       mouse.current.x = e.clientX;

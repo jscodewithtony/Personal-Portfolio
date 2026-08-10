@@ -89,18 +89,6 @@ function Hero() {
       ref={sectionRef}
       className="relative flex min-h-[100dvh] flex-col justify-between overflow-hidden bg-bg pb-6 pt-0 text-ink transition-colors duration-300 select-none dark:bg-[#0c0a14] dark:text-white"
     >
-      {/* Background Accent Grid */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-20"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px)
-          `,
-          backgroundSize: "72px 72px",
-        }}
-      />
-
       <div className="relative z-10 flex flex-col justify-between flex-1 w-full max-w-[94vw] mx-auto pt-2 pb-6">
         {/* Top Headline: Full Width HELLO I'M TONY */}
         <div
@@ -132,29 +120,29 @@ function Hero() {
 
           {/* Sub-headline bar: BASED IN INDIA & DESIGN WITH AI */}
           <div className="relative z-10 flex items-center justify-between mt-2 px-1 sm:px-2">
-            <p className="font-display text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-[0.2em] text-ink/90 dark:text-white/90">
+            <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold uppercase tracking-[0.70em] text-ink/90 dark:text-white/90">
               BASED IN INDIA
             </p>
-            <p className="font-display text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-[0.2em] text-ink/90 dark:text-white/90">
+            <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold uppercase tracking-[0.70em] text-ink/90 dark:text-white/90">
               DESIGN WITH AI
             </p>
           </div>
         </div>
 
         {/* Center Main Row: Left Specs + Mascot + Right Specs */}
-        <div className="relative z-0 flex items-center justify-between gap-4 sm:gap-8 md:gap-12 lg:gap-16 my-auto pt-4 pb-2">
+        <div className="relative z-0 grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 xl:gap-16 my-auto pt-4 pb-2 max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-8">
           {/* Left Spec Column */}
           <div
             ref={leftLabelRef}
-            className="flex flex-col items-start justify-center gap-2 sm:gap-3 text-left shrink-0"
+            className="flex flex-col items-end justify-center gap-2 sm:gap-3 text-right"
           >
-            <p className="font-display text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase">
+            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
               UIUX DESIGNER
             </p>
-            <p className="font-display text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase">
+            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
               ACCESSIBILITY(A11Y)
             </p>
-            <p className="font-display text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase">
+            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
               DESIGN SYSTEM
             </p>
           </div>
@@ -167,12 +155,12 @@ function Hero() {
           {/* Right Spec Column */}
           <div
             ref={rightLabelRef}
-            className="flex flex-col items-start justify-center gap-2 sm:gap-3 text-left shrink-0"
+            className="flex flex-col items-start justify-center gap-2 sm:gap-3 text-left"
           >
-            <p className="font-display text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase">
+            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
               STILL WAITING FOR
             </p>
-            <p className="font-display text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase flex items-center gap-2">
+            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase flex items-center gap-2 whitespace-nowrap">
               FIRST DESIGN AWARD 🏆
             </p>
           </div>
