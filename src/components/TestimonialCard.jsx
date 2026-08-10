@@ -57,6 +57,8 @@ function TestimonialCard({
             <img
               src={logoSrc}
               alt={platform ? `${platform} logo` : "Platform logo"}
+              loading="lazy"
+              decoding="async"
               className="h-5 w-auto object-contain opacity-95 sm:h-6"
             />
           </div>

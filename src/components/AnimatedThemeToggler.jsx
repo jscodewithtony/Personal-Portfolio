@@ -119,7 +119,7 @@ function getThemeTransitionClipPaths(
 
 export const AnimatedThemeToggler = ({
   className,
-  duration = 500,
+  duration = 1000,
   variant = "circle",
   fromCenter = false,
   theme,
@@ -239,7 +239,7 @@ export const AnimatedThemeToggler = ({
             },
             {
               duration,
-              easing: shape === "star" ? "linear" : "ease-in-out",
+              easing: shape === "star" ? "linear" : "cubic-bezier(0.4, 0, 0.2, 1)",
               fill: "forwards",
               pseudoElement: "::view-transition-new(root)",
             }

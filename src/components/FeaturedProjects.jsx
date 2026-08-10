@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import projectTekxera from "../assets/project-tekxera.webp";
@@ -43,16 +43,6 @@ const PROJECTS = [
   },
 ];
 
-// Row count covering the full scroll height with 0 blank space. 47 was
-// tuned against desktop's rendered row height. Since the font is sized
-// in vw, the SAME 47 rows render physically shorter on a narrow phone
-// (same percentage, smaller viewport) — not tall enough in total to
-// span the wall's fixed-pixel travel distance, which is why the text
-// never entered the visible window on mobile. Doubling the count is
-// purely additive: the extra rows just extend further into space that
-// was already off-screen and unused on desktop, so desktop's rendered
-// result is unchanged, while mobile now has enough stacked height to
-// cover the same travel distance.
 const BG_ROWS = Array.from(
   { length: 94 },
   () => "FEATURED PROJECTS FEATURED PROJECTS FEATURED PROJECTS"
@@ -63,6 +53,49 @@ function FeaturedProjects() {
   const bgWallRef = useRef(null);
   const bgRowsRef = useRef([]);
   const cardRefs = useRef([]);
+
+  // Mouse & Custom Cursor Refs (no re-renders, 60fps persistent RAF)
+  const followerRef = useRef(null);
+  const mousePosRef = useRef({ x: -200, y: -200 });
+  const posRef = useRef({ x: -200, y: -200 });
+  const scaleRef = useRef(0);
+  const activeHoverCardRef = useRef(false);
+
+  useEffect(() => {
+    // Only run on desktop/fine pointer devices
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    if (isTouch) return;
+
+    const handleMouseMove = (e) => {
+      mousePosRef.current = { x: e.clientX, y: e.clientY };
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+
+    let animId;
+    const tick = () => {
+      posRef.current.x += (mousePosRef.current.x - posRef.current.x) * 0.2;
+      posRef.current.y += (mousePosRef.current.y - posRef.current.y) * 0.2;
+
+      const targetScale = activeHoverCardRef.current ? 1 : 0;
+      scaleRef.current += (targetScale - scaleRef.current) * 0.22;
+
+      if (followerRef.current) {
+        followerRef.current.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0) translate(-50%, -50%) scale(${scaleRef.current})`;
+        followerRef.current.style.opacity = scaleRef.current > 0.01 ? "1" : "0";
+      }
+
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+
+    return () => {
+      document.body.dataset.cursorProjectHover = "false";
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (animId) cancelAnimationFrame(animId);
+    };
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -83,14 +116,11 @@ function FeaturedProjects() {
           start: "top top",
           end: () => `+=${pinDistance}`,
           pin: true,
-          scrub: 1.2, // Smooth responsive scrub
+          scrub: 1.2,
           anticipatePin: 1,
         },
       });
 
-      // -------------------------------------------------------------
-      // Initial Setup: Text Wall VISIBLE
-      // -------------------------------------------------------------
       bgRowsRef.current.forEach((row) => {
         if (!row) return;
         gsap.set(row, { opacity: 1, y: 0, scale: 1, force3D: true });
@@ -99,12 +129,7 @@ function FeaturedProjects() {
       // Position text wall initially shifted UP (-1800px) so it can travel DOWN as user scrolls DOWN
       gsap.set(bgWallRef.current, { y: -1800, force3D: true });
 
-      // Clean card initial offsets (NO card stacking or overlap!)
-      // Distances trimmed to just clear the viewport rather than
-      // overshooting far past it — less travel means less of each
-      // card's transition window is spent fully off-screen, which
-      // closes up the empty gap between one project leaving and the
-      // next arriving.
+      // Clean card initial offsets
       if (cardRefs.current[0]) {
         gsap.set(cardRefs.current[0], { opacity: 1, y: 650, rotate: 0, force3D: true });
       }
@@ -115,9 +140,6 @@ function FeaturedProjects() {
         gsap.set(cardRefs.current[2], { opacity: 1, y: 1250, rotate: 0, force3D: true });
       }
 
-      /* =============================================================
-         REVERSE TEXT SCROLL PARALLAX (Text moves DOWN as user scrolls DOWN)
-         ============================================================= */
       tl.to(
         bgWallRef.current,
         {
@@ -129,19 +151,13 @@ function FeaturedProjects() {
         0.0
       );
 
-      /* =============================================================
-         CLEAN INDIVIDUAL CARD PRESENTATIONS (NO Overlap / Stacking)
-         ============================================================= */
-
       // --- Card 1 ---
       if (cardRefs.current[0]) {
-        // Enters center stage cleanly (y: 950 -> 0)
         tl.to(
           cardRefs.current[0],
           { y: 0, rotate: 0.8, duration: 0.22, ease: "sine.inOut", force3D: true },
           0.05
         );
-        // Exits UP to top (y: 0 -> -1250) and tilts dynamically
         tl.to(
           cardRefs.current[0],
           { y: -850, rotate: -10, duration: 0.24, ease: "sine.inOut", force3D: true },
@@ -151,13 +167,11 @@ function FeaturedProjects() {
 
       // --- Card 2 ---
       if (cardRefs.current[1]) {
-        // Enters center stage AFTER Card 1 exits (NO overlap) and tilts dynamically (0deg -> 8.6deg)
         tl.to(
           cardRefs.current[1],
           { y: 0, rotate: 8.6, duration: 0.24, ease: "sine.inOut", force3D: true },
           0.36
         );
-        // Exits UP to top and tilts to 14deg
         tl.to(
           cardRefs.current[1],
           { y: -850, rotate: 14, duration: 0.24, ease: "sine.inOut", force3D: true },
@@ -167,13 +181,11 @@ function FeaturedProjects() {
 
       // --- Card 3 ---
       if (cardRefs.current[2]) {
-        // Enters center stage AFTER Card 2 exits (NO overlap) and tilts dynamically (0deg -> -7.8deg)
         tl.to(
           cardRefs.current[2],
           { y: 0, rotate: -7.8, duration: 0.24, ease: "sine.inOut", force3D: true },
           0.64
         );
-        // Exits UP to top and tilts to -12deg
         tl.to(
           cardRefs.current[2],
           { y: -850, rotate: -10, duration: 0.20, ease: "sine.inOut", force3D: true },
@@ -188,11 +200,27 @@ function FeaturedProjects() {
   return (
     <section
       ref={sectionRef}
+      onMouseLeave={() => {
+        activeHoverCardRef.current = false;
+        document.body.dataset.cursorProjectHover = "false";
+      }}
       className="relative z-10 h-screen w-full overflow-hidden bg-bg text-ink transition-colors duration-300 select-none dark:bg-[#0c0a14] dark:text-white"
     >
-      {/* -----------------------------------------------------------------
-          REVERSE PARALLAX BACKGROUND TEXT WALL
-          ----------------------------------------------------------------- */}
+      {/* SCOPED CUSTOM CIRCULAR CURSOR FOLLOWER */}
+      <div
+        ref={followerRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed top-0 left-0 z-50 flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-[#5953b0] text-white shadow-2xl shadow-[#5953b0]/40 opacity-0 will-change-transform"
+        style={{ transform: "translate3d(-200px, -200px, 0) translate(-50%, -50%) scale(0)" }}
+      >
+        <div className="select-none font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-center leading-[1.15] text-white drop-shadow-sm">
+          VIEW
+          <br />
+          PROJECT
+        </div>
+      </div>
+
+      {/* REVERSE PARALLAX BACKGROUND TEXT WALL */}
       <div
         ref={bgWallRef}
         className="pointer-events-none absolute -top-[2400px] -bottom-[2400px] inset-x-0 flex flex-col justify-start items-center overflow-hidden z-0 py-2"
@@ -210,9 +238,7 @@ function FeaturedProjects() {
         </div>
       </div>
 
-      {/* -----------------------------------------------------------------
-          INDIVIDUAL CLEAN CARD STAGE (Zero Overlap / Stacking)
-          ----------------------------------------------------------------- */}
+      {/* INDIVIDUAL CLEAN CARD STAGE */}
       <div className="relative z-10 flex h-full w-full items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-none">
         {PROJECTS.map((project, index) => (
           <div
@@ -220,12 +246,17 @@ function FeaturedProjects() {
             ref={(el) => (cardRefs.current[index] = el)}
             className="absolute inset-0 flex items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-auto will-change-transform"
           >
-            {/* Exact Card Shell matching Frame 32 reference. Mobile has
-                no side padding above (image bleeds to the true viewport
-                edge); the text column below keeps its own inner padding
-                so copy still reads with room to breathe even though the
-                card's own background now touches the screen edges. */}
-            <div className="relative w-full max-w-5xl lg:max-w-6xl overflow-hidden rounded-none border-none bg-white shadow-2xl transition-colors duration-300 dark:bg-[#141418]">
+            <div
+              onMouseEnter={() => {
+                activeHoverCardRef.current = true;
+                document.body.dataset.cursorProjectHover = "true";
+              }}
+              onMouseLeave={() => {
+                activeHoverCardRef.current = false;
+                document.body.dataset.cursorProjectHover = "false";
+              }}
+              className="relative w-full max-w-5xl lg:max-w-6xl overflow-hidden rounded-none border-none bg-white shadow-2xl transition-colors duration-300 dark:bg-[#141418] group cursor-pointer md:cursor-none"
+            >
               <div className="grid grid-cols-1 md:grid-cols-12 min-h-[480px] sm:min-h-[600px] lg:min-h-[640px]">
 
                 {/* Left Column: Full-Height Portrait Image */}
@@ -237,10 +268,9 @@ function FeaturedProjects() {
                   />
                 </div>
 
-                {/* Right Column: Title, Description, Metadata & Bottom-Right Preview Thumbnail Insert */}
+                {/* Right Column */}
                 <div className="md:col-span-7 flex flex-col justify-between p-6 sm:p-8 lg:p-10 bg-white relative rounded-none transition-colors duration-300 dark:bg-[#141418]">
 
-                  {/* Top Content: Client Header, Title, Description */}
                   <div className="space-y-4 max-w-xl">
                     <div className="text-sm font-normal tracking-normal text-ink/80 dark:text-white/80">
                       {project.client}
@@ -250,24 +280,12 @@ function FeaturedProjects() {
                       {project.title}
                     </h3>
 
-                    {/* line-clamp only below sm: different projects have
-                        different description lengths, and an open-ended
-                        height meant a longer one (e.g. Meridian) could
-                        push that card's real height past the viewport
-                        entirely, eating all the margin the watermark
-                        text needs — leaving it invisible for that card
-                        specifically while shorter ones showed it fine.
-                        Capping the line count makes every card's height
-                        consistent regardless of copy length. */}
                     <p className="line-clamp-3 text-xs sm:line-clamp-none sm:text-sm lg:text-base text-ink/70 dark:text-white/70 leading-relaxed font-sans pt-2">
                       {project.description}
                     </p>
                   </div>
 
-                  {/* Bottom Content: Industry & Role on left, Screenshot Thumbnail Insert on bottom-right */}
                   <div className="mt-8 flex flex-row items-end justify-between gap-4 relative">
-
-                    {/* Industry & Role Info */}
                     <div className="space-y-4 shrink-0">
                       <div>
                         <div className="text-sm lg:text-base font-normal text-ink dark:text-white">Industry</div>
@@ -283,7 +301,6 @@ function FeaturedProjects() {
                       </div>
                     </div>
 
-                    {/* Bottom-Right Screenshot Preview Insert */}
                     <div className="relative overflow-hidden rounded-none border border-ink/10 dark:border-white/10 bg-bg dark:bg-black/60 shadow-2xl w-48 sm:w-60 lg:w-72 aspect-[16/10] shrink-0 self-end">
                       <img
                         src={project.thumbnailImage}
@@ -291,7 +308,6 @@ function FeaturedProjects() {
                         className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-none"
                       />
                     </div>
-
                   </div>
 
                 </div>

@@ -76,23 +76,12 @@ function getMidiFrequency(midi) {
 
 function Footer() {
   const [activeKeys, setActiveKeys] = useState(new Set());
-  const [isIdle, setIsIdle] = useState(true);
 
+  const footerRef = useRef(null);
   const canvasRef = useRef(null);
   const keyContainerRef = useRef(null);
   const particlesRef = useRef([]);
   const animFrameRef = useRef(null);
-
-  const lastInteractionRef = useRef(Date.now());
-  const isIdleRef = useRef(true);
-
-  const registerInteraction = useCallback(() => {
-    lastInteractionRef.current = Date.now();
-    if (isIdleRef.current) {
-      isIdleRef.current = false;
-      setIsIdle(false);
-    }
-  }, []);
 
   const audioCtxRef = useRef(null);
   const masterGainRef = useRef(null);
@@ -308,7 +297,7 @@ function Footer() {
     }
   }, []);
 
-  // Spawn particle burst from the exact key position
+  // Spawn particle burst from exact key position floating up through contact section
   const spawnParticleBurst = useCallback(
     (note) => {
       const canvas = canvasRef.current;
@@ -330,7 +319,6 @@ function Footer() {
         keyOffsetY +
         (note.type === "black" ? keyRect.height * 0.35 : keyRect.height * 0.65);
 
-      // Burst of 4 to 6 particles (notes + sparkling dots)
       const count = 4 + Math.floor(Math.random() * 3);
       for (let i = 0; i < count; i++) {
         const isSparkle = i >= 2;
@@ -342,7 +330,7 @@ function Footer() {
           y: startY,
           vx: (Math.random() - 0.5) * 4.5,
           vy: -3.5 - Math.random() * 3.5,
-          gravity: -0.04, // floating buoyancy up through contact section
+          gravity: -0.04,
           rot: (Math.random() - 0.5) * 0.6,
           rotSpeed: (Math.random() - 0.5) * 0.1,
           size: isSparkle ? 6 + Math.random() * 8 : 22 + Math.random() * 14,
@@ -350,7 +338,7 @@ function Footer() {
           symbol,
           isSparkle,
           alpha: 1.0,
-          decay: 0.005 + Math.random() * 0.004, // longer lifespan to float up through contact section
+          decay: 0.005 + Math.random() * 0.004,
         });
       }
 
@@ -361,9 +349,73 @@ function Footer() {
     [TOTAL_WHITE_KEYS, animateParticles]
   );
 
+  // --- FLOATING MUSICAL NOTES SPAWNER (FLOATS UP THROUGH PianoLidContact) ---
+  useEffect(() => {
+    let isVisible = true;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+        });
+      },
+      { threshold: 0.05 }
+    );
+
+    if (footerRef.current) {
+      observer.observe(footerRef.current);
+    }
+
+    const SPAWN_INTERVAL_MS = 400;
+
+    const interval = setInterval(() => {
+      if (!isVisible) return;
+
+      const canvas = canvasRef.current;
+      const keyContainer = keyContainerRef.current;
+      if (canvas && keyContainer) {
+        const canvasRect = canvas.getBoundingClientRect();
+        const keyRect = keyContainer.getBoundingClientRect();
+
+        const keyOffsetX = keyRect.left - canvasRect.left;
+        const keyOffsetY = keyRect.top - canvasRect.top;
+
+        const startX = keyOffsetX + (0.05 + Math.random() * 0.9) * keyRect.width;
+        const startY = keyOffsetY + keyRect.height * (0.3 + Math.random() * 0.5);
+
+        const noteSymbols = ["♪", "♫", "🎵", "🎶", "🎼", "♩"];
+        const symbol = noteSymbols[Math.floor(Math.random() * noteSymbols.length)];
+        const color = MELODY_COLORS[Math.floor(Math.random() * MELODY_COLORS.length)];
+
+        particlesRef.current.push({
+          x: startX,
+          y: startY,
+          vx: (Math.random() - 0.5) * 1.8,
+          vy: -2.0 - Math.random() * 2.5,
+          gravity: -0.035,
+          rot: (Math.random() - 0.5) * 0.4,
+          rotSpeed: (Math.random() - 0.5) * 0.02,
+          size: symbol === "🎵" || symbol === "🎶" ? 24 + Math.random() * 10 : 28 + Math.random() * 14,
+          color,
+          symbol,
+          isSparkle: false,
+          alpha: 0.95,
+          decay: 0.004 + Math.random() * 0.0035,
+        });
+
+        if (!animFrameRef.current) {
+          animFrameRef.current = requestAnimationFrame(animateParticles);
+        }
+      }
+    }, SPAWN_INTERVAL_MS);
+
+    return () => {
+      clearInterval(interval);
+      observer.disconnect();
+    };
+  }, [animateParticles]);
+
   const triggerNoteOn = useCallback(
     (note) => {
-      registerInteraction();
       setActiveKeys((prev) => {
         const next = new Set(prev);
         next.add(note.id);
@@ -372,7 +424,7 @@ function Footer() {
       spawnParticleBurst(note);
       playNoteAudio(note);
     },
-    [playNoteAudio, registerInteraction, spawnParticleBurst]
+    [playNoteAudio, spawnParticleBurst]
   );
 
   const triggerNoteOff = useCallback((note) => {
@@ -396,7 +448,6 @@ function Footer() {
 
   const handlePointerDown = useCallback(
     (e) => {
-      registerInteraction();
       isPointerDownRef.current = true;
       const note = getKeyFromPoint(e.clientX, e.clientY);
       if (note) {
@@ -404,13 +455,12 @@ function Footer() {
         triggerNoteOn(note);
       }
     },
-    [getKeyFromPoint, registerInteraction, triggerNoteOn]
+    [getKeyFromPoint, triggerNoteOn]
   );
 
   const handlePointerMove = useCallback(
     (e) => {
       if (!isPointerDownRef.current) return;
-      registerInteraction();
       const note = getKeyFromPoint(e.clientX, e.clientY);
       if (note && note.id !== lastPlayedNoteIdRef.current) {
         if (lastPlayedNoteIdRef.current) {
@@ -429,7 +479,7 @@ function Footer() {
         lastPlayedNoteIdRef.current = null;
       }
     },
-    [getKeyFromPoint, registerInteraction, triggerNoteOn, triggerNoteOff]
+    [getKeyFromPoint, triggerNoteOn, triggerNoteOff]
   );
 
   const handlePointerUp = useCallback(() => {
@@ -444,61 +494,6 @@ function Footer() {
       lastPlayedNoteIdRef.current = null;
     }
   }, [triggerNoteOff]);
-
-  // --- IDLE FLOATING NOTES SPAWNER (SOARING UP THROUGH CONTACT SECTION) ---
-  useEffect(() => {
-    const IDLE_TIMEOUT_MS = 1500;
-    const SPAWN_INTERVAL_MS = 400;
-
-    const interval = setInterval(() => {
-      const timeSinceInteraction = Date.now() - lastInteractionRef.current;
-      if (timeSinceInteraction > IDLE_TIMEOUT_MS) {
-        if (!isIdleRef.current) {
-          isIdleRef.current = true;
-          setIsIdle(true);
-        }
-
-        const canvas = canvasRef.current;
-        const keyContainer = keyContainerRef.current;
-        if (canvas && keyContainer) {
-          const canvasRect = canvas.getBoundingClientRect();
-          const keyRect = keyContainer.getBoundingClientRect();
-
-          const keyOffsetX = keyRect.left - canvasRect.left;
-          const keyOffsetY = keyRect.top - canvasRect.top;
-
-          const startX = keyOffsetX + (0.05 + Math.random() * 0.9) * keyRect.width;
-          const startY = keyOffsetY + keyRect.height * (0.3 + Math.random() * 0.5);
-
-          const noteSymbols = ["♪", "♫", "🎵", "🎶", "🎼", "♩"];
-          const symbol = noteSymbols[Math.floor(Math.random() * noteSymbols.length)];
-          const color = MELODY_COLORS[Math.floor(Math.random() * MELODY_COLORS.length)];
-
-          particlesRef.current.push({
-            x: startX,
-            y: startY,
-            vx: (Math.random() - 0.5) * 1.8,
-            vy: -2.0 - Math.random() * 2.5,
-            gravity: -0.035,
-            rot: (Math.random() - 0.5) * 0.4,
-            rotSpeed: (Math.random() - 0.5) * 0.02,
-            size: symbol === "🎵" || symbol === "🎶" ? 24 + Math.random() * 10 : 28 + Math.random() * 14,
-            color,
-            symbol,
-            isSparkle: false,
-            alpha: 0.95,
-            decay: 0.004 + Math.random() * 0.0035, // floats gracefully all the way up through PianoLidContact
-          });
-
-          if (!animFrameRef.current) {
-            animFrameRef.current = requestAnimationFrame(animateParticles);
-          }
-        }
-      }
-    }, SPAWN_INTERVAL_MS);
-
-    return () => clearInterval(interval);
-  }, [animateParticles]);
 
   // Global pointer up / move listener for seamless glissando swipe across keys
   useEffect(() => {
@@ -560,14 +555,17 @@ function Footer() {
   }, [triggerNoteOn, triggerNoteOff]);
 
   return (
-    <footer className="relative z-10 w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white select-none pt-20 pb-6 sm:pt-24 md:pt-28">
-      {/* REAL-TIME CANVAS PARTICLE LAYER (COVERS FULL FOOTER INCLUDING PianoLidContact) */}
+    <footer
+      ref={footerRef}
+      className="relative z-10 w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white select-none py-6"
+    >
+      {/* REAL-TIME CANVAS PARTICLE LAYER (FLOATS UP ACROSS FULL FOOTER & PianoLidContact) */}
       <canvas
         ref={canvasRef}
         className="pointer-events-none absolute inset-0 z-30 h-full w-full"
       />
 
-      {/* Contact / outro panel, sitting flush above the keyboard below it. */}
+      {/* Contact / outro panel */}
       <PianoLidContact />
 
       {/* --- 100% FULL WIDTH EDGE-TO-EDGE TALL PIANO KEYBOARD --- */}
@@ -576,8 +574,6 @@ function Footer() {
           <div
             ref={keyContainerRef}
             onPointerDown={handlePointerDown}
-            onPointerEnter={registerInteraction}
-            onPointerMove={registerInteraction}
             className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] min-w-[760px] w-full flex touch-none overflow-hidden"
           >
             {/* NATURAL NOTES LAYER */}

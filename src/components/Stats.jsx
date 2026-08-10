@@ -302,12 +302,32 @@ function Stats({ theme }) {
       return mesh;
     });
 
-    // --- RENDER LOOP ---
+    // --- RENDER LOOP WITH OFF-SCREEN PAUSE OPTIMIZATION ---
     let animationFrameId;
+    let isVisible = true;
+
     const render = () => {
+      if (!isVisible) {
+        animationFrameId = null;
+        return;
+      }
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(render);
     };
+
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !animationFrameId) {
+            render();
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+    sectionObserver.observe(section);
+
     render();
 
     // --- GSAP SCROLLTRIGGER TIMELINE ---
@@ -552,7 +572,8 @@ function Stats({ theme }) {
 
     // --- CLEANUP ---
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      sectionObserver.disconnect();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
       ctx?.revert();
