@@ -1,13 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import projectTekxera from "../assets/project-tekxera.webp";
 import projectJewelry from "../assets/project-jewelry.webp";
 import projectStrategy from "../assets/project-strategy.webp";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { projectsQuery } from "../sanity/queries";
+import { urlFor } from "../sanity/client";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const PROJECTS = [
+// Original hardcoded projects, reused as the loading/empty fallback.
+// The pinned scroll animation below is hand-tuned for exactly 3 cards
+// (fixed per-index offsets/rotations), so the CMS-backed list is
+// clamped to its first 3 entries (by displayOrder) to keep that
+// animation contract intact rather than changing the motion.
+const FALLBACK_PROJECTS = [
   {
     id: "01",
     client: "Tekxera",
@@ -18,6 +27,7 @@ const PROJECTS = [
     role: "UIUX DESIGNER | DESIGN SYSTEM",
     image: projectTekxera,
     thumbnailImage: projectJewelry,
+    slug: null,
   },
   {
     id: "02",
@@ -29,6 +39,7 @@ const PROJECTS = [
     role: "LEAD DESIGNER | FRONTEND ARCHITECT",
     image: projectJewelry,
     thumbnailImage: projectStrategy,
+    slug: null,
   },
   {
     id: "03",
@@ -40,8 +51,25 @@ const PROJECTS = [
     role: "PRODUCT DESIGNER | GSAP DEVELOPER",
     image: projectStrategy,
     thumbnailImage: projectTekxera,
+    slug: null,
   },
 ];
+
+function mapSanityProject(doc) {
+  const mainImageUrl = urlFor(doc.mainImage)?.width(1200).url();
+  const thumbUrl = urlFor(doc.thumbnailImage)?.width(400).url();
+  return {
+    id: doc._id,
+    client: doc.client,
+    title: doc.title,
+    description: doc.shortDescription,
+    industry: doc.industry,
+    role: doc.role,
+    image: mainImageUrl || projectTekxera,
+    thumbnailImage: thumbUrl || projectJewelry,
+    slug: doc.slug,
+  };
+}
 
 const BG_ROWS = Array.from(
   { length: 94 },
@@ -49,6 +77,12 @@ const BG_ROWS = Array.from(
 );
 
 function FeaturedProjects() {
+  const { data: docs, status } = useSanityQuery(projectsQuery, {}, []);
+  const projects =
+    status === "ready" && docs?.length
+      ? docs.slice(0, 3).map(mapSanityProject)
+      : FALLBACK_PROJECTS;
+
   const sectionRef = useRef(null);
   const bgWallRef = useRef(null);
   const bgRowsRef = useRef([]);
@@ -240,13 +274,17 @@ function FeaturedProjects() {
 
       {/* INDIVIDUAL CLEAN CARD STAGE */}
       <div className="relative z-10 flex h-full w-full items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-none">
-        {PROJECTS.map((project, index) => (
+        {projects.map((project, index) => {
+          const CardTag = project.slug ? Link : "div";
+          const cardTagProps = project.slug ? { to: `/projects/${project.slug}` } : {};
+          return (
           <div
-            key={project.id}
+            key={index}
             ref={(el) => (cardRefs.current[index] = el)}
             className="absolute inset-0 flex items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-auto will-change-transform"
           >
-            <div
+            <CardTag
+              {...cardTagProps}
               onMouseEnter={() => {
                 activeHoverCardRef.current = true;
                 document.body.dataset.cursorProjectHover = "true";
@@ -313,9 +351,10 @@ function FeaturedProjects() {
                 </div>
 
               </div>
-            </div>
+            </CardTag>
           </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

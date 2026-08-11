@@ -2,16 +2,33 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import FitGroup from "./FitGroup";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { homepageContentQuery } from "../sanity/queries";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Visually the sentence is broken into mixed-scale fragments with a
-// trailing aside ("Don't have to make one.") sitting after the last
-// line. That reads fine to the eye but garbles for a screen reader, so
-// the fragments are hidden from the accessibility tree and the coherent
-// sentence is exposed once via the wrapper's aria-label.
-const FULL_SENTENCE =
-  "Design is a series of decisions so you don't have to make one.";
+const FALLBACK = {
+  statementHeadline: "Design is a series of decisions so you",
+  statementTrailingLine: "Don't have to make one.",
+};
+
+// The 4-line poster layout is a fixed visual shape (3 words / 2 words /
+// 1 word / 2 words), not a generic wrap — re-chunks whatever headline
+// the CMS provides into that same shape so editors can change the
+// wording without needing to know the line-break mechanics.
+function splitHeadlineIntoLines(headline) {
+  const words = headline.trim().split(/\s+/).filter(Boolean);
+  const pattern = [3, 2, 1, 2];
+  const lines = [];
+  let i = 0;
+  for (let li = 0; li < pattern.length; li++) {
+    const isLast = li === pattern.length - 1;
+    const count = isLast ? Math.max(1, words.length - i) : pattern[li];
+    lines.push(words.slice(i, i + count).join(" "));
+    i += count;
+  }
+  return lines;
+}
 
 const SMALL =
   "font-display text-base font-semibold leading-snug text-ink/80 dark:text-white/90 sm:text-2xl md:text-4xl lg:text-5xl";
@@ -49,6 +66,15 @@ function computeHeadingMaxFontSize() {
 }
 
 function Statement() {
+  const { data: content, status } = useSanityQuery(
+    homepageContentQuery,
+    {},
+    null
+  );
+  const c = status === "ready" ? { ...FALLBACK, ...content } : FALLBACK;
+  const headlineWords = splitHeadlineIntoLines(c.statementHeadline);
+  const fullSentence = `${c.statementHeadline} ${c.statementTrailingLine}`;
+
   const sectionRef = useRef(null);
   const scaleWrapRef = useRef(null);
   const trailingAsideRef = useRef(null);
@@ -67,11 +93,29 @@ function Statement() {
   }, []);
 
   const ROW_CLASS =
-    "flex flex-wrap items-center justify-start gap-x-3 gap-y-1 sm:gap-x-4";
+    "flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1 sm:gap-x-4";
 
   const lines = [
-    { key: "line1", rowClassName: ROW_CLASS, rowRef: line1RowRef, content: "Design is a" },
-    { key: "line2", rowClassName: ROW_CLASS, rowRef: line2RowRef, content: "series of" },
+    {
+      key: "line1",
+      rowClassName: ROW_CLASS,
+      rowRef: line1RowRef,
+      content: (
+        <>
+          Design is<span className="hidden sm:inline"> a</span>
+        </>
+      ),
+    },
+    {
+      key: "line2",
+      rowClassName: ROW_CLASS,
+      rowRef: line2RowRef,
+      content: (
+        <>
+          <span className="inline sm:hidden">a </span>series of
+        </>
+      ),
+    },
     { key: "line3", rowClassName: ROW_CLASS, rowRef: line3RowRef, content: "decisions" },
     {
       key: "line4",
@@ -159,7 +203,11 @@ function Statement() {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+    // Re-runs when the CMS content resolves from fallback text to the
+    // real headline/trailing line, so the word-width measurements this
+    // effect takes (setRestingPositions) reflect the final content
+    // instead of stale fallback-text dimensions.
+  }, [c.statementHeadline, c.statementTrailingLine]);
 
   return (
     <section
@@ -171,7 +219,7 @@ function Statement() {
           side, instead of stretching flush to the section's edge. */}
       <div
         role="text"
-        aria-label={FULL_SENTENCE}
+        aria-label={fullSentence}
         className="mx-auto w-full max-w-7xl px-[6%] sm:px-[8%]"
       >
         <div ref={scaleWrapRef}>

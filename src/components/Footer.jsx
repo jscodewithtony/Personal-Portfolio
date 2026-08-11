@@ -273,16 +273,12 @@ function Footer() {
 
       if (p.isSparkle) {
         ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
         ctx.fill();
       } else {
         ctx.font = `bold ${p.size}px sans-serif`;
         ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 8;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(p.symbol, 0, 0);
@@ -319,26 +315,26 @@ function Footer() {
         keyOffsetY +
         (note.type === "black" ? keyRect.height * 0.35 : keyRect.height * 0.65);
 
-      const count = 4 + Math.floor(Math.random() * 3);
+      const count = 1 + Math.floor(Math.random() * 2);
       for (let i = 0; i < count; i++) {
-        const isSparkle = i >= 2;
+        const isSparkle = i >= 1;
         const color = MELODY_COLORS[Math.floor(Math.random() * MELODY_COLORS.length)];
         const symbol = MELODY_SYMBOLS[Math.floor(Math.random() * MELODY_SYMBOLS.length)];
 
         particlesRef.current.push({
           x: startX + (Math.random() - 0.5) * 16,
           y: startY,
-          vx: (Math.random() - 0.5) * 4.5,
-          vy: -3.5 - Math.random() * 3.5,
-          gravity: -0.04,
-          rot: (Math.random() - 0.5) * 0.6,
-          rotSpeed: (Math.random() - 0.5) * 0.1,
-          size: isSparkle ? 6 + Math.random() * 8 : 22 + Math.random() * 14,
+          vx: (Math.random() - 0.5) * 3,
+          vy: -2.5 - Math.random() * 2.5,
+          gravity: -0.03,
+          rot: (Math.random() - 0.5) * 0.4,
+          rotSpeed: (Math.random() - 0.5) * 0.05,
+          size: isSparkle ? 5 + Math.random() * 5 : 18 + Math.random() * 10,
           color,
           symbol,
           isSparkle,
           alpha: 1.0,
-          decay: 0.005 + Math.random() * 0.004,
+          decay: 0.01 + Math.random() * 0.008,
         });
       }
 
@@ -365,10 +361,11 @@ function Footer() {
       observer.observe(footerRef.current);
     }
 
-    const SPAWN_INTERVAL_MS = 400;
+    const SPAWN_INTERVAL_MS = 1800;
 
     const interval = setInterval(() => {
       if (!isVisible) return;
+      if (particlesRef.current.length >= 10) return;
 
       const canvas = canvasRef.current;
       const keyContainer = keyContainerRef.current;
@@ -379,27 +376,27 @@ function Footer() {
         const keyOffsetX = keyRect.left - canvasRect.left;
         const keyOffsetY = keyRect.top - canvasRect.top;
 
-        const startX = keyOffsetX + (0.05 + Math.random() * 0.9) * keyRect.width;
+        const startX = keyOffsetX + (0.1 + Math.random() * 0.8) * keyRect.width;
         const startY = keyOffsetY + keyRect.height * (0.3 + Math.random() * 0.5);
 
-        const noteSymbols = ["♪", "♫", "🎵", "🎶", "🎼", "♩"];
+        const noteSymbols = ["♪", "♫", "🎵", "🎶"];
         const symbol = noteSymbols[Math.floor(Math.random() * noteSymbols.length)];
         const color = MELODY_COLORS[Math.floor(Math.random() * MELODY_COLORS.length)];
 
         particlesRef.current.push({
           x: startX,
           y: startY,
-          vx: (Math.random() - 0.5) * 1.8,
-          vy: -2.0 - Math.random() * 2.5,
-          gravity: -0.035,
-          rot: (Math.random() - 0.5) * 0.4,
-          rotSpeed: (Math.random() - 0.5) * 0.02,
-          size: symbol === "🎵" || symbol === "🎶" ? 24 + Math.random() * 10 : 28 + Math.random() * 14,
+          vx: (Math.random() - 0.5) * 1.2,
+          vy: -1.8 - Math.random() * 1.8,
+          gravity: -0.025,
+          rot: (Math.random() - 0.5) * 0.3,
+          rotSpeed: (Math.random() - 0.5) * 0.015,
+          size: 20 + Math.random() * 10,
           color,
           symbol,
           isSparkle: false,
-          alpha: 0.95,
-          decay: 0.004 + Math.random() * 0.0035,
+          alpha: 0.9,
+          decay: 0.008 + Math.random() * 0.006,
         });
 
         if (!animFrameRef.current) {

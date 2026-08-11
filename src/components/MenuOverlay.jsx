@@ -1,12 +1,31 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { navigationQuery } from "../sanity/queries";
 
-const LINKS = ["Work", "About", "Contact", "Resume"];
+// Original hardcoded nav, kept as the fallback for the "empty"/"error"
+// Sanity states so the menu is never left with nothing to show.
+const FALLBACK_LINKS = [
+  { label: "Work", link: "#" },
+  { label: "About", link: "#" },
+  { label: "Contact", link: "#" },
+  { label: "Resume", link: "#" },
+];
 
 function MenuOverlay({ open, onClose, anchorRef }) {
   const overlayRef = useRef(null);
   const linksRef = useRef(null);
   const firstLinkRef = useRef(null);
+
+  const { data: navigation, status } = useSanityQuery(
+    navigationQuery,
+    {},
+    null
+  );
+  const links =
+    status === "ready" && navigation?.items?.length
+      ? navigation.items
+      : FALLBACK_LINKS;
 
   useEffect(() => {
     const overlay = overlayRef.current;
@@ -89,15 +108,15 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         ref={linksRef}
         className="flex flex-col items-center gap-4 md:gap-6"
       >
-        {LINKS.map((item, i) => (
+        {links.map((item, i) => (
           <a
-            key={item}
+            key={item.link + item.label}
             ref={i === 0 ? firstLinkRef : null}
-            href="#"
+            href={item.link}
             tabIndex={open ? 0 : -1}
-            className="font-display text-5xl font-black tracking-tight opacity-90 transition-[opacity,transform] duration-200 ease-snap hover:opacity-100 active:scale-[0.97] sm:text-6xl md:text-7xl"
+            className="font-display text-5xl font-black tracking-tight opacity-90 transition-[opacity,transform] duration-200 ease-snap hover:opacity-100 active:scale-[0.97] sm:text-6xl md:text-7xl focus:outline-none focus-visible:outline-none"
           >
-            {item}
+            {item.label}
           </a>
         ))}
       </nav>

@@ -33,7 +33,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           aria-expanded={menuOpen}
           aria-controls="site-menu"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className={`flex items-center gap-1.5 font-display font-black text-sm sm:text-base md:text-lg uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] ${
+          className={`flex items-center gap-1.5 font-display font-black text-sm sm:text-base md:text-lg uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none ${
             menuOpen ? "text-white" : "text-ink dark:text-white"
           }`}
         >

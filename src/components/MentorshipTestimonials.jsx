@@ -2,10 +2,18 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import TestimonialCard from "./TestimonialCard";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { testimonialsQuery } from "../sanity/queries";
+import { urlFor } from "../sanity/client";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const TESTIMONIALS = [
+// Original hardcoded testimonials, reused as the loading/empty
+// fallback. The stack animation's per-card stackRot/stackY offsets are
+// hand-tuned for exactly these 5 slots, so CMS testimonials are
+// clamped to their first 5 (by displayOrder) and mapped onto this same
+// position config rather than generating new offsets.
+const FALLBACK_TESTIMONIALS = [
   {
     id: "radhika",
     name: "RADHIKA MALHOTRA",
@@ -58,7 +66,31 @@ const TESTIMONIALS = [
   },
 ];
 
+const STACK_POSITIONS = FALLBACK_TESTIMONIALS.map(({ stackRot, stackY }) => ({
+  stackRot,
+  stackY,
+}));
+
+function mapSanityTestimonial(doc, index) {
+  const pos = STACK_POSITIONS[index] || { stackRot: 0, stackY: index * 8 };
+  return {
+    id: doc._id,
+    name: doc.name,
+    quote: doc.quote,
+    platform: (doc.sourcePlatform || "topmate").toLowerCase(),
+    platformLogo: urlFor(doc.sourceLogo)?.width(80).url(),
+    role: doc.role,
+    ...pos,
+  };
+}
+
 function MentorshipTestimonials() {
+  const { data: docs, status } = useSanityQuery(testimonialsQuery, {}, []);
+  const TESTIMONIALS =
+    status === "ready" && docs?.length
+      ? docs.slice(0, 5).map(mapSanityTestimonial)
+      : FALLBACK_TESTIMONIALS;
+
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const cardsRef = useRef([]);
@@ -220,7 +252,11 @@ function MentorshipTestimonials() {
       clearTimeout(timer);
       ctx.revert();
     };
-  }, []);
+    // Re-runs once `status` flips from "loading" to its resolved value
+    // so cardsRef gets fresh gsap.set/timeline targets sized to the
+    // real TESTIMONIALS list instead of staying keyed to the fallback
+    // array captured on first mount.
+  }, [status]);
 
   return (
     <section

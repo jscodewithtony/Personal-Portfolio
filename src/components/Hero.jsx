@@ -4,13 +4,36 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Mascot from "./Mascot";
 import FitText from "./FitText";
 import Shuffle from "./Shuffle";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { homepageContentQuery } from "../sanity/queries";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const PIN_DISTANCE_VH = 1.3;
 const MERGE_COVER_MARGIN = 1.35;
 
+// Original hardcoded copy, reused as the fallback shown while the CMS
+// fetch is loading and if homepageContent has no value for a field yet
+// — the hero is never left blank.
+const FALLBACK = {
+  heroHeadline: "HELLO I'M TONY",
+  heroBasedInLocation: "INDIA",
+  heroTagline: "DESIGN WITH AI",
+  heroSpecs: ["UIUX DESIGNER", "ACCESSIBILITY(A11Y)", "DESIGN SYSTEM"],
+  heroBadgeLine1: "STILL WAITING FOR",
+  heroBadgeLine2: "FIRST DESIGN AWARD 🏆",
+};
+
 function Hero() {
+  const { data: content, status } = useSanityQuery(
+    homepageContentQuery,
+    {},
+    null
+  );
+  const c = status === "ready" ? { ...FALLBACK, ...content } : FALLBACK;
+  const heroSpecs =
+    c.heroSpecs && c.heroSpecs.length ? c.heroSpecs : FALLBACK.heroSpecs;
+
   const sectionRef = useRef(null);
   const leftLabelRef = useRef(null);
   const rightLabelRef = useRef(null);
@@ -102,7 +125,8 @@ function Hero() {
             minFontSize={70}
           >
             <Shuffle
-              text="HELLO I'M TONY"
+              key={c.heroHeadline}
+              text={c.heroHeadline}
               tag="h1"
               className="select-none font-display font-black leading-[0.82] tracking-tighter text-ink dark:text-white whitespace-nowrap"
               shuffleDirection="right"
@@ -121,10 +145,10 @@ function Hero() {
           {/* Sub-headline bar: BASED IN INDIA & DESIGN WITH AI */}
           <div className="relative z-10 flex items-center justify-between mt-2 px-1 sm:px-2">
             <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold uppercase tracking-[0.70em] text-ink/90 dark:text-white/90">
-              BASED IN INDIA
+              BASED IN {c.heroBasedInLocation}
             </p>
             <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold uppercase tracking-[0.70em] text-ink/90 dark:text-white/90">
-              DESIGN WITH AI
+              {c.heroTagline}
             </p>
           </div>
         </div>
@@ -136,15 +160,14 @@ function Hero() {
             ref={leftLabelRef}
             className="flex flex-col items-end justify-center gap-2 sm:gap-3 text-right"
           >
-            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
-              UIUX DESIGNER
-            </p>
-            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
-              ACCESSIBILITY(A11Y)
-            </p>
-            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
-              DESIGN SYSTEM
-            </p>
+            {heroSpecs.map((spec) => (
+              <p
+                key={spec}
+                className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap"
+              >
+                {spec}
+              </p>
+            ))}
           </div>
 
           {/* Center Mascot */}
@@ -158,10 +181,10 @@ function Hero() {
             className="flex flex-col items-start justify-center gap-2 sm:gap-3 text-left"
           >
             <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
-              STILL WAITING FOR
+              {c.heroBadgeLine1}
             </p>
             <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase flex items-center gap-2 whitespace-nowrap">
-              FIRST DESIGN AWARD 🏆
+              {c.heroBadgeLine2}
             </p>
           </div>
         </div>

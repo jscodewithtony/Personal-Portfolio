@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { statCardsQuery } from "../sanity/queries";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -74,7 +76,39 @@ const STAT_ITEMS = [
   },
 ];
 
+// Fallback for the pinned centerpiece card (a 5th, differently-laid-out
+// stat slot outside the STAT_ITEMS array) — sourced from the 5th
+// statCard document (by displayOrder) when present.
+const FALLBACK_CENTERPIECE = {
+  label: "Projects Shipped",
+  value: "20+",
+  description:
+    "NudgeFile renames and sorts your files with a local AI — but it asks first, and it always has an undo button, because trusting an AI with your file system sight-unseen is how horror movies start.",
+};
+
 function Stats({ theme }) {
+  const { data: statCards, status: statCardsStatus } = useSanityQuery(
+    statCardsQuery,
+    {},
+    []
+  );
+  const cmsReady = statCardsStatus === "ready" && statCards?.length;
+  // The 4 overlay cards keep STAT_ITEMS' own position/rotation config
+  // (pure presentation, index-keyed) and only swap in CMS text by index.
+  const displayItems = STAT_ITEMS.map((item, i) => {
+    const cms = cmsReady ? statCards[i] : null;
+    if (!cms) return item;
+    return {
+      ...item,
+      eyebrow: cms.label || item.eyebrow,
+      value: cms.value || item.value,
+      title: cms.title || item.title,
+      copy: cms.description || item.copy,
+    };
+  });
+  const centerpiece =
+    (cmsReady && statCards[4]) || FALLBACK_CENTERPIECE;
+
   const sectionRef = useRef(null);
   const mountRef = useRef(null);
   const mainCardRef = useRef(null);
@@ -624,7 +658,7 @@ function Stats({ theme }) {
       {/* HTML OVERLAY STAGE FOR TEXT & CARDS */}
       <div className="relative mx-auto flex h-[100dvh] w-full items-center justify-center pointer-events-auto">
         {/* 4 Sweeping HTML Stat Cards (Synced with 3D Mesh Animation) */}
-        {STAT_ITEMS.map((item, i) => (
+        {displayItems.map((item, i) => (
           <div
             key={item.id}
             ref={(el) => (overlayCardRefs.current[i] = el)}
@@ -663,19 +697,17 @@ function Stats({ theme }) {
         >
           {/* Bordered pill/badge with thin outline */}
           <div className="inline-block rounded-none border border-ink/20 bg-[#f1f0fa] px-3.5 py-1 font-display text-xs font-bold uppercase tracking-wider text-ink/90 dark:border-white/30 dark:bg-white/10 dark:text-white/90">
-            Projects Shipped
+            {centerpiece.label}
           </div>
 
           {/* Big Stat Text Color #0D0C14 for 20+ */}
           <h2 className="mt-3 font-display text-5xl font-black leading-none tracking-tight text-[#0D0C14] sm:text-7xl md:text-8xl dark:text-white">
-            20+
+            {centerpiece.value}
           </h2>
 
           {/* High contrast body text */}
           <p className="mt-4 font-display text-[11px] font-normal leading-relaxed text-ink/80 sm:text-sm md:text-base dark:text-white/80">
-            NudgeFile renames and sorts your files with a local AI — but it asks
-            first, and it always has an undo button, because trusting an AI
-            with your file system sight-unseen is how horror movies start.
+            {centerpiece.description}
           </p>
         </div>
       </div>

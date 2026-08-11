@@ -7,15 +7,23 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed": "node --env-file=.env scripts/seed-sanity.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@portabletext/react": "^7.0.1",
+    "@sanity/client": "^7.26.2",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^6.9.1",
     "clsx": "^2.1.1",
     "gsap": "^3.15.0",
     "lucide-react": "^1.30.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.2",
+    "sanity": "^6.9.1",
+    "styled-components": "^6.5.1",
     "tailwind-merge": "^3.6.0",
     "three": "^0.185.1"
   },

@@ -15,9 +15,12 @@
 
   /* Strong custom eases (weak CSS built-ins lack punch). Generates
      ease-snap / ease-glide / ease-drawer Tailwind utilities. */
-  --ease-snap: cubic-bezier(0.23, 1, 0.32, 1); /* enter / exit, ease-out */
-  --ease-glide: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen movement */
-  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* iOS-like drawer/overlay */
+  --ease-snap: cubic-bezier(0.23, 1, 0.32, 1);
+  /* enter / exit, ease-out */
+  --ease-glide: cubic-bezier(0.77, 0, 0.175, 1);
+  /* on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  /* iOS-like drawer/overlay */
 }
 
 /* Every section's 72px grid overlay reads its line color from this one
@@ -28,6 +31,7 @@
 :root {
   --grid-line-color: transparent;
 }
+
 .dark {
   --grid-line-color: transparent;
 }
@@ -36,8 +40,22 @@ html {
   background: var(--color-bg);
   transition: background-color 0.3s ease;
 }
+
 html.dark {
   background: #0c0a14;
+}
+
+/* The embedded Sanity Studio (/admin) lays itself out with internal
+   height:100% chains — without an explicit height on html/body/#root,
+   those chains have nothing to resolve against, so Studio collapses to
+   its content height and the page's own background shows through
+   below it as a large empty band. Harmless for the public site, which
+   already sizes its own sections with min-height rather than relying
+   on this ancestor chain. */
+html,
+body,
+#root {
+  height: 100%;
 }
 
 /* Magic UI View Transitions for AnimatedThemeToggler */
@@ -46,23 +64,33 @@ html.dark {
   animation: none;
   mix-blend-mode: normal;
 }
+
 ::view-transition-old(root) {
   z-index: 1;
 }
+
 ::view-transition-new(root) {
   z-index: 9999;
 }
+
 html[data-magicui-theme-vt="active"] ::view-transition-new(root) {
   clip-path: var(--magicui-theme-vt-clip-from, circle(0% at 50% 50%));
 }
 
-body,
-button,
-input,
-textarea,
-select {
+body {
   margin: 0;
   overflow-x: hidden;
+}
+
+/* Uppercase form controls only within the public site shell — scoped
+   (rather than a bare `body,button,input...` rule) so the embedded
+   Sanity Studio at /admin, which renders in the same document, keeps
+   its own normal-case UI instead of inheriting the portfolio's type
+   treatment. */
+.site-shell button,
+.site-shell input,
+.site-shell textarea,
+.site-shell select {
   text-transform: uppercase;
 }
 
@@ -75,15 +103,24 @@ select {
   outline-offset: 3px;
 }
 
+header button,
+header a,
+#site-menu a,
+#site-menu button {
+  outline: none !important;
+}
+
 /* Slight vertical bias (scaleY > scaleX) reads as an inhale/exhale
    rather than a uniform pulse. Kept subtle so it doesn't compete with
    the mascot's cursor-tracking eyes. Reduced-motion is already handled
    globally below (animation-duration clamped to ~0). */
 @keyframes mascot-breathe {
+
   0%,
   100% {
     transform: scale(1, 1);
   }
+
   50% {
     transform: scale(1.015, 1.035);
   }
@@ -99,6 +136,7 @@ select {
   0% {
     transform: translateX(0%);
   }
+
   100% {
     transform: translateX(-100%);
   }
@@ -114,14 +152,17 @@ select {
     transform: translateX(80%);
     opacity: 0;
   }
+
   20% {
     transform: translateX(0%);
     opacity: 1;
   }
+
   80% {
     transform: translateX(0%);
     opacity: 1;
   }
+
   100% {
     transform: translateX(-80%);
     opacity: 0;
@@ -134,24 +175,33 @@ select {
 
 /* Play button attention-grabbing shake motion (subtle rotation + micro wiggle) */
 @keyframes play-shake {
-  0%, 65%, 100% {
+
+  0%,
+  65%,
+  100% {
     transform: rotate(0deg);
   }
+
   70% {
     transform: rotate(-14deg);
   }
+
   75% {
     transform: rotate(14deg);
   }
+
   80% {
     transform: rotate(-10deg);
   }
+
   85% {
     transform: rotate(10deg);
   }
+
   90% {
     transform: rotate(-5deg);
   }
+
   95% {
     transform: rotate(5deg);
   }
@@ -162,6 +212,7 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -175,7 +226,49 @@ select {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Statement section mobile-only responsive styling. Scoped under
+   .site-shell (rather than bare div[role="text"]) so these !important
+   overrides can't reach into the embedded Sanity Studio's own DOM at
+   /admin, which shares this stylesheet. */
+@media (max-width: 768px) {
+  .site-shell div[role="text"] {
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .site-shell div[role="text"] .flex {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .site-shell div[role="text"] .font-display.font-black {
+    font-size: 5.75rem !important;
+    line-height: 1.08 !important;
+    text-align: center !important;
+    letter-spacing: -0.03em !important;
+    white-space: nowrap !important;
+  }
+
+  .site-shell div[role="text"] span[aria-hidden="true"] {
+    display: block !important;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 1.75rem auto 0 auto !important;
+    text-align: center !important;
+    max-width: 22rem !important;
+    font-size: 2.15rem !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: -0.01em !important;
+  }
 }

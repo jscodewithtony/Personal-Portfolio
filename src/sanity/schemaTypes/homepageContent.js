@@ -1,0 +1,96 @@
+export default {
+  name: "homepageContent",
+  title: "Homepage Content",
+  type: "document",
+  groups: [
+    { name: "hero", title: "Hero" },
+    { name: "about", title: "About" },
+    { name: "statement", title: "Statement" },
+  ],
+  fields: [
+    {
+      name: "heroHeadline",
+      title: "Headline",
+      type: "string",
+      group: "hero",
+      initialValue: "HELLO I'M TONY",
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "heroBasedInLocation",
+      title: "Based-in location",
+      description: 'Shown as "BASED IN {location}".',
+      type: "string",
+      group: "hero",
+      initialValue: "INDIA",
+    },
+    {
+      name: "heroTagline",
+      title: "Tagline",
+      description: 'Shown opposite the location, e.g. "DESIGN WITH AI".',
+      type: "string",
+      group: "hero",
+      initialValue: "DESIGN WITH AI",
+    },
+    {
+      name: "heroSpecs",
+      title: "Spec labels",
+      description: "Short role/skill labels stacked beside the mascot.",
+      type: "array",
+      of: [{ type: "string" }],
+      group: "hero",
+      initialValue: ["UIUX DESIGNER", "ACCESSIBILITY(A11Y)", "DESIGN SYSTEM"],
+    },
+    {
+      name: "heroBadgeLine1",
+      title: "Badge — line 1",
+      type: "string",
+      group: "hero",
+      initialValue: "STILL WAITING FOR",
+    },
+    {
+      name: "heroBadgeLine2",
+      title: "Badge — line 2",
+      type: "string",
+      group: "hero",
+      initialValue: "FIRST DESIGN AWARD 🏆",
+    },
+    {
+      name: "aboutBodyParagraph1",
+      title: "Body — paragraph 1",
+      type: "text",
+      rows: 3,
+      group: "about",
+    },
+    {
+      name: "aboutBodyParagraph2",
+      title: "Body — paragraph 2",
+      type: "text",
+      rows: 3,
+      group: "about",
+    },
+    {
+      name: "statementHeadline",
+      title: "Headline",
+      description:
+        "The main poster sentence. Rendered across the section's fixed 4-line layout.",
+      type: "string",
+      group: "statement",
+      initialValue: "Design is a series of decisions so you",
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "statementTrailingLine",
+      title: "Trailing line",
+      type: "string",
+      group: "statement",
+      initialValue: "Don't have to make one.",
+      validation: (Rule) => Rule.required(),
+    },
+  ],
+  preview: {
+    prepare() {
+      return { title: "Homepage Content" };
+    },
+  },
+};

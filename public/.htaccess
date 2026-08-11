@@ -1,0 +1,16 @@
+# This is a client-side-routed React app (react-router). Without this,
+# Hostinger's Apache server 404s on any direct visit or refresh of a
+# route it doesn't have a matching file for — e.g. /admin, /projects/x,
+# or any deep link — because there's no file at that path; only
+# index.html exists, and the routing normally happens in the browser
+# after index.html loads. This rewrites every such request back to
+# index.html so react-router can take over.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Let real files/folders (JS, CSS, images, etc.) serve directly
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

@@ -2,9 +2,23 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArticleCard from "./ArticleCard";
-import insights from "../data/insights.json";
+import fallbackInsights from "../data/insights.json";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { articlesQuery } from "../sanity/queries";
+import { urlFor } from "../sanity/client";
 
 gsap.registerPlugin(ScrollTrigger);
+
+function mapSanityArticle(doc) {
+  return {
+    title: doc.title,
+    excerpt: doc.excerpt,
+    date: doc.publishDate,
+    image: urlFor(doc.thumbnail)?.width(800).url(),
+    link: doc.externalLink,
+    source: doc.sourcePlatform,
+  };
+}
 
 // Formats "2026-07-13" (insights.json's ISO date) into "Jul 13, 2026" —
 // the display format the card was already built for. Parsed as UTC
@@ -20,6 +34,12 @@ function formatDisplayDate(isoDate) {
 }
 
 function Insight() {
+  const { data: docs, status } = useSanityQuery(articlesQuery, {}, []);
+  const insights =
+    status === "ready" && docs?.length
+      ? docs.map(mapSanityArticle)
+      : fallbackInsights;
+
   const sectionRef = useRef(null);
   const headlineRef = useRef(null);
   const gridRef = useRef(null);
@@ -86,7 +106,10 @@ function Insight() {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+    // Re-runs once `status` resolves so the reveal targets the real
+    // (possibly different-count) CMS article grid, not just whatever
+    // grid.children looked like at the fallback-content first render.
+  }, [status]);
 
   return (
     <section

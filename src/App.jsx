@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import About from "./components/About";
-import Statement from "./components/Statement";
-import CanvasCursor from "./components/CanvasCursor";
+import { useEffect, useState, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import CaseStudy from "./pages/CaseStudy";
 
-const FeaturedProjects = lazy(() => import("./components/FeaturedProjects"));
-const Stats = lazy(() => import("./components/Stats"));
-const MentorshipTestimonials = lazy(() => import("./components/MentorshipTestimonials"));
-const Insight = lazy(() => import("./components/Insight"));
-const Footer = lazy(() => import("./components/Footer"));
-const MenuOverlay = lazy(() => import("./components/MenuOverlay"));
+// Lazy — AdminStudio pulls in the entire Sanity Studio package
+// (structureTool, visionTool, styled-components, its own ~170KB CSS
+// bundle). A static import here would bundle all of that into the main
+// entry chunk, whose <link>/<script> tags load unconditionally in
+// index.html — meaning Studio's own global styles would load, and can
+// visually collide with the public site, on every route including "/".
+// Dynamic import keeps it out of the initial page load entirely.
+const AdminStudio = lazy(() => import("./pages/AdminStudio"));
 
 const THEME_STORAGE_KEY = "theme";
 
@@ -24,44 +24,41 @@ function getInitialTheme() {
 }
 
 function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState(getInitialTheme);
-  const menuButtonRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
-  return (
-    <div className="relative min-h-[100dvh] bg-bg font-display text-ink uppercase transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white">
-      <CanvasCursor />
-      <Header
-        menuButtonRef={menuButtonRef}
-        menuOpen={menuOpen}
-        onToggle={() => setMenuOpen((v) => !v)}
-        theme={theme}
-        onToggleTheme={() =>
-          setTheme((t) => (t === "light" ? "dark" : "light"))
-        }
-      />
-      <Hero />
-      <About theme={theme} />
-      <Statement />
+  const toggleTheme = () =>
+    setTheme((t) => (t === "light" ? "dark" : "light"));
 
-      <Suspense fallback={null}>
-        <FeaturedProjects />
-        <Stats theme={theme} />
-        <MentorshipTestimonials theme={theme} />
-        <Insight />
-        <Footer />
-        <MenuOverlay
-          open={menuOpen}
-          onClose={() => setMenuOpen(false)}
-          anchorRef={menuButtonRef}
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* /admin is intentionally its own top-level route, outside the
+            public site's .site-shell wrapper and nav — the Studio is
+            never linked from the header/menu and carries no public
+            layout, only Sanity's own login + editor UI. */}
+        <Route
+          path="/admin/*"
+          element={
+            <Suspense fallback={null}>
+              <AdminStudio />
+            </Suspense>
+          }
         />
-      </Suspense>
-    </div>
+        <Route
+          path="/projects/:slug"
+          element={<CaseStudy theme={theme} onToggleTheme={toggleTheme} />}
+        />
+        <Route
+          path="/"
+          element={<HomePage theme={theme} onToggleTheme={toggleTheme} />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

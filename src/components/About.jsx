@@ -2,8 +2,21 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import aboutPortrait from "../assets/about-portrait.webp";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { homepageContentQuery } from "../sanity/queries";
 
 gsap.registerPlugin(ScrollTrigger);
+
+// The headline below is a structural composition — word-by-word scroll
+// spans plus an inline interactive ribbon toggle and marquee box baked
+// into specific words — not swappable prose, so it stays hardcoded here
+// (CMS only drives the two body paragraphs, which are plain text).
+const FALLBACK_BODY = {
+  aboutBodyParagraph1:
+    "I value clarity, structure, and intent — both in design and in how I build. I am drawn to systems that hold up under scale: patterns, not one-offs. I believe good design is governed, not just made — every decision should trace back to a reason.",
+  aboutBodyParagraph2:
+    "I like building things end to end, from the first sketch to the shipped product. And I trust frameworks over instinct — but only the ones I've tested myself.",
+};
 
 const PIN_DISTANCE_VH = 1.1;
 
@@ -22,6 +35,14 @@ const SINGLE_MARQUEE_WORDS = [
 ];
 
 function About({ theme }) {
+  const { data: content, status } = useSanityQuery(
+    homepageContentQuery,
+    {},
+    null
+  );
+  const body =
+    status === "ready" ? { ...FALLBACK_BODY, ...content } : FALLBACK_BODY;
+
   const sectionRef = useRef(null);
   const headlineRef = useRef(null);
   const imageOuterRef = useRef(null);
@@ -245,7 +266,7 @@ function About({ theme }) {
           <span className="word inline-block">A</span>{" "}
           <span className="word inline-block">product</span>{" "}
           <span className="word inline-block">designer</span>
-          <br />
+          <br className="hidden sm:block" />{" "}
 
           {/* Line 2 with Interactive Play Button */}
           <span className="word inline-block">focused</span>{" "}
@@ -271,7 +292,7 @@ function About({ theme }) {
           </button>{" "}
           <span className="word inline-block">what</span>{" "}
           <span className="word inline-block">actually</span>
-          <br />
+          <br className="hidden sm:block" />{" "}
 
           {/* Line 3 with Single-Word Marquee Box (Active ONLY when play button is ON) */}
           <span className="word inline-block">works</span>{" "}
@@ -288,7 +309,7 @@ function About({ theme }) {
             </span>
           </span>{" "}
           <span className="word inline-block">impact,</span>
-          <br />
+          <br className="hidden sm:block" />{" "}
 
           {/* Line 4 */}
           <span className="word inline-block">not</span>{" "}
@@ -299,15 +320,10 @@ function About({ theme }) {
         {/* Body copy */}
         <div className="col-span-1 flex flex-col gap-6 self-end md:col-span-4 md:col-start-5">
           <p className="font-display text-base leading-relaxed text-ink/70 dark:text-white/70 sm:text-lg">
-            I value clarity, structure, and intent — both in design and in
-            how I build. I am drawn to systems that hold up under scale:
-            patterns, not one-offs. I believe good design is governed, not
-            just made — every decision should trace back to a reason.
+            {body.aboutBodyParagraph1}
           </p>
           <p className="font-display text-base leading-relaxed text-ink/70 dark:text-white/70 sm:text-lg">
-            I like building things end to end, from the first sketch to
-            the shipped product. And I trust frameworks over instinct —
-            but only the ones I've tested myself.
+            {body.aboutBodyParagraph2}
           </p>
         </div>
 
