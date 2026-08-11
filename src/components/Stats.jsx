@@ -4,6 +4,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { statCardsQuery } from "../sanity/queries";
+import { useThemeTokens } from "../theme/ThemeTokensContext";
+import { hexToThreeColor } from "../theme/themeTokens";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -109,6 +111,8 @@ function Stats({ theme }) {
   const centerpiece =
     (cmsReady && statCards[4]) || FALLBACK_CENTERPIECE;
 
+  const themeTokens = useThemeTokens();
+
   const sectionRef = useRef(null);
   const mountRef = useRef(null);
   const mainCardRef = useRef(null);
@@ -122,22 +126,30 @@ function Stats({ theme }) {
   const lightCardMatRef = useRef(null);
   const ambientLightRef = useRef(null);
 
-  // Helper to dynamically update Three.js material colors and lighting when theme toggles
+  // Helper to dynamically update Three.js material colors and lighting
+  // when theme toggles. Dark-mode hex values stay hardcoded exactly as
+  // before — only the light-mode branch now reads the active theme's
+  // (Sanity-selected) cube colors instead of a fixed purple.
   const applyThemeToMaterials = (isDark) => {
     if (greyFrontMatRef.current) {
-      // Light theme: #5953B0 | Dark theme: #1a1a1f
-      greyFrontMatRef.current.color.setHex(isDark ? 0x1a1a1f : 0x5953b0);
+      greyFrontMatRef.current.color.setHex(
+        isDark ? 0x1a1a1f : hexToThreeColor(themeTokens.statsCubeFrontColor)
+      );
     }
     if (sideGreyMatRef.current) {
-      // Light theme: #49439F | Dark theme: #242429
-      sideGreyMatRef.current.color.setHex(isDark ? 0x242429 : 0x49439f);
+      sideGreyMatRef.current.color.setHex(
+        isDark ? 0x242429 : hexToThreeColor(themeTokens.statsCubeSideColor)
+      );
     }
     if (greyLineMatRef.current) {
-      // Light theme: #534DA4 | Dark theme: #3d3950
-      greyLineMatRef.current.color.setHex(isDark ? 0x3d3950 : 0x534da4);
+      greyLineMatRef.current.color.setHex(
+        isDark ? 0x3d3950 : hexToThreeColor(themeTokens.statsCubeLineColor)
+      );
     }
     if (lightCardMatRef.current) {
-      lightCardMatRef.current.color.setHex(isDark ? 0x120f24 : 0x5953b0);
+      lightCardMatRef.current.color.setHex(
+        isDark ? 0x120f24 : hexToThreeColor(themeTokens.statsCubeFrontColor)
+      );
     }
     if (ambientLightRef.current) {
       ambientLightRef.current.intensity = isDark ? 0.8 : 1.6;
@@ -160,7 +172,7 @@ function Stats({ theme }) {
     });
 
     return () => observer.disconnect();
-  }, [theme]);
+  }, [theme, themeTokens]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -232,9 +244,9 @@ function Stats({ theme }) {
     const cubeGeo = new THREE.BoxGeometry(tileSize, tileSize, tileSize);
     const edgesGeo = new THREE.EdgesGeometry(cubeGeo);
 
-    // Front face material (Light: #5953B0 | Dark: #1a1a1f)
+    // Front face material (Light: theme accent | Dark: #1a1a1f, frozen)
     const greyFrontMat = new THREE.MeshStandardMaterial({
-      color: isInitialDark ? 0x1a1a1f : 0x5953b0,
+      color: isInitialDark ? 0x1a1a1f : hexToThreeColor(themeTokens.statsCubeFrontColor),
       roughness: 0.98,
       metalness: 0.0,
       transparent: true,
@@ -242,9 +254,9 @@ function Stats({ theme }) {
     });
     greyFrontMatRef.current = greyFrontMat;
 
-    // Side face material for depth shading (Light: #49439F | Dark: #242429)
+    // Side face material for depth shading (Light: theme accent | Dark: #242429, frozen)
     const sideGreyMat = new THREE.MeshStandardMaterial({
-      color: isInitialDark ? 0x242429 : 0x49439f,
+      color: isInitialDark ? 0x242429 : hexToThreeColor(themeTokens.statsCubeSideColor),
       roughness: 0.98,
       metalness: 0.0,
       transparent: true,
@@ -261,9 +273,9 @@ function Stats({ theme }) {
       sideGreyMat,  // back
     ];
 
-    // Wireframe edge lines (Light: #534DA4 | Dark: #3d3950)
+    // Wireframe edge lines (Light: theme accent | Dark: #3d3950, frozen)
     const greyLineMat = new THREE.LineBasicMaterial({
-      color: isInitialDark ? 0x3d3950 : 0x534da4,
+      color: isInitialDark ? 0x3d3950 : hexToThreeColor(themeTokens.statsCubeLineColor),
       linewidth: 1.5,
       transparent: true,
       opacity: isInitialDark ? 0.35 : 0.45,
@@ -317,7 +329,7 @@ function Stats({ theme }) {
     const statMeshes = STAT_ITEMS.map((item) => {
       const geo = new THREE.BoxGeometry(3.0, 2.2, 0.6);
       const lightCardMat = new THREE.MeshStandardMaterial({
-        color: isInitialDark ? 0x120f24 : 0x5953b0,
+        color: isInitialDark ? 0x120f24 : hexToThreeColor(themeTokens.statsCubeFrontColor),
         roughness: 0.5,
         metalness: 0.1,
         transparent: true,
@@ -674,7 +686,7 @@ function Stats({ theme }) {
             <div className="inline-block rounded-none border border-ink/20 bg-[#f1f0fa] px-2 py-0.5 font-display text-[8px] sm:text-[10px] font-bold tracking-widest text-ink/90 uppercase dark:border-white/30 dark:bg-white/10 dark:text-white/90">
               {item.eyebrow}
             </div>
-            <div className="mt-2 font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-none tracking-tight text-[#0D0C14] dark:text-white">
+            <div className="mt-2 font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-none tracking-tight text-stat-value dark:text-white">
               {item.value}
             </div>
             <div className="mt-2 font-display text-[10px] sm:text-xs md:text-sm font-bold text-ink dark:text-white">
@@ -701,7 +713,7 @@ function Stats({ theme }) {
           </div>
 
           {/* Big Stat Text Color #0D0C14 for 20+ */}
-          <h2 className="mt-3 font-display text-5xl font-black leading-none tracking-tight text-[#0D0C14] sm:text-7xl md:text-8xl dark:text-white">
+          <h2 className="mt-3 font-display text-5xl font-black leading-none tracking-tight text-stat-value sm:text-7xl md:text-8xl dark:text-white">
             {centerpiece.value}
           </h2>
 

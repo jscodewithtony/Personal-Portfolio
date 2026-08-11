@@ -32,7 +32,7 @@ const portableTextComponents = {
       </p>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="mt-8 border-l-4 border-primary pl-6 font-display text-xl font-bold uppercase leading-snug text-ink dark:text-white sm:text-2xl">
+      <blockquote className="mt-8 border-l-4 border-primary pl-6 font-display text-xl font-bold uppercase leading-snug text-ink dark:border-[#5953b0] dark:text-white sm:text-2xl">
         {children}
       </blockquote>
     ),
@@ -147,7 +147,7 @@ function CaseStudy({ theme, onToggleTheme }) {
           </p>
           <Link
             to="/"
-            className="font-display text-sm font-bold uppercase tracking-widest text-primary underline"
+            className="font-display text-sm font-bold uppercase tracking-widest text-primary underline dark:text-[#5953b0]"
           >
             Back to home
           </Link>
@@ -204,7 +204,7 @@ function CaseStudy({ theme, onToggleTheme }) {
                 href={project.externalLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-display text-xs font-bold uppercase tracking-wider text-primary underline"
+                className="font-display text-xs font-bold uppercase tracking-wider text-primary underline dark:text-[#5953b0]"
               >
                 Visit live site ↗
               </a>

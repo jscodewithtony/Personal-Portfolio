@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import aboutPortrait from "../assets/about-portrait.webp";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { homepageContentQuery } from "../sanity/queries";
+import { useThemeTokens } from "../theme/ThemeTokensContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,8 +24,12 @@ const PIN_DISTANCE_VH = 1.1;
 // =========================================================================
 // RIBBON & MARQUEE WORD CUSTOMIZATION
 // =========================================================================
-const RIBBON_1_COLOR = "bg-[#5953b0]"; // Purple Ribbon (Bottom layer, slanting UP)
-const RIBBON_2_COLOR = "bg-[#121212]"; // Dark Ribbon (Top layer, slanting DOWN)
+// Theme accent, frozen to the original purple in dark mode — this class
+// previously rendered identically regardless of light/dark (no dark:
+// variant existed), so dark mode must keep that exact value now that
+// the base color is theme-driven rather than a compile-time constant.
+const RIBBON_1_COLOR = "bg-primary dark:bg-[#5953b0]"; // Bottom layer, slanting UP
+const RIBBON_2_COLOR = "bg-[#121212]"; // Dark Ribbon (Top layer, slanting DOWN) — not accent-colored, unaffected by theming
 
 const SINGLE_MARQUEE_WORDS = [
   "HUMANS",
@@ -42,6 +47,7 @@ function About({ theme }) {
   );
   const body =
     status === "ready" ? { ...FALLBACK_BODY, ...content } : FALLBACK_BODY;
+  const themeTokens = useThemeTokens();
 
   const sectionRef = useRef(null);
   const headlineRef = useRef(null);
@@ -82,7 +88,7 @@ function About({ theme }) {
       const isDark = theme
         ? theme === "dark"
         : document.documentElement.classList.contains("dark");
-      const targetColor = isDark ? "#0c0a14" : "#f1f0fa";
+      const targetColor = isDark ? "#0c0a14" : themeTokens.backgroundColor;
 
       if (bgTweenRef.current) {
         bgTweenRef.current.vars.backgroundColor = targetColor;
@@ -110,7 +116,7 @@ function About({ theme }) {
     });
 
     return () => observer.disconnect();
-  }, [theme]);
+  }, [theme, themeTokens]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -150,16 +156,20 @@ function About({ theme }) {
 
       tlRef.current = tl;
 
-      // Smooth background color morphing from mascot purple (#5953b0) to target theme background
+      // Smooth background color morphing from mascot color to target theme background.
+      // The start color mirrors whatever the Hero mascot is currently
+      // rendering: frozen purple in dark mode (matches Mascot.jsx's own
+      // dark: freeze), theme-accent-driven in light mode.
       const isDark = theme
         ? theme === "dark"
         : document.documentElement.classList.contains("dark");
-      const targetBgColor = isDark ? "#0c0a14" : "#f1f0fa";
+      const morphStartColor = isDark ? "#5953b0" : themeTokens.primaryAccent;
+      const targetBgColor = isDark ? "#0c0a14" : themeTokens.backgroundColor;
 
       if (bgLayerRef.current) {
         bgTweenRef.current = gsap.fromTo(
           bgLayerRef.current,
-          { backgroundColor: "#5953b0" },
+          { backgroundColor: morphStartColor },
           { backgroundColor: targetBgColor, ease: "power1.out", duration: 0.5 }
         );
         tl.add(bgTweenRef.current, 0);
@@ -186,7 +196,11 @@ function About({ theme }) {
     }, section);
 
     return () => ctx.revert();
-  }, []);
+    // themeTokens starts at the light defaults and updates once the
+    // Sanity fetch resolves — rebuilding here (like the other pinned
+    // sections do) picks up the real morph-start color for whichever
+    // theme is actually selected, instead of staying stuck on defaults.
+  }, [themeTokens]);
 
   // GSAP Smooth Slow Slide-In (Play) & Slow Slide-Out Off-Screen (Pause)
   useEffect(() => {
@@ -253,7 +267,7 @@ function About({ theme }) {
       {/* Whole-screen background morphing layer */}
       <div
         ref={bgLayerRef}
-        className="pointer-events-none absolute inset-0 z-0 bg-[#5953b0]"
+        className="pointer-events-none absolute inset-0 z-0 bg-primary dark:bg-[#5953b0]"
       />
 
       <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 gap-y-14 md:grid-cols-12 md:gap-x-8 md:gap-y-24">
@@ -275,7 +289,7 @@ function About({ theme }) {
             type="button"
             onClick={() => setRibbonsActive((v) => !v)}
             aria-label="Toggle diagonal quote ribbons"
-            className="group relative inline-flex h-[0.95em] w-[0.95em] mx-1.5 sm:mx-2.5 align-middle items-center justify-center bg-[#5953b0] text-white rounded-lg sm:rounded-xl shadow-md transition-all duration-200 hover:scale-110 hover:bg-[#46408c] active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#5953b0] focus:ring-offset-2 overflow-hidden"
+            className="group relative inline-flex h-[0.95em] w-[0.95em] mx-1.5 sm:mx-2.5 align-middle items-center justify-center bg-primary text-white rounded-lg sm:rounded-xl shadow-md transition-all duration-200 hover:scale-110 hover:bg-primary-dark active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 overflow-hidden dark:bg-[#5953b0] dark:hover:bg-[#46408c] dark:focus:ring-[#5953b0]"
           >
             <span className="inline-flex items-center justify-center w-full h-full animate-shake">
               {ribbonsActive ? (
@@ -298,7 +312,7 @@ function About({ theme }) {
           <span className="word inline-block">works</span>{" "}
           <span className="word inline-block">designing</span>{" "}
           <span className="word inline-block">for</span>{" "}
-          <span className="relative inline-flex items-center justify-center align-middle bg-[#5953b0] text-white rounded-lg px-2 sm:px-3 py-0.5 mx-1.5 sm:mx-2.5 overflow-hidden w-[3.6em] sm:w-[4.2em] md:w-[4.8em] lg:w-[5.2em] h-[0.92em] shadow-sm select-none shrink-0">
+          <span className="relative inline-flex items-center justify-center align-middle bg-primary dark:bg-[#5953b0] text-white rounded-lg px-2 sm:px-3 py-0.5 mx-1.5 sm:mx-2.5 overflow-hidden w-[3.6em] sm:w-[4.2em] md:w-[4.8em] lg:w-[5.2em] h-[0.92em] shadow-sm select-none shrink-0">
             <span
               key={`${wordIndex}-${ribbonsActive}`}
               className={`inline-block font-extrabold text-white text-[0.60em] sm:text-[0.64em] md:text-[0.68em] leading-none tracking-tight whitespace-nowrap ${

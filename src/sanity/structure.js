@@ -22,6 +22,12 @@ export const structure = (S) =>
             .schemaType("homepageContent")
             .documentId("homepageContent")
         ),
+      S.listItem()
+        .title("Site Settings")
+        .id("siteSettings")
+        .child(
+          S.document().schemaType("siteSettings").documentId("siteSettings")
+        ),
       S.divider(),
       ...S.documentTypeListItems().filter(
         (item) => !singletonTypes.has(item.getId())

@@ -2,6 +2,7 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import CaseStudy from "./pages/CaseStudy";
+import { ThemeTokensProvider } from "./theme/ThemeTokensContext";
 
 // Lazy — AdminStudio pulls in the entire Sanity Studio package
 // (structureTool, visionTool, styled-components, its own ~170KB CSS
@@ -51,11 +52,19 @@ function App() {
         />
         <Route
           path="/projects/:slug"
-          element={<CaseStudy theme={theme} onToggleTheme={toggleTheme} />}
+          element={
+            <ThemeTokensProvider>
+              <CaseStudy theme={theme} onToggleTheme={toggleTheme} />
+            </ThemeTokensProvider>
+          }
         />
         <Route
           path="/"
-          element={<HomePage theme={theme} onToggleTheme={toggleTheme} />}
+          element={
+            <ThemeTokensProvider>
+              <HomePage theme={theme} onToggleTheme={toggleTheme} />
+            </ThemeTokensProvider>
+          }
         />
       </Routes>
     </BrowserRouter>

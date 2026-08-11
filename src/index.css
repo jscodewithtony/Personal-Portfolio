@@ -11,6 +11,11 @@
   --color-bg: #f1f0fa;
   --color-ink: #0d0c14;
   --color-cream: #f3efe3;
+  /* Stats section's big figures ("20+" etc). Same value as --color-ink
+     today, kept as its own token so a theme (e.g. Red Diamond) can
+     recolor just the stat numbers to its accent without recoloring
+     every other piece of body/heading text that also reads --color-ink. */
+  --color-stat-value: #0d0c14;
   --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
 
   /* Strong custom eases (weak CSS built-ins lack punch). Generates
@@ -101,6 +106,15 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 3px;
+}
+
+/* --color-primary is theme-driven now (see src/theme). This rule
+   previously rendered identically in light and dark mode (the var was
+   static), so dark mode must keep that exact original value regardless
+   of which theme is selected for light mode — hence a hardcoded
+   (non-var) freeze here rather than just letting the override cascade. */
+html.dark :focus-visible {
+  outline-color: #5953b0;
 }
 
 header button,

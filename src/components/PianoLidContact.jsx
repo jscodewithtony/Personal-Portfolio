@@ -35,7 +35,7 @@ function PianoLidContact() {
             </a>
             <a
               href="mailto:Tony2742000@gmail.com"
-              className="w-fit select-none bg-primary px-6 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-colors hover:bg-primary-dark sm:px-8 sm:py-5 sm:text-xl"
+              className="w-fit select-none bg-primary px-6 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-colors hover:bg-primary-dark dark:bg-[#5953b0] dark:hover:bg-[#46408c] sm:px-8 sm:py-5 sm:text-xl"
             >
               Book a call with me
             </a>

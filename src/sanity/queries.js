@@ -77,3 +77,17 @@ export const articlesQuery = /* groq */ `*[_type == "article"] | order(displayOr
   sourcePlatform,
   displayOrder
 }`;
+
+export const activeThemeQuery = /* groq */ `*[_type == "siteSettings"][0]{
+  selectedTheme->{
+    name,
+    "primaryAccent": primaryAccent.hex,
+    "primaryAccentHover": primaryAccentHover.hex,
+    "backgroundColor": backgroundColor.hex,
+    "textColor": textColor.hex,
+    "statValueColor": statValueColor.hex,
+    "statsCubeFrontColor": statsCubeFrontColor.hex,
+    "statsCubeSideColor": statsCubeSideColor.hex,
+    "statsCubeLineColor": statsCubeLineColor.hex
+  }
+}`;

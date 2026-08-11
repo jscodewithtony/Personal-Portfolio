@@ -237,7 +237,7 @@ function Mascot({ faceRef }) {
       ref={containerRef}
       role="img"
       aria-label="Tony's mascot, a friendly purple character whose eyes and eyebrows follow your cursor"
-      className="animate-mascot-breathe relative flex h-[80vw] w-[80vw] max-h-[28rem] max-w-[28rem] flex-col items-center justify-center rounded-[2.25rem] bg-primary shadow-[0_25px_60px_-18px_rgba(89,83,176,0.6)] sm:h-[26rem] sm:w-[26rem] sm:max-h-none sm:max-w-none sm:rounded-[2.5rem] md:h-[28rem] md:w-[28rem] md:rounded-[2.75rem] lg:h-[34rem] lg:w-[34rem] xl:h-[40rem] xl:w-[40rem]"
+      className="animate-mascot-breathe relative flex h-[80vw] w-[80vw] max-h-[28rem] max-w-[28rem] flex-col items-center justify-center rounded-[2.25rem] bg-primary shadow-[0_25px_60px_-18px_color-mix(in_srgb,var(--color-primary)_60%,transparent)] dark:bg-[#5953b0] dark:shadow-[0_25px_60px_-18px_rgba(89,83,176,0.6)] sm:h-[26rem] sm:w-[26rem] sm:max-h-none sm:max-w-none sm:rounded-[2.5rem] md:h-[28rem] md:w-[28rem] md:rounded-[2.75rem] lg:h-[34rem] lg:w-[34rem] xl:h-[40rem] xl:w-[40rem]"
     >
       <div ref={faceRef} className="flex flex-col items-center">
         <div className="mb-7 flex gap-7 sm:gap-10 md:gap-12 lg:gap-14 xl:gap-16">

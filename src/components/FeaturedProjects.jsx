@@ -244,7 +244,7 @@ function FeaturedProjects() {
       <div
         ref={followerRef}
         aria-hidden="true"
-        className="pointer-events-none fixed top-0 left-0 z-50 flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-[#5953b0] text-white shadow-2xl shadow-[#5953b0]/40 opacity-0 will-change-transform"
+        className="pointer-events-none fixed top-0 left-0 z-50 flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-primary text-white shadow-2xl shadow-primary/40 opacity-0 will-change-transform dark:bg-[#5953b0] dark:shadow-[#5953b0]/40"
         style={{ transform: "translate3d(-200px, -200px, 0) translate(-50%, -50%) scale(0)" }}
       >
         <div className="select-none font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-center leading-[1.15] text-white drop-shadow-sm">

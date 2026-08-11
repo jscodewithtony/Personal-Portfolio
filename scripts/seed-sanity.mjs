@@ -65,6 +65,56 @@ function slugify(str) {
     .replace(/(^-|-$)/g, "");
 }
 
+function color(hex) {
+  return { _type: "color", hex, alpha: 1 };
+}
+
+async function seedThemes() {
+  console.log("Themes...");
+  // Exact current hardcoded values — keeps "Light" pixel-identical to
+  // what the site has always rendered, whether or not this doc exists.
+  await client.createOrReplace({
+    _id: "theme-light",
+    _type: "theme",
+    name: "Light",
+    primaryAccent: color("#5953b0"),
+    primaryAccentHover: color("#46408c"),
+    backgroundColor: color("#f1f0fa"),
+    textColor: color("#0d0c14"),
+    statValueColor: color("#0d0c14"),
+    statsCubeFrontColor: color("#5953b0"),
+    statsCubeSideColor: color("#49439f"),
+    statsCubeLineColor: color("#534da4"),
+  });
+
+  // Red Diamond: dark/near-black surfaces (matching dark mode's own
+  // near-black) with the purple accent swapped for #A60000 everywhere,
+  // and hero/body text forced white for readability on the dark
+  // background — see themeTokens.js for how textColor drives that.
+  await client.createOrReplace({
+    _id: "theme-red-diamond",
+    _type: "theme",
+    name: "Red Diamond",
+    primaryAccent: color("#A60000"),
+    primaryAccentHover: color("#7a0000"),
+    backgroundColor: color("#0c0a14"),
+    textColor: color("#ffffff"),
+    statValueColor: color("#A60000"),
+    statsCubeFrontColor: color("#A60000"),
+    statsCubeSideColor: color("#7a0000"),
+    statsCubeLineColor: color("#8f0000"),
+  });
+}
+
+async function seedSiteSettings() {
+  console.log("Site Settings...");
+  await client.createOrReplace({
+    _id: "siteSettings",
+    _type: "siteSettings",
+    selectedTheme: { _type: "reference", _ref: "theme-light" },
+  });
+}
+
 async function seedNavigation() {
   console.log("Navigation...");
   await client.createOrReplace({
@@ -257,11 +307,16 @@ async function main() {
   console.log(`Seeding Sanity project ${projectId}/${dataset}...\n`);
   await seedNavigation();
   await seedHomepageContent();
+  await seedThemes();
+  await seedSiteSettings();
   await seedProjects();
   await seedStatCards();
   await seedTestimonials();
   await seedArticles();
-  console.log("\nDone. Refresh the Studio to see the content.");
+  console.log(
+    "\nDone. Refresh the Studio to see the content.\n" +
+      'Site Settings currently points at "Light" — switch it to "Red Diamond" in the Studio to preview the new theme.'
+  );
 }
 
 main().catch((err) => {
