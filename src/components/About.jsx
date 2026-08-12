@@ -315,9 +315,8 @@ function About({ theme }) {
           <span className="relative inline-flex items-center justify-center align-middle bg-primary dark:bg-[#5953b0] text-white rounded-lg px-2 sm:px-3 py-0.5 mx-1.5 sm:mx-2.5 overflow-hidden w-[3.6em] sm:w-[4.2em] md:w-[4.8em] lg:w-[5.2em] h-[0.92em] shadow-sm select-none shrink-0">
             <span
               key={`${wordIndex}-${ribbonsActive}`}
-              className={`inline-block font-extrabold text-white text-[0.60em] sm:text-[0.64em] md:text-[0.68em] leading-none tracking-tight whitespace-nowrap ${
-                ribbonsActive ? "animate-single-word-marquee" : ""
-              }`}
+              className={`inline-block font-extrabold text-white text-[0.60em] sm:text-[0.64em] md:text-[0.68em] leading-none tracking-tight whitespace-nowrap ${ribbonsActive ? "animate-single-word-marquee" : ""
+                }`}
             >
               {SINGLE_MARQUEE_WORDS[wordIndex]}
             </span>
@@ -357,9 +356,8 @@ function About({ theme }) {
 
       {/* Diagonal Ribbon Overlay Layer */}
       <div
-        className={`absolute inset-0 z-30 overflow-hidden transition-opacity duration-700 ${
-          ribbonsActive ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0 delay-700"
-        }`}
+        className={`absolute inset-0 z-30 overflow-hidden transition-opacity duration-700 ${ribbonsActive ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0 delay-700"
+          }`}
         onClick={() => setRibbonsActive(false)}
       >
         <div className="relative h-full w-full">

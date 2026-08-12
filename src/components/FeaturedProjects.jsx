@@ -278,81 +278,81 @@ function FeaturedProjects() {
           const CardTag = project.slug ? Link : "div";
           const cardTagProps = project.slug ? { to: `/projects/${project.slug}` } : {};
           return (
-          <div
-            key={index}
-            ref={(el) => (cardRefs.current[index] = el)}
-            className="absolute inset-0 flex items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-auto will-change-transform"
-          >
-            <CardTag
-              {...cardTagProps}
-              onMouseEnter={() => {
-                activeHoverCardRef.current = true;
-                document.body.dataset.cursorProjectHover = "true";
-              }}
-              onMouseLeave={() => {
-                activeHoverCardRef.current = false;
-                document.body.dataset.cursorProjectHover = "false";
-              }}
-              className="relative w-full max-w-5xl lg:max-w-6xl overflow-hidden rounded-none border-none bg-white shadow-2xl transition-colors duration-300 dark:bg-[#141418] group cursor-pointer md:cursor-none"
+            <div
+              key={index}
+              ref={(el) => (cardRefs.current[index] = el)}
+              className="absolute inset-0 flex items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-auto will-change-transform"
             >
-              <div className="grid grid-cols-1 md:grid-cols-12 min-h-[480px] sm:min-h-[600px] lg:min-h-[640px]">
+              <CardTag
+                {...cardTagProps}
+                onMouseEnter={() => {
+                  activeHoverCardRef.current = true;
+                  document.body.dataset.cursorProjectHover = "true";
+                }}
+                onMouseLeave={() => {
+                  activeHoverCardRef.current = false;
+                  document.body.dataset.cursorProjectHover = "false";
+                }}
+                className="relative w-full max-w-5xl lg:max-w-6xl overflow-hidden rounded-none border-none bg-white shadow-2xl transition-colors duration-300 dark:bg-[#141418] group cursor-pointer md:cursor-none"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-12 min-h-[480px] sm:min-h-[600px] lg:min-h-[640px]">
 
-                {/* Left Column: Full-Height Portrait Image */}
-                <div className="md:col-span-5 relative overflow-hidden h-72 sm:h-96 md:h-full w-full">
-                  <img
-                    src={project.image}
-                    alt={project.client}
-                    className="h-full w-full object-cover rounded-none transition-transform duration-700 hover:scale-105"
-                  />
-                </div>
-
-                {/* Right Column */}
-                <div className="md:col-span-7 flex flex-col justify-between p-6 sm:p-8 lg:p-10 bg-white relative rounded-none transition-colors duration-300 dark:bg-[#141418]">
-
-                  <div className="space-y-4 max-w-xl">
-                    <div className="text-sm font-normal tracking-normal text-ink/80 dark:text-white/80">
-                      {project.client}
-                    </div>
-
-                    <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-ink dark:text-white leading-[1.08] font-display tracking-tight whitespace-pre-line">
-                      {project.title}
-                    </h3>
-
-                    <p className="line-clamp-3 text-xs sm:line-clamp-none sm:text-sm lg:text-base text-ink/70 dark:text-white/70 leading-relaxed font-sans pt-2">
-                      {project.description}
-                    </p>
+                  {/* Left Column: Full-Height Portrait Image */}
+                  <div className="md:col-span-5 relative overflow-hidden h-72 sm:h-96 md:h-full w-full">
+                    <img
+                      src={project.image}
+                      alt={project.client}
+                      className="h-full w-full object-cover rounded-none transition-transform duration-700 hover:scale-105"
+                    />
                   </div>
 
-                  <div className="mt-8 flex flex-row items-end justify-between gap-4 relative">
-                    <div className="space-y-4 shrink-0">
-                      <div>
-                        <div className="text-sm lg:text-base font-normal text-ink dark:text-white">Industry</div>
-                        <div className="text-xs font-normal tracking-wider text-ink/50 dark:text-white/50 uppercase mt-0.5">
-                          {project.industry}
+                  {/* Right Column */}
+                  <div className="md:col-span-7 flex flex-col justify-between p-6 sm:p-8 lg:p-10 bg-white relative rounded-none transition-colors duration-300 dark:bg-[#141418]">
+
+                    <div className="space-y-4 max-w-xl">
+                      <div className="text-sm font-normal tracking-normal text-ink/80 dark:text-white/80">
+                        {project.client}
+                      </div>
+
+                      <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-ink dark:text-white leading-[1.08] font-display tracking-tight whitespace-pre-line">
+                        {project.title}
+                      </h3>
+
+                      <p className="line-clamp-3 text-xs sm:line-clamp-none sm:text-sm lg:text-base text-ink/70 dark:text-white/70 leading-relaxed font-sans pt-2">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    <div className="mt-8 flex flex-row items-end justify-between gap-4 relative">
+                      <div className="space-y-4 shrink-0">
+                        <div>
+                          <div className="text-sm lg:text-base font-normal text-ink dark:text-white">Industry</div>
+                          <div className="text-xs font-normal tracking-wider text-ink/50 dark:text-white/50 uppercase mt-0.5">
+                            {project.industry}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm lg:text-base font-normal text-ink dark:text-white">Role</div>
+                          <div className="text-xs font-normal tracking-wider text-ink/50 dark:text-white/50 uppercase mt-0.5">
+                            {project.role}
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className="text-sm lg:text-base font-normal text-ink dark:text-white">Role</div>
-                        <div className="text-xs font-normal tracking-wider text-ink/50 dark:text-white/50 uppercase mt-0.5">
-                          {project.role}
-                        </div>
+
+                      <div className="relative overflow-hidden rounded-none border border-ink/10 dark:border-white/10 bg-bg dark:bg-black/60 shadow-2xl w-48 sm:w-60 lg:w-72 aspect-[16/10] shrink-0 self-end">
+                        <img
+                          src={project.thumbnailImage}
+                          alt={`${project.client} preview`}
+                          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-none"
+                        />
                       </div>
                     </div>
 
-                    <div className="relative overflow-hidden rounded-none border border-ink/10 dark:border-white/10 bg-bg dark:bg-black/60 shadow-2xl w-48 sm:w-60 lg:w-72 aspect-[16/10] shrink-0 self-end">
-                      <img
-                        src={project.thumbnailImage}
-                        alt={`${project.client} preview`}
-                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-none"
-                      />
-                    </div>
                   </div>
 
                 </div>
-
-              </div>
-            </CardTag>
-          </div>
+              </CardTag>
+            </div>
           );
         })}
       </div>

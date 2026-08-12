@@ -20,7 +20,7 @@ function PianoLidContact() {
       <div className="relative z-10 w-full px-6 pt-14 pb-10 sm:px-10 sm:pt-16 sm:pb-12 md:px-14 md:pt-20 md:pb-14 lg:px-16">
         {/* Standalone headline for the whole contact block, sitting above
             the two-column row rather than stacked inside the left column. */}
-        <h2 className="select-none font-display text-6xl font-black uppercase leading-[0.9] tracking-tight text-ink dark:text-white sm:text-7xl md:text-8xl lg:text-[12rem] mb-10 sm:mb-12 md:mb-14">
+        <h2 className="select-none font-display text-6xl font-black uppercase leading-[0.9] tracking-tight text-ink dark:text-white sm:text-7xl md:text-8xl lg:text-[11rem] mb-10 sm:mb-12 md:mb-14">
           Connect With Me
         </h2>
 
