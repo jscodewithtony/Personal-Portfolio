@@ -13,10 +13,13 @@ const PIN_DISTANCE_VH = 1.3;
 const MERGE_COVER_MARGIN = 1.35;
 
 // Easily adjust the font size of mobile sub-details here (e.g., text-[12px], text-sm, text-base)
-const MOBILE_SPEC_FONT_SIZE = "text-[24px]";
+const MOBILE_SPEC_FONT_SIZE = "text-[18px]";
 
 // Easily adjust the vertical spacing between the left and right mobile sections here (e.g., mt-4, mt-6, mt-8, mt-12)
 const MOBILE_SPEC_VERTICAL_GAP = "mt-6";
+
+// Easily adjust the top margin/gap of the mobile mascot here (e.g., mt-2, mt-4, mt-6, mt-8)
+const MOBILE_MASCOT_TOP_GAP = "mt-2";
 
 // Original hardcoded copy, reused as the fallback shown while the CMS
 // fetch is loading and if homepageContent has no value for a field yet
@@ -197,7 +200,7 @@ function Hero() {
       ref={sectionRef}
       className="relative flex min-h-[100dvh] flex-col justify-between overflow-hidden bg-bg pb-0 md:pb-6 pt-0 text-ink transition-colors duration-300 select-none dark:bg-[#0c0a14] dark:text-white"
     >
-      <div className="relative z-10 flex flex-col justify-between flex-1 w-full max-w-[94vw] mx-auto pt-2 pb-0 md:pb-6">
+      <div className="relative z-10 flex flex-col justify-start md:justify-between flex-1 w-full max-w-[94vw] mx-auto pt-2 pb-0 md:pb-6">
         {/* Top Headline Section */}
         <div className="relative z-10 w-full text-center">
           {/* Mobile View: Centered Badge + Stacked 2-line Headline */}
@@ -205,7 +208,7 @@ function Hero() {
             <div className="inline-block px-3 py-1 border border-ink/40 dark:border-white/40 font-display text-[10px] sm:text-xs font-bold uppercase tracking-wider text-ink dark:text-white mb-3">
               WAITING FOR FIRST DESIGN AWARD 🏆
             </div>
-            <h1 className="select-none font-display font-black leading-[0.84] tracking-tighter text-center text-ink dark:text-white uppercase text-[110px]">
+            <h1 className="select-none font-display font-black leading-[0.84] tracking-tighter text-center text-ink dark:text-white uppercase text-[90px]">
               {c.heroHeadline.split(" ")[0] || "HELLO"}
               <br />
               {c.heroHeadline.split(" ").slice(1).join(" ") || "I'M TONY"}
@@ -309,10 +312,10 @@ function Hero() {
         </div>
 
         {/* Mobile Mascot Container (Full-width purple block at bottom) */}
-        <div className="md:hidden w-full flex-1 flex flex-col justify-end mt-2">
+        <div className="md:hidden w-full flex-1 flex flex-col justify-end">
           <div
             ref={mobileMascotWrapRef}
-            className="relative z-30 w-full min-h-[320px] sm:min-h-[380px] bg-primary dark:bg-[#5953b0] flex items-center justify-center p-6 rounded-none overflow-hidden"
+            className={`relative z-30 w-full min-h-[320px] sm:min-h-[380px] bg-primary dark:bg-[#5953b0] flex items-center justify-start p-6 rounded-none overflow-hidden ${MOBILE_MASCOT_TOP_GAP}`}
           >
             <Mascot faceRef={mobileMascotFaceRef} />
           </div>
