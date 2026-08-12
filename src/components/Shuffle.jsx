@@ -161,10 +161,23 @@ const Shuffle = ({
           // measurement so `w` reflects the glyph's true rendered width;
           // the tight tracking is re-applied further down as spacing
           // *between* wrapper boxes instead of *inside* one.
+          //
+          // offsetWidth/offsetHeight, not getBoundingClientRect() — this
+          // headline sits inside an ancestor Hero scales down/up via GSAP
+          // while pinned-scrolling. getBoundingClientRect() reports the
+          // post-transform *visual* size, so a rebuild that happens to
+          // run mid-transform (e.g. a resize-triggered remeasure while
+          // scrolling back up through the pin) would bake in a scaled,
+          // wrong pixel width for these wrapper boxes — surviving even
+          // after the scale settles back to 1, which is exactly what
+          // produced the overlapping/misaligned characters. offset*
+          // reflects true layout size and ignores ancestor transforms
+          // entirely, so the measurement is correct regardless of
+          // whatever scale the headline happens to be at when this runs.
           const originalLetterSpacing = ch.style.letterSpacing;
           ch.style.letterSpacing = 'normal';
-          const w = ch.getBoundingClientRect().width;
-          const h = ch.getBoundingClientRect().height;
+          const w = ch.offsetWidth;
+          const h = ch.offsetHeight;
           ch.style.letterSpacing = originalLetterSpacing;
           if (!w) return;
 
@@ -397,8 +410,12 @@ const Shuffle = ({
             strip.dataset.animating = 'true';
 
             const isVertical = shuffleDirection === 'up' || shuffleDirection === 'down';
-            const charW = origChar ? origChar.getBoundingClientRect().width : 0;
-            const charH = origChar ? origChar.getBoundingClientRect().height : 0;
+            // Same reasoning as the build-time measurement above: offset*
+            // instead of getBoundingClientRect() so a hover mid-scroll
+            // (while the ancestor is mid-transform) can't bake in a
+            // scaled-wrong travel distance for the roll animation.
+            const charW = origChar ? origChar.offsetWidth : 0;
+            const charH = origChar ? origChar.offsetHeight : 0;
             const rolls = Math.max(1, Math.floor(shuffleTimes));
             const steps = rolls + 1;
 
