@@ -200,11 +200,11 @@ function Hero() {
       ref={sectionRef}
       className="relative flex min-h-[100dvh] flex-col justify-between overflow-hidden bg-bg pb-0 md:pb-6 pt-0 text-ink transition-colors duration-300 select-none dark:bg-[#0c0a14] dark:text-white"
     >
-      <div className="relative z-10 flex flex-col justify-start md:justify-between flex-1 w-full max-w-[94vw] mx-auto pt-2 pb-0 md:pb-6">
+      <div className="relative z-10 flex flex-col justify-start md:justify-between flex-1 w-full max-w-none md:max-w-[94vw] mx-auto pt-2 pb-0 md:pb-6">
         {/* Top Headline Section */}
         <div className="relative z-10 w-full text-center">
           {/* Mobile View: Centered Badge + Stacked 2-line Headline */}
-          <div ref={mobileHeadlineWrapRef} className="md:hidden flex flex-col items-center pt-2 pb-1">
+          <div ref={mobileHeadlineWrapRef} className="md:hidden flex flex-col items-center pt-2 pb-1 px-4">
             <div className="inline-block px-3 py-1 border border-ink/40 dark:border-white/40 font-display text-[10px] sm:text-xs font-bold uppercase tracking-wider text-ink dark:text-white mb-3">
               WAITING FOR FIRST DESIGN AWARD 🏆
             </div>
@@ -253,7 +253,7 @@ function Hero() {
         </div>
 
         {/* Mobile Sub-Details: Left Column (Full Width) */}
-        <div ref={mobileLeftLabelRef} className="md:hidden w-full px-2 pt-3">
+        <div ref={mobileLeftLabelRef} className="md:hidden w-full px-4 pt-3">
           <div className="flex flex-col gap-1 text-left">
             <p className={`font-display sm:text-xs font-bold uppercase tracking-tight text-ink/90 dark:text-white/90 ${MOBILE_SPEC_FONT_SIZE}`}>
               BASED IN {c.heroBasedInLocation}
@@ -265,7 +265,7 @@ function Hero() {
         </div>
 
         {/* Mobile Sub-Details: Right Column (Full Width) */}
-        <div ref={mobileRightLabelRef} className={`md:hidden w-full px-2 pb-3 ${MOBILE_SPEC_VERTICAL_GAP}`}>
+        <div ref={mobileRightLabelRef} className={`md:hidden w-full px-4 pb-3 ${MOBILE_SPEC_VERTICAL_GAP}`}>
           <div className="flex flex-col gap-1 text-right">
             {heroSpecs.map((spec) => (
               <p
