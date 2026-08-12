@@ -275,7 +275,6 @@ header a,
     position: relative !important;
     left: auto !important;
     top: auto !important;
-    transform: none !important;
     margin: 1.75rem auto 0 auto !important;
     text-align: center !important;
     max-width: 22rem !important;

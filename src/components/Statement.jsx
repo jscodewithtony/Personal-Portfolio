@@ -128,7 +128,7 @@ function Statement() {
           aria-hidden="true"
           className={`max-w-[11rem] sm:max-w-[16rem] md:max-w-[24rem] ${SMALL}`}
         >
-          Don't have to make one.
+          {c.statementTrailingLine}
         </span>
       ),
     },

@@ -51,7 +51,7 @@ function FitGroup({ lines, className = "", maxFontSize = 640, minFontSize = 32 }
     document.fonts?.ready?.then(recalc);
 
     return () => resizeObserver.disconnect();
-  }, [maxFontSize, minFontSize, lines.length]);
+  }, [maxFontSize, minFontSize, lines]);
 
   itemRefs.current = [];
 

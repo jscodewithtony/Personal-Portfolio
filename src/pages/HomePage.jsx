@@ -1,18 +1,15 @@
-import { useRef, useState, lazy, Suspense } from "react";
+import { useRef, useState } from "react";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
 import About from "../components/About";
 import Statement from "../components/Statement";
 import CanvasCursor from "../components/CanvasCursor";
-
-const FeaturedProjects = lazy(() => import("../components/FeaturedProjects"));
-const Stats = lazy(() => import("../components/Stats"));
-const MentorshipTestimonials = lazy(() =>
-  import("../components/MentorshipTestimonials")
-);
-const Insight = lazy(() => import("../components/Insight"));
-const Footer = lazy(() => import("../components/Footer"));
-const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
+import FeaturedProjects from "../components/FeaturedProjects";
+import Stats from "../components/Stats";
+import MentorshipTestimonials from "../components/MentorshipTestimonials";
+import Insight from "../components/Insight";
+import Footer from "../components/Footer";
+import MenuOverlay from "../components/MenuOverlay";
 
 function HomePage({ theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,18 +29,16 @@ function HomePage({ theme, onToggleTheme }) {
       <About theme={theme} />
       <Statement />
 
-      <Suspense fallback={null}>
-        <FeaturedProjects />
-        <Stats theme={theme} />
-        <MentorshipTestimonials theme={theme} />
-        <Insight />
-        <Footer />
-        <MenuOverlay
-          open={menuOpen}
-          onClose={() => setMenuOpen(false)}
-          anchorRef={menuButtonRef}
-        />
-      </Suspense>
+      <FeaturedProjects />
+      <Stats theme={theme} />
+      <MentorshipTestimonials theme={theme} />
+      <Insight />
+      <Footer />
+      <MenuOverlay
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        anchorRef={menuButtonRef}
+      />
     </div>
   );
 }

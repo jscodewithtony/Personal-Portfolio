@@ -7,8 +7,25 @@
     <meta name="description" content="Tony — Product Designer & UX Designer portfolio." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Preloads the Latin subset's actual woff2 file (the one that
+         covers the Hero headline's characters) so it's already in
+         flight before the stylesheet below is even parsed, instead of
+         only being discovered once that stylesheet's @font-face is
+         read. This is what actually shrinks the fallback-font window
+         that caused the headline's weight/style to flash before
+         settling. Versioned/hashed Google Fonts URL — if Google
+         revisions this font file later, this preload just becomes an
+         inert no-op rather than an error, so it's safe to leave as-is
+         until re-verified. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=optional"
       rel="stylesheet"
     />
     <title>I'm Tony — Product & UX Designer</title>

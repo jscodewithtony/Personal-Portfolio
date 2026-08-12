@@ -5,6 +5,13 @@ import { LIGHT_THEME_DEFAULTS, resolveThemeTokens, applyThemeTokens } from "./th
 
 const ThemeTokensContext = createContext(LIGHT_THEME_DEFAULTS);
 
+// Kill switch: the Sanity-driven theme system (schemas, Studio UI,
+// ThemeTokensProvider fetch/apply logic) stays in place, but this flag
+// stops the site from reading or applying whatever is selected in
+// Sanity — the site always renders the original hardcoded light theme,
+// regardless of Site Settings, until this is flipped back on.
+const THEME_SYSTEM_ENABLED = false;
+
 // Fetches whichever theme siteSettings.selectedTheme currently points
 // at, resolves it against the light-theme defaults, applies it as CSS
 // custom properties (so every bg-primary/text-ink/bg-bg utility
@@ -12,6 +19,18 @@ const ThemeTokensContext = createContext(LIGHT_THEME_DEFAULTS);
 // through context for the few spots that need JS-side color math
 // (Three.js materials, GSAP color tweens) rather than a CSS class.
 export function ThemeTokensProvider({ children }) {
+  if (!THEME_SYSTEM_ENABLED) {
+    return (
+      <ThemeTokensContext.Provider value={LIGHT_THEME_DEFAULTS}>
+        {children}
+      </ThemeTokensContext.Provider>
+    );
+  }
+
+  return <LiveThemeTokensProvider>{children}</LiveThemeTokensProvider>;
+}
+
+function LiveThemeTokensProvider({ children }) {
   const { data, status } = useSanityQuery(activeThemeQuery, {}, null);
 
   const tokens = useMemo(
