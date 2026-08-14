@@ -5,14 +5,14 @@
 // Sanity connectivity.
 export const LIGHT_THEME_DEFAULTS = {
   name: "Light",
-  primaryAccent: "#5953b0",
-  primaryAccentHover: "#46408c",
-  backgroundColor: "#f1f0fa",
+  primaryAccent: "#114AFC",
+  primaryAccentHover: "#022CDB",
+  backgroundColor: "#F9F9F9",
   textColor: "#0d0c14",
   statValueColor: "#0d0c14",
-  statsCubeFrontColor: "#5953b0",
-  statsCubeSideColor: "#49439f",
-  statsCubeLineColor: "#534da4",
+  statsCubeFrontColor: "#114AFC",
+  statsCubeSideColor: "#0013B2",
+  statsCubeLineColor: "#022CDB",
 };
 
 // Merges fetched theme fields over the light defaults, field by field,

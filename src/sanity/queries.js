@@ -45,7 +45,19 @@ export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.curre
   industry,
   role,
   externalLink,
-  caseStudyBody
+  timeline,
+  tools,
+  overviewParagraphs,
+  outcomeStats,
+  caseStudyBody,
+  "nextProject": coalesce(
+    *[_type == "project" && displayOrder > ^.displayOrder] | order(displayOrder asc)[0]{
+      title, "slug": slug.current, mainImage, client
+    },
+    *[_type == "project" && _id != ^._id] | order(displayOrder asc)[0]{
+      title, "slug": slug.current, mainImage, client
+    }
+  )
 }`;
 
 export const statCardsQuery = /* groq */ `*[_type == "statCard"] | order(displayOrder asc){

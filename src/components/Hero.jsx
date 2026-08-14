@@ -315,7 +315,7 @@ function Hero() {
         <div className="md:hidden w-full flex-1 flex flex-col justify-end">
           <div
             ref={mobileMascotWrapRef}
-            className={`relative z-30 w-full min-h-[320px] sm:min-h-[380px] bg-primary dark:bg-[#5953b0] flex items-center justify-center p-6 rounded-none overflow-hidden ${MOBILE_MASCOT_TOP_GAP}`}
+            className={`relative z-30 w-full min-h-[320px] sm:min-h-[380px] bg-primary dark:bg-[#114AFC] flex items-center justify-center p-6 rounded-none overflow-hidden ${MOBILE_MASCOT_TOP_GAP}`}
           >
             <Mascot faceRef={mobileMascotFaceRef} />
           </div>

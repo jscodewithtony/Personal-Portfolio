@@ -28,7 +28,7 @@ const PIN_DISTANCE_VH = 1.1;
 // previously rendered identically regardless of light/dark (no dark:
 // variant existed), so dark mode must keep that exact value now that
 // the base color is theme-driven rather than a compile-time constant.
-const RIBBON_1_COLOR = "bg-primary dark:bg-[#5953b0]"; // Bottom layer, slanting UP
+const RIBBON_1_COLOR = "bg-primary dark:bg-[#114AFC]"; // Bottom layer, slanting UP
 const RIBBON_2_COLOR = "bg-[#121212]"; // Dark Ribbon (Top layer, slanting DOWN) — not accent-colored, unaffected by theming
 
 const SINGLE_MARQUEE_WORDS = [
@@ -163,7 +163,7 @@ function About({ theme }) {
       const isDark = theme
         ? theme === "dark"
         : document.documentElement.classList.contains("dark");
-      const morphStartColor = isDark ? "#5953b0" : themeTokens.primaryAccent;
+      const morphStartColor = isDark ? "#114AFC" : themeTokens.primaryAccent;
       const targetBgColor = isDark ? "#0c0a14" : themeTokens.backgroundColor;
 
       if (bgLayerRef.current) {
@@ -267,7 +267,7 @@ function About({ theme }) {
       {/* Whole-screen background morphing layer */}
       <div
         ref={bgLayerRef}
-        className="pointer-events-none absolute inset-0 z-0 bg-primary dark:bg-[#5953b0]"
+        className="pointer-events-none absolute inset-0 z-0 bg-primary dark:bg-[#114AFC]"
       />
 
       <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 gap-y-14 md:grid-cols-12 md:gap-x-8 md:gap-y-24">
@@ -289,7 +289,7 @@ function About({ theme }) {
             type="button"
             onClick={() => setRibbonsActive((v) => !v)}
             aria-label="Toggle diagonal quote ribbons"
-            className="group relative inline-flex h-[0.95em] w-[0.95em] mx-1.5 sm:mx-2.5 align-middle items-center justify-center bg-primary text-white rounded-lg sm:rounded-xl shadow-md transition-all duration-200 hover:scale-110 hover:bg-primary-dark active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 overflow-hidden dark:bg-[#5953b0] dark:hover:bg-[#46408c] dark:focus:ring-[#5953b0]"
+            className="group relative inline-flex h-[0.95em] w-[0.95em] mx-1.5 sm:mx-2.5 align-middle items-center justify-center bg-primary text-white rounded-lg sm:rounded-xl shadow-md transition-all duration-200 hover:scale-110 hover:bg-primary-dark active:scale-95 active:bg-primary-active cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-active focus:ring-offset-2 overflow-hidden dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2] dark:focus:ring-[#0013B2]"
           >
             <span className="inline-flex items-center justify-center w-full h-full animate-shake">
               {ribbonsActive ? (
@@ -312,7 +312,7 @@ function About({ theme }) {
           <span className="word inline-block">works</span>{" "}
           <span className="word inline-block">designing</span>{" "}
           <span className="word inline-block">for</span>{" "}
-          <span className="relative inline-flex items-center justify-center align-middle bg-primary dark:bg-[#5953b0] text-white rounded-lg px-2 sm:px-3 py-0.5 mx-1.5 sm:mx-2.5 overflow-hidden w-[3.6em] sm:w-[4.2em] md:w-[4.8em] lg:w-[5.2em] h-[0.92em] shadow-sm select-none shrink-0">
+          <span className="relative inline-flex items-center justify-center align-middle bg-primary dark:bg-[#114AFC] text-white rounded-lg px-2 sm:px-3 py-0.5 mx-1.5 sm:mx-2.5 overflow-hidden w-[3.6em] sm:w-[4.2em] md:w-[4.8em] lg:w-[5.2em] h-[0.92em] shadow-sm select-none shrink-0">
             <span
               key={`${wordIndex}-${ribbonsActive}`}
               className={`inline-block font-extrabold text-white text-[0.60em] sm:text-[0.64em] md:text-[0.68em] leading-none tracking-tight whitespace-nowrap ${ribbonsActive ? "animate-single-word-marquee" : ""
@@ -332,10 +332,10 @@ function About({ theme }) {
 
         {/* Body copy */}
         <div className="col-span-1 flex flex-col gap-6 self-end md:col-span-4 md:col-start-5">
-          <p className="font-display text-base leading-relaxed text-ink/70 dark:text-white/70 sm:text-lg">
+          <p className="font-display text-base normal-case leading-relaxed text-ink/70 dark:text-white/70 sm:text-lg">
             {body.aboutBodyParagraph1}
           </p>
-          <p className="font-display text-base leading-relaxed text-ink/70 dark:text-white/70 sm:text-lg">
+          <p className="font-display text-base normal-case leading-relaxed text-ink/70 dark:text-white/70 sm:text-lg">
             {body.aboutBodyParagraph2}
           </p>
         </div>
@@ -349,6 +349,7 @@ function About({ theme }) {
             ref={imageInnerRef}
             src={aboutPortrait}
             alt="Tony, seated outdoors in dark clothing beside a black horse"
+            loading="lazy"
             className="h-full w-full object-cover"
           />
         </div>
@@ -361,7 +362,7 @@ function About({ theme }) {
         onClick={() => setRibbonsActive(false)}
       >
         <div className="relative h-full w-full">
-          {/* Ribbon 1: Purple (#5953b0) - Slanted UPWARDS (+9deg) in background */}
+          {/* Ribbon 1: Purple (#114AFC) - Slanted UPWARDS (+9deg) in background */}
           <div
             ref={ribbon1Ref}
             className={`absolute left-1/2 top-[60%] w-[240vw] ${RIBBON_1_COLOR} py-4 sm:py-6 md:py-7 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] will-change-transform z-10`}

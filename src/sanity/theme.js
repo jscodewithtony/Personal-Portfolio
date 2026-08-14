@@ -1,7 +1,7 @@
 import { buildLegacyTheme } from "sanity";
 
 // Maps the Studio's CSS custom properties onto the portfolio's own
-// design tokens (src/index.css: --color-primary #5953b0, --color-ink
+// design tokens (src/index.css: --color-primary #114AFC, --color-ink
 // #0d0c14, dark surface #0c0a14) so /admin reads as part of the same
 // product instead of stock Sanity blue-on-white.
 export const portfolioStudioTheme = buildLegacyTheme({

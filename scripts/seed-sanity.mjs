@@ -77,14 +77,14 @@ async function seedThemes() {
     _id: "theme-light",
     _type: "theme",
     name: "Light",
-    primaryAccent: color("#5953b0"),
-    primaryAccentHover: color("#46408c"),
-    backgroundColor: color("#f1f0fa"),
+    primaryAccent: color("#114AFC"),
+    primaryAccentHover: color("#022CDB"),
+    backgroundColor: color("#F9F9F9"),
     textColor: color("#0d0c14"),
     statValueColor: color("#0d0c14"),
-    statsCubeFrontColor: color("#5953b0"),
-    statsCubeSideColor: color("#49439f"),
-    statsCubeLineColor: color("#534da4"),
+    statsCubeFrontColor: color("#114AFC"),
+    statsCubeSideColor: color("#0013B2"),
+    statsCubeLineColor: color("#022CDB"),
   });
 
   // Red Diamond: dark/near-black surfaces (matching dark mode's own
@@ -149,6 +149,73 @@ async function seedHomepageContent() {
   });
 }
 
+// Builds a demo caseStudyBody: intro paragraph, an H2, another
+// paragraph, a full-bleed captioned image, a second H2, and a
+// multi-image gallery block — exercises every block type the case
+// study page's Portable Text renderer supports (headings, paragraphs,
+// full-width image break, image grid) in one pass.
+function buildDemoCaseStudyBody(id, shortDescription, images) {
+  return [
+    {
+      _type: "block",
+      _key: `${id}-intro`,
+      style: "normal",
+      children: [{ _type: "span", _key: `${id}-intro-span`, text: shortDescription }],
+    },
+    {
+      _type: "block",
+      _key: `${id}-h2-1`,
+      style: "h2",
+      children: [{ _type: "span", _key: `${id}-h2-1-span`, text: "The Problem" }],
+    },
+    {
+      _type: "block",
+      _key: `${id}-p1`,
+      style: "normal",
+      children: [
+        {
+          _type: "span",
+          _key: `${id}-p1-span`,
+          text: "Early usage data showed people understood the product's value the moment they saw it work — the drop-off happened earlier, in the handful of screens before that moment. We mapped every step between signup and first real result, and found three places where the product asked for trust before it had earned any.",
+        },
+      ],
+    },
+    {
+      _type: "captionedImage",
+      _key: `${id}-hero-break`,
+      ...images.full,
+      alt: `${id} full-bleed visual`,
+      caption: "Early exploration — mapping the first-five-minutes flow end to end.",
+    },
+    {
+      _type: "block",
+      _key: `${id}-h2-2`,
+      style: "h2",
+      children: [{ _type: "span", _key: `${id}-h2-2-span`, text: "The Approach" }],
+    },
+    {
+      _type: "block",
+      _key: `${id}-p2`,
+      style: "normal",
+      children: [
+        {
+          _type: "span",
+          _key: `${id}-p2-span`,
+          text: "Rather than redesign the whole flow, we replaced each trust-breaking moment with a small, specific explanation exactly where the doubt appeared — before an irreversible action, not after. The rest of the interface stayed untouched.",
+        },
+      ],
+    },
+    {
+      _type: "gallery",
+      _key: `${id}-gallery`,
+      images: [
+        { ...images.gallery1, _key: `${id}-gallery-1`, alt: `${id} detail view 1` },
+        { ...images.gallery2, _key: `${id}-gallery-2`, alt: `${id} detail view 2` },
+      ],
+    },
+  ];
+}
+
 async function seedProjects() {
   console.log("Projects...");
   const projects = [
@@ -162,6 +229,23 @@ async function seedProjects() {
         "NudgeFile renames and sorts your files with a local AI — but it asks first, and it always has an undo button, because trusting an AI with your file system sight-unseen is how horror movies start.",
       industry: "TECHNOLOGY | IT SUPPORT",
       role: "UIUX DESIGNER | DESIGN SYSTEM",
+      timeline: "6 Weeks · Q1 2026",
+      tools: ["Figma", "React", "GSAP"],
+      overviewParagraphs: [
+        "Tekxera's local-AI file assistant, NudgeFile, worked well in testing but saw a third of new users disable it within their first session — not because it made mistakes, but because it acted before explaining itself.",
+        "Support tickets and session recordings pointed to the same handful of moments: batch renames and moves happening automatically, with no visible way to know what changed or undo it.",
+        "The goal was narrow: rebuild the first-run experience so every automatic action is visible, explained, and reversible, without adding a single extra click for users who already trust the tool.",
+      ],
+      outcomeStats: [
+        { value: "32%", label: "Reduction in first-session opt-out" },
+        { value: "2.4x", label: "Faster first successful rename batch" },
+        { value: "18", label: "Components shipped to the design system" },
+      ],
+      gallery: {
+        full: { image: "src/assets/project-jewelry.webp" },
+        gallery1: { image: "src/assets/project-strategy.webp" },
+        gallery2: { image: "src/assets/about-portrait.webp" },
+      },
       displayOrder: 1,
     },
     {
@@ -174,6 +258,23 @@ async function seedProjects() {
         "An immersive luxury e-commerce experience crafted for high-end bespoke jewelry, featuring fluid micro-interactions, spatial product showcases, and bespoke design systems.",
       industry: "E-COMMERCE | LUXURY RETAIL",
       role: "LEAD DESIGNER | FRONTEND ARCHITECT",
+      timeline: "10 Weeks · Q4 2025",
+      tools: ["Figma", "Three.js", "Shopify Hydrogen"],
+      overviewParagraphs: [
+        "Aurelle sells bespoke jewelry starting at five figures, but the existing site presented every piece the same way a mass-market retailer would: a grid, a price, an 'add to cart.'",
+        "For a considered, high-trust purchase, that flattening was costing them consultations. The brief was to make the site feel like walking into the atelier, not a warehouse.",
+        "We rebuilt product presentation around spatial, close-up exploration and slowed the pacing deliberately, trading conversion-funnel speed for the kind of confidence a five-figure purchase actually needs.",
+      ],
+      outcomeStats: [
+        { value: "47%", label: "More consultation requests per visitor" },
+        { value: "3.1x", label: "Longer average session on product pages" },
+        { value: "12", label: "Bespoke product configurators shipped" },
+      ],
+      gallery: {
+        full: { image: "src/assets/project-strategy.webp" },
+        gallery1: { image: "src/assets/project-tekxera.webp" },
+        gallery2: { image: "src/assets/about-portrait.webp" },
+      },
       displayOrder: 2,
     },
     {
@@ -186,6 +287,23 @@ async function seedProjects() {
         "Real-time financial risk assessment and decision-making platform for enterprise finance teams. Consolidates multi-market telemetry streams into intuitive interactive dashboards.",
       industry: "FINTECH | RISK ANALYTICS",
       role: "PRODUCT DESIGNER | GSAP DEVELOPER",
+      timeline: "14 Weeks · Q2 2025",
+      tools: ["Figma", "D3.js", "GSAP", "WebSocket streaming"],
+      overviewParagraphs: [
+        "Meridian's risk desk was reading eleven separate market-data tools side by side, cross-referencing by memory during the exact moments when a slow read costs money.",
+        "The ask wasn't a prettier dashboard — it was a single surface that could hold multi-market telemetry at a glance without hiding the precision analysts actually needed underneath.",
+        "We designed a layered system: an always-visible overview for ambient awareness, with every widget one interaction away from the full precision view analysts used to make the actual call.",
+      ],
+      outcomeStats: [
+        { value: "41%", label: "Faster time-to-decision on flagged risk" },
+        { value: "11 → 1", label: "Tools consolidated into one surface" },
+        { value: "99.98%", label: "Uptime on the live telemetry layer" },
+      ],
+      gallery: {
+        full: { image: "src/assets/project-tekxera.webp" },
+        gallery1: { image: "src/assets/project-jewelry.webp" },
+        gallery2: { image: "src/assets/about-portrait.webp" },
+      },
       displayOrder: 3,
     },
   ];
@@ -193,6 +311,11 @@ async function seedProjects() {
   for (const p of projects) {
     const mainImage = await uploadImage(p.mainImage);
     const thumbnailImage = await uploadImage(p.thumbnailImage);
+    const galleryImages = {
+      full: await uploadImage(p.gallery.full.image),
+      gallery1: await uploadImage(p.gallery.gallery1.image),
+      gallery2: await uploadImage(p.gallery.gallery2.image),
+    };
     await client.createOrReplace({
       _id: `project-${p.id}`,
       _type: "project",
@@ -204,15 +327,12 @@ async function seedProjects() {
       shortDescription: p.shortDescription,
       industry: p.industry,
       role: p.role,
+      timeline: p.timeline,
+      tools: p.tools,
+      overviewParagraphs: p.overviewParagraphs,
+      outcomeStats: p.outcomeStats.map((s, i) => ({ ...s, _key: `${p.id}-stat-${i}` })),
       displayOrder: p.displayOrder,
-      caseStudyBody: [
-        {
-          _type: "block",
-          _key: "intro",
-          style: "normal",
-          children: [{ _type: "span", _key: "intro-span", text: p.shortDescription }],
-        },
-      ],
+      caseStudyBody: buildDemoCaseStudyBody(p.id, p.shortDescription, galleryImages),
     });
   }
 }

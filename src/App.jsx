@@ -1,7 +1,9 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import CaseStudy from "./pages/CaseStudy";
+// Lazy load the page routes to split chunks
+const HomePage = lazy(() => import("./pages/HomePage"));
+const CaseStudy = lazy(() => import("./pages/CaseStudy"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
 import { ThemeTokensProvider } from "./theme/ThemeTokensContext";
 
 // Lazy — AdminStudio pulls in the entire Sanity Studio package
@@ -37,36 +39,46 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        {/* /admin is intentionally its own top-level route, outside the
-            public site's .site-shell wrapper and nav — the Studio is
-            never linked from the header/menu and carries no public
-            layout, only Sanity's own login + editor UI. */}
-        <Route
-          path="/admin/*"
-          element={
-            <Suspense fallback={null}>
-              <AdminStudio />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/projects/:slug"
-          element={
-            <ThemeTokensProvider>
-              <CaseStudy theme={theme} onToggleTheme={toggleTheme} />
-            </ThemeTokensProvider>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <ThemeTokensProvider>
-              <HomePage theme={theme} onToggleTheme={toggleTheme} />
-            </ThemeTokensProvider>
-          }
-        />
-      </Routes>
+      <Suspense fallback={null}>
+        <Routes>
+          {/* /admin is intentionally its own top-level route, outside the
+              public site's .site-shell wrapper and nav — the Studio is
+              never linked from the header/menu and carries no public
+              layout, only Sanity's own login + editor UI. */}
+          <Route
+            path="/admin/*"
+            element={
+              <Suspense fallback={null}>
+                <AdminStudio />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/projects/:slug"
+            element={
+              <ThemeTokensProvider>
+                <CaseStudy theme={theme} onToggleTheme={toggleTheme} />
+              </ThemeTokensProvider>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <ThemeTokensProvider>
+                <AboutPage theme={theme} onToggleTheme={toggleTheme} />
+              </ThemeTokensProvider>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <ThemeTokensProvider>
+                <HomePage theme={theme} onToggleTheme={toggleTheme} />
+              </ThemeTokensProvider>
+            }
+          />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

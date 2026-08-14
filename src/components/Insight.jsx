@@ -114,6 +114,7 @@ function Insight() {
   return (
     <section
       ref={sectionRef}
+      id="insights"
       className="relative z-10 overflow-hidden bg-bg px-6 py-20 text-ink transition-colors duration-300 sm:px-10 sm:py-24 md:px-14 md:py-28 dark:bg-[#0c0a14] dark:text-white"
     >
       <div className="mx-auto flex w-full flex-col gap-12 sm:gap-14 md:gap-16">

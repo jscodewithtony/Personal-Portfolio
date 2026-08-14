@@ -74,7 +74,10 @@ function getMidiFrequency(midi) {
   return 440 * Math.pow(2, (midi - 69) / 12);
 }
 
-function Footer() {
+// `variant="about"` is opt-in — only AboutPage.jsx passes it, so Home and
+// CaseStudy keep the default site palette untouched.
+function Footer({ variant = "site" }) {
+  const isAbout = variant === "about";
   const [activeKeys, setActiveKeys] = useState(new Set());
 
   const footerRef = useRef(null);
@@ -554,7 +557,12 @@ function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="relative z-10 w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white select-none py-6"
+      className={
+        "relative z-10 w-full overflow-hidden transition-colors duration-300 select-none py-6 " +
+        (isAbout
+          ? "bg-primary text-white dark:bg-[#161616] dark:text-[#fafafa]"
+          : "bg-bg text-ink dark:bg-[#0c0a14] dark:text-white")
+      }
     >
       {/* REAL-TIME CANVAS PARTICLE LAYER (FLOATS UP ACROSS FULL FOOTER & PianoLidContact) */}
       <canvas
@@ -563,10 +571,17 @@ function Footer() {
       />
 
       {/* Contact / outro panel */}
-      <PianoLidContact />
+      <PianoLidContact variant={variant} />
 
       {/* --- 100% FULL WIDTH EDGE-TO-EDGE TALL PIANO KEYBOARD --- */}
-      <div className="relative w-full overflow-hidden border-t border-b border-[#4c45aa] bg-[#5E56C5] shadow-2xl dark:border-white/20 dark:bg-[#12101b]">
+      <div
+        className={
+          "relative w-full overflow-hidden border-t border-b shadow-2xl " +
+          (isAbout
+            ? "border-black/40 bg-[#161616] dark:border-white/20 dark:bg-[#12101b]"
+            : "border-[#0013B2] bg-[#114AFC] dark:border-white/20 dark:bg-[#12101b]")
+        }
+      >
         <div className="overflow-x-auto overflow-y-hidden no-scrollbar w-full">
           <div
             ref={keyContainerRef}
@@ -582,11 +597,19 @@ function Footer() {
                   type="button"
                   data-note-id={note.id}
                   aria-label={`Piano key ${note.name}`}
-                  className={`relative flex-1 h-full border-r border-[#4c45aa] dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${
-                    isActive
-                      ? "bg-[#4a43a8] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
-                      : "bg-[#5E56C5] hover:bg-[#524ab8] dark:bg-white dark:hover:bg-[#f1f5f9]"
-                  }`}
+                  className={
+                    isAbout
+                      ? `relative flex-1 h-full border-r border-black/40 dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${
+                          isActive
+                            ? "bg-[#e3f900] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
+                            : "bg-white hover:bg-[#e3f900] dark:bg-white dark:hover:bg-[#f1f5f9]"
+                        }`
+                      : `relative flex-1 h-full border-r border-[#0013B2] dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${
+                          isActive
+                            ? "bg-[#0013B2] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
+                            : "bg-[#114AFC] hover:bg-[#022CDB] dark:bg-white dark:hover:bg-[#f1f5f9]"
+                        }`
+                  }
                 />
               );
             })}
@@ -606,11 +629,19 @@ function Footer() {
                   style={{
                     left: `calc(${leftPercent}% - 1.15rem)`,
                   }}
-                  className={`absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${
-                    isActive
-                      ? "bg-[#2a2640] dark:bg-[#332f48] translate-y-[3px]"
-                      : "bg-[#12101b] dark:bg-black hover:bg-[#1f1c2d] dark:hover:bg-[#1a1a1a]"
-                  }`}
+                  className={
+                    isAbout
+                      ? `absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${
+                          isActive
+                            ? "bg-[#3a3a3a] dark:bg-[#332f48] translate-y-[3px]"
+                            : "bg-black hover:bg-[#262626] dark:bg-black dark:hover:bg-[#1a1a1a]"
+                        }`
+                      : `absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${
+                          isActive
+                            ? "bg-[#2a2640] dark:bg-[#332f48] translate-y-[3px]"
+                            : "bg-[#12101b] dark:bg-black hover:bg-[#1f1c2d] dark:hover:bg-[#1a1a1a]"
+                        }`
+                  }
                 />
               );
             })}

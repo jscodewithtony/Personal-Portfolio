@@ -32,7 +32,7 @@ function ArticleCard({ article }) {
         <h3 className="font-display text-xl font-bold uppercase leading-[1.1] tracking-tight text-ink dark:text-white transition-colors duration-300 group-hover:text-ink/80 dark:group-hover:text-white/80 sm:text-2xl">
           {title}
         </h3>
-        <p className="line-clamp-3 font-display text-base leading-relaxed text-ink/60 dark:text-white/60 sm:text-lg">
+        <p className="line-clamp-3 font-display text-base normal-case leading-relaxed text-ink/60 dark:text-white/60 sm:text-lg">
           {excerpt}
         </p>
       </div>

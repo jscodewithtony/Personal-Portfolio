@@ -1,13 +1,15 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { navigationQuery } from "../sanity/queries";
 
 // Original hardcoded nav, kept as the fallback for the "empty"/"error"
-// Sanity states so the menu is never left with nothing to show.
+// Sanity states so the menu is never left with nothing to show. "About"
+// now points at the dedicated /about route instead of a same-page anchor.
 const FALLBACK_LINKS = [
   { label: "Work", link: "#" },
-  { label: "About", link: "#" },
+  { label: "About", link: "/about" },
   { label: "Contact", link: "#" },
   { label: "Resume", link: "#" },
 ];
@@ -108,17 +110,37 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         ref={linksRef}
         className="flex flex-col items-center gap-4 md:gap-6"
       >
-        {links.map((item, i) => (
-          <a
-            key={item.link + item.label}
-            ref={i === 0 ? firstLinkRef : null}
-            href={item.link}
-            tabIndex={open ? 0 : -1}
-            className="font-display text-5xl font-black tracking-tight opacity-90 transition-[opacity,transform] duration-200 ease-snap hover:opacity-100 active:scale-[0.97] sm:text-6xl md:text-7xl focus:outline-none focus-visible:outline-none"
-          >
-            {item.label}
-          </a>
-        ))}
+        {links.map((item, i) => {
+          const isRoute = item.link?.startsWith("/");
+          const linkClassName =
+            "font-display text-5xl font-black tracking-tight opacity-90 transition-[opacity,transform] duration-200 ease-snap hover:opacity-100 active:scale-[0.97] sm:text-6xl md:text-7xl focus:outline-none focus-visible:outline-none";
+
+          // Real routes (e.g. /about) navigate client-side via react-router
+          // so they don't force a full page reload; same-page anchors
+          // (e.g. #contact) and external links keep the plain <a>.
+          return isRoute ? (
+            <Link
+              key={item.link + item.label}
+              ref={i === 0 ? firstLinkRef : null}
+              to={item.link}
+              onClick={onClose}
+              tabIndex={open ? 0 : -1}
+              className={linkClassName}
+            >
+              {item.label}
+            </Link>
+          ) : (
+            <a
+              key={item.link + item.label}
+              ref={i === 0 ? firstLinkRef : null}
+              href={item.link}
+              tabIndex={open ? 0 : -1}
+              className={linkClassName}
+            >
+              {item.label}
+            </a>
+          );
+        })}
       </nav>
     </div>
   );

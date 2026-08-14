@@ -6,9 +6,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #5953b0;
-  --color-primary-dark: #46408c;
-  --color-bg: #f1f0fa;
+  --color-primary: #114AFC;
+  --color-primary-dark: #022CDB; /* hover */
+  --color-primary-active: #0013B2; /* focused / pressed */
+  --color-bg: #F9F9F9;
   --color-ink: #0d0c14;
   --color-cream: #f3efe3;
   /* Stats section's big figures ("20+" etc). Same value as --color-ink
@@ -39,6 +40,7 @@
 
 .dark {
   --grid-line-color: transparent;
+  --color-white: #FAFAFA;
 }
 
 html {
@@ -87,6 +89,17 @@ body {
   overflow-x: hidden;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+html, body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* Uppercase form controls only within the public site shell — scoped
    (rather than a bare `body,button,input...` rule) so the embedded
    Sanity Studio at /admin, which renders in the same document, keeps
@@ -104,17 +117,17 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-primary-active);
   outline-offset: 3px;
 }
 
-/* --color-primary is theme-driven now (see src/theme). This rule
+/* --color-primary-active is theme-driven now (see src/theme). This rule
    previously rendered identically in light and dark mode (the var was
    static), so dark mode must keep that exact original value regardless
    of which theme is selected for light mode — hence a hardcoded
    (non-var) freeze here rather than just letting the override cascade. */
 html.dark :focus-visible {
-  outline-color: #5953b0;
+  outline-color: #0013B2;
 }
 
 header button,

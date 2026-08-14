@@ -69,8 +69,48 @@ export default {
       description: "Optional — a live site or external case study link.",
     },
     {
+      name: "timeline",
+      title: "Timeline",
+      type: "string",
+      description: 'e.g. "6 Weeks · Q1 2026" — shown in the case study meta row.',
+    },
+    {
+      name: "tools",
+      title: "Tools used",
+      type: "array",
+      of: [{ type: "string" }],
+      description: 'e.g. "Figma", "React", "GSAP" — shown in the case study meta row.',
+    },
+    {
+      name: "overviewParagraphs",
+      title: "Overview",
+      description: "2–3 paragraphs: problem statement, context, goals.",
+      type: "array",
+      of: [{ type: "text", rows: 4 }],
+    },
+    {
+      name: "outcomeStats",
+      title: "Outcome stats",
+      description: 'Short results, e.g. value "32%", label "Reduction in onboarding drop-off".',
+      type: "array",
+      of: [
+        {
+          type: "object",
+          name: "outcomeStat",
+          fields: [
+            { name: "value", title: "Value", type: "string", validation: (Rule) => Rule.required() },
+            { name: "label", title: "Label", type: "string", validation: (Rule) => Rule.required() },
+          ],
+          preview: {
+            select: { title: "value", subtitle: "label" },
+          },
+        },
+      ],
+    },
+    {
       name: "caseStudyBody",
-      title: "Case study body",
+      title: "Process / Approach",
+      description: "Rich content body: headings, paragraphs, images, video, galleries.",
       type: "array",
       of: [
         {

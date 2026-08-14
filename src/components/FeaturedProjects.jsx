@@ -234,6 +234,7 @@ function FeaturedProjects() {
   return (
     <section
       ref={sectionRef}
+      id="featured-projects"
       onMouseLeave={() => {
         activeHoverCardRef.current = false;
         document.body.dataset.cursorProjectHover = "false";
@@ -244,7 +245,7 @@ function FeaturedProjects() {
       <div
         ref={followerRef}
         aria-hidden="true"
-        className="pointer-events-none fixed top-0 left-0 z-50 flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-primary text-white shadow-2xl shadow-primary/40 opacity-0 will-change-transform dark:bg-[#5953b0] dark:shadow-[#5953b0]/40"
+        className="pointer-events-none fixed top-0 left-0 z-50 flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-primary text-white shadow-2xl shadow-primary/40 opacity-0 will-change-transform dark:bg-[#114AFC] dark:shadow-[#114AFC]/40"
         style={{ transform: "translate3d(-200px, -200px, 0) translate(-50%, -50%) scale(0)" }}
       >
         <div className="select-none font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-center leading-[1.15] text-white drop-shadow-sm">
@@ -302,6 +303,7 @@ function FeaturedProjects() {
                     <img
                       src={project.image}
                       alt={project.client}
+                      loading="lazy"
                       className="h-full w-full object-cover rounded-none transition-transform duration-700 hover:scale-105"
                     />
                   </div>
@@ -318,7 +320,7 @@ function FeaturedProjects() {
                         {project.title}
                       </h3>
 
-                      <p className="line-clamp-3 text-xs sm:line-clamp-none sm:text-sm lg:text-base text-ink/70 dark:text-white/70 leading-relaxed font-sans pt-2">
+                      <p className="line-clamp-3 text-xs sm:line-clamp-none sm:text-sm lg:text-base text-ink/70 dark:text-white/70 leading-relaxed font-sans normal-case pt-2">
                         {project.description}
                       </p>
                     </div>
@@ -343,6 +345,7 @@ function FeaturedProjects() {
                         <img
                           src={project.thumbnailImage}
                           alt={`${project.client} preview`}
+                          loading="lazy"
                           className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-none"
                         />
                       </div>

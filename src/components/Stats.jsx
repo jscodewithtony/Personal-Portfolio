@@ -696,7 +696,7 @@ function Stats({ theme }) {
                 narrow to keep this third line legible alongside the
                 eyebrow/value/title, so it's cut rather than shrunk to
                 unreadable size. */}
-            <p className="mt-2 hidden font-display text-[11px] font-normal leading-relaxed text-ink/80 sm:block sm:text-xs dark:text-white/80">
+            <p className="mt-2 hidden font-display text-[11px] font-normal normal-case leading-relaxed text-ink/80 sm:block sm:text-xs dark:text-white/80">
               {item.copy}
             </p>
           </div>
@@ -718,7 +718,7 @@ function Stats({ theme }) {
           </h2>
 
           {/* High contrast body text */}
-          <p className="mt-4 font-display text-[11px] font-normal leading-relaxed text-ink/80 sm:text-sm md:text-base dark:text-white/80">
+          <p className="mt-4 font-display text-[11px] font-normal normal-case leading-relaxed text-ink/80 sm:text-sm md:text-base dark:text-white/80">
             {centerpiece.description}
           </p>
         </div>
