@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
-import { animate, useReducedMotion } from "framer-motion";
+import { animate, AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Header from "../components/Header";
 import Reveal from "../components/Reveal";
 import CanvasCursor from "../components/CanvasCursor";
@@ -140,7 +140,13 @@ function useSharedScrollDirection() {
   }, []);
 }
 
-function WordHeadline({ text, className = "", direction = "top-to-bottom", animated = true }) {
+function WordHeadline({
+  text,
+  className = "",
+  direction = "top-to-bottom",
+  animated = true,
+  wordRef,
+}) {
   const shouldReduceMotion = useReducedMotion();
   const startClip = CURTAIN_INSET_MAP[direction] || CURTAIN_INSET_MAP["top-to-bottom"];
   const elRef = useRef(null);
@@ -173,11 +179,224 @@ function WordHeadline({ text, className = "", direction = "top-to-bottom", anima
       style={isAnimated ? { clipPath: startClip, willChange: "clip-path" } : undefined}
     >
       {text.split(" ").map((word, i) => (
-        <span key={i} className="inline-block">
+        <span
+          key={i}
+          ref={wordRef ? (el) => wordRef(i, el) : undefined}
+          className="inline-block"
+        >
           {word}
         </span>
       ))}
     </h2>
+  );
+}
+
+// --- "Know more about Myself Beyond as a designer" annotation dots ---
+// Scoped entirely to this one headline instance. Each entry anchors to
+// one word in the headline (by its index in the text.split(" ") array)
+// and a corner of that word's own bounding box, so the dot tracks the
+// text at every breakpoint instead of a raw container-relative percent
+// guess. `text` is the placeholder tooltip copy — swap per-dot later,
+// or map this array to a Sanity field (e.g. `aboutHeadlineAnnotations`).
+const KNOW_MORE_HEADLINE_TEXT = "Know more about Myself Beyond as a designer";
+const KNOW_MORE_ANNOTATIONS = [
+  {
+    id: "know",
+    wordIndex: 0, // "Know"
+    corner: "top-left",
+    text: "Beans and potatoes? Not my thing. But I like mashed Potatoes \u{1F605}",
+  },
+  {
+    id: "about",
+    wordIndex: 2, // "about"
+    corner: "top-right",
+    text: "I have Five best friends and they are all boys. 😕 \u{1F605}",
+  },
+  {
+    id: "beyond",
+    wordIndex: 4, // "Beyond"
+    corner: "left-center",
+    text: "Most of my best ideas come In the Morning 🌞 \u{1F605}",
+  },
+  {
+    id: "designer",
+    wordIndex: 7, // "designer"
+    corner: "center",
+    text: "Less is more – except when it comes to snacks! \u{1F605}",
+  },
+];
+
+function AnnotationDot({ x, y, text, isOpen, onOpen, onClose, onToggle, supportsHover }) {
+  const wrapperRef = useRef(null);
+  const [align, setAlign] = useState({ h: "left", v: "top" });
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = wrapperRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setAlign({
+      h: rect.left > window.innerWidth * 0.6 ? "right" : "left",
+      v: rect.top < 140 ? "bottom" : "top",
+    });
+  }, [isOpen]);
+
+  return (
+    <div
+      ref={wrapperRef}
+      data-annotation-dot=""
+      className="absolute z-20"
+      style={{ left: x, top: y, transform: "translate(-10%, 60%)" }}
+      onMouseEnter={supportsHover ? onOpen : undefined}
+      onMouseLeave={supportsHover ? onClose : undefined}
+    >
+      <button
+        type="button"
+        onClick={supportsHover ? undefined : onToggle}
+        aria-label="Show note"
+        aria-expanded={isOpen}
+        className="block h-6 w-6 rounded-full border-[3px] border-white bg-[#D9F51C] normal-case shadow-[0_0_0_2px_rgba(0,0,0,0.18)] transition-transform hover:scale-110 sm:h-7 sm:w-7 md:h-8 md:w-8"
+      />
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.85 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className={`absolute z-30 w-72 rounded-none bg-[#D9F51C] p-6 text-left font-sans text-base font-medium normal-case leading-snug text-black shadow-xl sm:w-80 sm:p-3 sm:text-lg md:w-90 ${align.v === "top" ? "bottom-full mb-2" : "top-full mt-2"
+              } ${align.h === "left"
+                ? "left-0 ml-3 origin-bottom-left"
+                : "right-0 mr-3 origin-bottom-right"
+              }`}
+          >
+            {text}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function KnowMoreHeadlineWithAnnotations() {
+  const containerRef = useRef(null);
+  const wordElsRef = useRef({});
+  const [dotPositions, setDotPositions] = useState({});
+  const [openDotId, setOpenDotId] = useState(null);
+  const [supportsHover, setSupportsHover] = useState(true);
+  const autoOpenedRef = useRef(false);
+
+  const handleWordRef = useCallback((index, el) => {
+    if (el) wordElsRef.current[index] = el;
+    else delete wordElsRef.current[index];
+  }, []);
+
+  const measure = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const containerRect = container.getBoundingClientRect();
+    const next = {};
+    KNOW_MORE_ANNOTATIONS.forEach((annotation) => {
+      const wordEl = wordElsRef.current[annotation.wordIndex];
+      if (!wordEl) return;
+      const rect = wordEl.getBoundingClientRect();
+      let x = rect.left - containerRect.left;
+      let y = rect.top - containerRect.top;
+      if (annotation.corner === "top-left") {
+        // dot stays at the word's own top-left corner
+      } else if (annotation.corner === "top-right") {
+        x += rect.width;
+      } else if (annotation.corner === "left-center") {
+        y += rect.height / 2;
+      } else {
+        x += rect.width * 0.6;
+        y += rect.height * 0.55;
+      }
+      next[annotation.id] = { x, y };
+    });
+    setDotPositions(next);
+  }, []);
+
+  useEffect(() => {
+    setSupportsHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+  }, []);
+
+  useEffect(() => {
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
+
+  // Auto-open the first dot's tooltip once this headline scrolls into
+  // view, then auto-close it after 5s. Runs once per mount; the other
+  // dots stay idle until hovered/tapped.
+  useEffect(() => {
+    if (autoOpenedRef.current) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    let closeTimer;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || autoOpenedRef.current) return;
+        autoOpenedRef.current = true;
+        const firstId = KNOW_MORE_ANNOTATIONS[0].id;
+        setOpenDotId(firstId);
+        closeTimer = window.setTimeout(() => {
+          setOpenDotId((current) => (current === firstId ? null : current));
+        }, 5000);
+        observer.disconnect();
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(container);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(closeTimer);
+    };
+  }, []);
+
+  // Tap-to-toggle on touch devices: tapping outside every dot closes
+  // whichever one is open.
+  useEffect(() => {
+    if (supportsHover || !openDotId) return;
+    const handlePointerDown = (event) => {
+      if (!event.target.closest("[data-annotation-dot]")) {
+        setOpenDotId(null);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [supportsHover, openDotId]);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <WordHeadline
+        text={KNOW_MORE_HEADLINE_TEXT}
+        className="mt-32 text-4xl sm:mt-40 sm:text-6xl md:text-8xl lg:text-[10rem]"
+        wordRef={handleWordRef}
+      />
+      {KNOW_MORE_ANNOTATIONS.map((annotation) => {
+        const pos = dotPositions[annotation.id];
+        if (!pos) return null;
+        const isOpen = openDotId === annotation.id;
+        return (
+          <AnnotationDot
+            key={annotation.id}
+            x={pos.x}
+            y={pos.y}
+            text={annotation.text}
+            isOpen={isOpen}
+            supportsHover={supportsHover}
+            onOpen={() => setOpenDotId(annotation.id)}
+            onClose={() => setOpenDotId((current) => (current === annotation.id ? null : current))}
+            onToggle={() => setOpenDotId((current) => (current === annotation.id ? null : annotation.id))}
+          />
+        );
+      })}
+    </div>
   );
 }
 
@@ -375,11 +594,8 @@ function AboutPage({ theme, onToggleTheme }) {
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
-          {/* 547:765 — third headline */}
-          <WordHeadline
-            text="Know more about Myself Beyond as a designer"
-            className="mt-32 text-4xl sm:mt-40 sm:text-6xl md:text-8xl lg:text-[10rem]"
-          />
+          {/* 547:765 — third headline, with annotation dots */}
+          <KnowMoreHeadlineWithAnnotations />
 
           {/* 564:1271 (left) and 564:1272 (right) — sits before the
               "Exploring India" headline, exactly as ordered in Figma. */}
