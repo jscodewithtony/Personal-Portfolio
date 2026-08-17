@@ -15,8 +15,19 @@ const SOCIAL_LINKS = [
 ];
 
 // `variant="about"` is opt-in — only AboutPage.jsx passes it, so Home and
-// CaseStudy keep the default site palette untouched.
-function PianoLidContact({ variant = "site" }) {
+// CaseStudy keep the default site palette untouched. The content props
+// (headlineLines, eyebrow, email, ctaLabel, ctaHref) are likewise
+// opt-in overrides — AboutPage.jsx is the only caller passing them
+// (sourced from the aboutPage Sanity document), so every default below
+// stays exactly what Home/CaseStudy already render today.
+function PianoLidContact({
+  variant = "site",
+  headlineLines = ["Let's Create a Remarkable Journey"],
+  eyebrow = "Always up for good design talk",
+  email = "Tony2742000@gmail.com",
+  ctaLabel = "Book a call with me",
+  ctaHref = "mailto:Tony2742000@gmail.com",
+}) {
   const isAbout = variant === "about";
 
   return (
@@ -37,7 +48,11 @@ function PianoLidContact({ variant = "site" }) {
             (isAbout ? "text-white dark:text-[#fafafa]" : "text-ink dark:text-white")
           }
         >
-          Let's Create a Remarkable Journey
+          {headlineLines.filter(Boolean).map((line, i) => (
+            <span key={i} className="block">
+              {line}
+            </span>
+          ))}
         </h2>
 
         {/* Left column switches to a side-by-side split only at lg — keeping
@@ -52,16 +67,16 @@ function PianoLidContact({ variant = "site" }) {
                 (isAbout ? "text-[#e3f900]" : "text-primary dark:text-[#7F9DFD]")
               }
             >
-              Always up for good design talk
+              {eyebrow}
             </p>
             <a
-              href="mailto:Tony2742000@gmail.com"
+              href={`mailto:${email}`}
               className="block select-none whitespace-nowrap font-display text-xl font-black leading-[1.04] tracking-tight transition-opacity hover:opacity-70 sm:text-2xl md:text-3xl lg:text-2xl xl:text-7xl"
             >
-              Tony2742000@gmail.com
+              {email}
             </a>
             <a
-              href="mailto:Tony2742000@gmail.com"
+              href={ctaHref}
               className={
                 "w-fit select-none px-6 py-4 font-display text-base font-bold uppercase tracking-tight transition-colors sm:px-8 sm:py-5 sm:text-xl " +
                 (isAbout
@@ -69,7 +84,7 @@ function PianoLidContact({ variant = "site" }) {
                   : "bg-primary text-white hover:bg-primary-dark active:bg-primary-active dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2]")
               }
             >
-              Book a call with me
+              {ctaLabel}
             </a>
           </div>
 

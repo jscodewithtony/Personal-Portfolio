@@ -74,9 +74,9 @@ function getMidiFrequency(midi) {
   return 440 * Math.pow(2, (midi - 69) / 12);
 }
 
-// `variant="about"` is opt-in — only AboutPage.jsx passes it, so Home and
-// CaseStudy keep the default site palette untouched.
-function Footer({ variant = "site" }) {
+// `variant="about"` and `contactContent` are opt-in — only AboutPage.jsx
+// passes them, so Home and CaseStudy keep rendering exactly as before.
+function Footer({ variant = "site", contactContent }) {
   const isAbout = variant === "about";
   const [activeKeys, setActiveKeys] = useState(new Set());
 
@@ -571,7 +571,7 @@ function Footer({ variant = "site" }) {
       />
 
       {/* Contact / outro panel */}
-      <PianoLidContact variant={variant} />
+      <PianoLidContact variant={variant} {...contactContent} />
 
       {/* --- 100% FULL WIDTH EDGE-TO-EDGE TALL PIANO KEYBOARD --- */}
       <div

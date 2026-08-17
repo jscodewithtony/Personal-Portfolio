@@ -6,7 +6,6 @@ import Header from "../components/Header";
 import Reveal from "../components/Reveal";
 import CanvasCursor from "../components/CanvasCursor";
 import portraitImg from "../assets/about-page/portrait.webp";
-import groupPhotoImg from "../assets/about-page/group-photo.webp";
 import travelCollageImg from "../assets/about-page/travel-collage.webp";
 import iconMark from "../assets/about-page/icon-mark.svg";
 import tonyBlueImg from "../assets/about-page/tony-blue-strong-full.jpg";
@@ -14,7 +13,10 @@ import resumeBgImg from "../assets/about-page/Resume-background.png";
 
 
 import { useSanityQuery } from "../sanity/useSanityQuery";
-import { homepageContentQuery } from "../sanity/queries";
+import { homepageContentQuery, aboutPageQuery } from "../sanity/queries";
+import { urlFor } from "../sanity/client";
+import { isPreviewMode } from "../sanity/preview";
+import { previewClient } from "../sanity/previewClient";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
@@ -44,27 +46,73 @@ const FALLBACK_BODY = {
     "Me at somewhere",
 };
 
-const MARQUEE_TEXT = "Most of my ideas comes in the morning";
 const MARQUEE_REPEATS = Array.from({ length: 10 });
 
-const TIMELINE = [
-  { year: "2026", text: "Freelancing alongside Tekxera, including brand and content work for takara.ai" },
-  { year: "2025", text: "Launched NudgeFile — first solo shipped product, design to code" },
-  { year: "2024", text: "DLS reaches 20+ governed product features across the platform" },
-  { year: "2021", text: "Started at Gemraj Technologies as a product designer" },
-];
+// Everything below is sourced from the `aboutPage` Sanity singleton
+// (aboutPageQuery). This object is what renders when that document (or
+// an individual field on it) is empty/unset/still loading, so the page
+// never shows blank gaps — it's the exact copy this page shipped with
+// before the CMS wiring. The intro bio paragraph beside the portrait is
+// the one exception: it still comes from the existing `homepageContent`
+// document (FALLBACK_BODY above), shared with the homepage About ribbon.
+const FALLBACK_ABOUT = {
+  scrollingTicker: "Most of my ideas comes in the morning",
+  heroHeadline: "SO WHO IS ACTUALLY BEHIND THIS",
+  introParagraph:
+    "I'm a product designer who builds the systems other people design inside of — governed, not improvised.",
+  leftText: "Me at somewhere  ",
+  rightText: "Giving a Unique pose @2022",
+  philosophyLabel: "",
+  philosophyText:
+    "The best products don't just work well, they feel like someone cared enough to get the details right. That's what I aim for in every screen I design.",
+  philosophyHeadline: "I design Applications and Websites that build credibility.",
+  experienceHeading: "Professional Experience",
+  experienceEntries: [
+    { year: "2026", description: "Freelancing alongside Tekxera, including brand and content work for takara.ai" },
+    { year: "2025", description: "Launched NudgeFile — first solo shipped product, design to code" },
+    { year: "2024", description: "DLS reaches 20+ governed product features across the platform" },
+    { year: "2021", description: "Started at Gemraj Technologies as a product designer" },
+  ],
+  knowMoreHeadline: "Know more about Myself Beyond as a designer",
+  personalParagraphOne:
+    "I love traveling around India, exploring greenery and snow. But my wallet always seems to cry at the thought! It's like every time I plan a trip, one of my friends decides it's a great time to bail at the last minute. Perfect timing, right?",
+  personalParagraphTwo:
+    "I've always loved how design affects the way people feel and interact. I work to create easy-to-use designs and visuals that people remember, making every experience enjoyable and valuable.",
+  exploringIndiaHeadline: "Exploring India",
+  exploringIndiaText:
+    "As I mentioned, I love traveling! So far, I've explored 10 states and over 30 cities across India, each place adding something unique to my journey.",
+};
 
-// The repeated-truncation cluster (Figma nodes 547:719/720/721) — three
-// separate positioned instances of the same sentence at three different
-// cut points, sitting right before the "I designed impactful website…"
-// headline. Kept as three literal, separate blocks per the brief,
-// rather than collapsed into one paragraph.
-const REPEAT_LEFT =
-  "Me at somewhere  ";
-const REPEAT_RIGHT =
-  "Giving a Unique pose @2022";
-const REPEAT_CENTER =
-  "The best products don't just work well, they feel like someone cared enough to get the details right. That's what I aim for in every screen I design.";
+// Placeholder tooltip copy for the "Know more..." annotation dots —
+// `wordIndex`/`corner` stay code-only (per the schema field's own
+// description); only `text` is ever overridden by CMS content, matched
+// by array order.
+const KNOW_MORE_ANNOTATIONS_FALLBACK = [
+  {
+    id: "know",
+    wordIndex: 0, // "Know"
+    corner: "top-left",
+    text: "Beans and potatoes? Not my thing. But I like mashed Potatoes \u{1F605}",
+  },
+  {
+    id: "about",
+    wordIndex: 2, // "about"
+    corner: "top-right",
+    text: "I have Five best friends and they are all boys. 😕 \u{1F605}",
+  },
+  {
+    id: "beyond",
+    wordIndex: 4, // "Beyond"
+    corner: "left-center",
+    text: "Most of my best ideas come In the Morning 🌞 \u{1F605}",
+  },
+  {
+    id: "designer",
+    wordIndex: 7, // "designer"
+    corner: "center",
+    text: "Less is more – except when it comes to snacks! \u{1F605}",
+  },
+];
 
 // Curtain-mask reveal (adapted from Originkit's Mask Text Reveal) —
 // clip-path animates on the whole headline block rather than fading
@@ -202,35 +250,7 @@ function WordHeadline({
 // one word in the headline (by its index in the text.split(" ") array)
 // and a corner of that word's own bounding box, so the dot tracks the
 // text at every breakpoint instead of a raw container-relative percent
-// guess. `text` is the placeholder tooltip copy — swap per-dot later,
-// or map this array to a Sanity field (e.g. `aboutHeadlineAnnotations`).
-const KNOW_MORE_HEADLINE_TEXT = "Know more about Myself Beyond as a designer";
-const KNOW_MORE_ANNOTATIONS = [
-  {
-    id: "know",
-    wordIndex: 0, // "Know"
-    corner: "top-left",
-    text: "Beans and potatoes? Not my thing. But I like mashed Potatoes \u{1F605}",
-  },
-  {
-    id: "about",
-    wordIndex: 2, // "about"
-    corner: "top-right",
-    text: "I have Five best friends and they are all boys. 😕 \u{1F605}",
-  },
-  {
-    id: "beyond",
-    wordIndex: 4, // "Beyond"
-    corner: "left-center",
-    text: "Most of my best ideas come In the Morning 🌞 \u{1F605}",
-  },
-  {
-    id: "designer",
-    wordIndex: 7, // "designer"
-    corner: "center",
-    text: "Less is more – except when it comes to snacks! \u{1F605}",
-  },
-];
+// guess.
 
 function AnnotationDot({ x, y, text, isOpen, onOpen, onClose, onToggle, supportsHover }) {
   const wrapperRef = useRef(null);
@@ -270,7 +290,7 @@ function AnnotationDot({ x, y, text, isOpen, onOpen, onClose, onToggle, supports
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.85 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`absolute z-30 w-72 rounded-none bg-[#D9F51C] p-6 text-left font-sans text-base font-medium normal-case leading-snug text-black shadow-xl sm:w-80 sm:p-3 sm:text-lg md:w-90 ${align.v === "top" ? "bottom-full mb-2" : "top-full mt-2"
+            className={`absolute z-30 w-72 rounded-none bg-[#D9F51C] p-6 text-left font-sans text-base font-normal normal-case leading-snug text-black shadow-xl sm:w-80 sm:p-3 sm:text-lg md:w-90 ${align.v === "top" ? "bottom-full mb-2" : "top-full mt-2"
               } ${align.h === "left"
                 ? "left-0 ml-3 origin-bottom-left"
                 : "right-0 mr-3 origin-bottom-right"
@@ -284,7 +304,7 @@ function AnnotationDot({ x, y, text, isOpen, onOpen, onClose, onToggle, supports
   );
 }
 
-function KnowMoreHeadlineWithAnnotations() {
+function KnowMoreHeadlineWithAnnotations({ headlineText, annotations }) {
   const containerRef = useRef(null);
   const wordElsRef = useRef({});
   const [dotPositions, setDotPositions] = useState({});
@@ -302,7 +322,7 @@ function KnowMoreHeadlineWithAnnotations() {
     if (!container) return;
     const containerRect = container.getBoundingClientRect();
     const next = {};
-    KNOW_MORE_ANNOTATIONS.forEach((annotation) => {
+    annotations.forEach((annotation) => {
       const wordEl = wordElsRef.current[annotation.wordIndex];
       if (!wordEl) return;
       const rect = wordEl.getBoundingClientRect();
@@ -321,7 +341,7 @@ function KnowMoreHeadlineWithAnnotations() {
       next[annotation.id] = { x, y };
     });
     setDotPositions(next);
-  }, []);
+  }, [annotations]);
 
   useEffect(() => {
     setSupportsHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
@@ -348,7 +368,8 @@ function KnowMoreHeadlineWithAnnotations() {
       ([entry]) => {
         if (!entry.isIntersecting || autoOpenedRef.current) return;
         autoOpenedRef.current = true;
-        const firstId = KNOW_MORE_ANNOTATIONS[0].id;
+        const firstId = annotations[0]?.id;
+        if (!firstId) return;
         setOpenDotId(firstId);
         closeTimer = window.setTimeout(() => {
           setOpenDotId((current) => (current === firstId ? null : current));
@@ -362,6 +383,7 @@ function KnowMoreHeadlineWithAnnotations() {
       observer.disconnect();
       window.clearTimeout(closeTimer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Tap-to-toggle on touch devices: tapping outside every dot closes
@@ -380,11 +402,11 @@ function KnowMoreHeadlineWithAnnotations() {
   return (
     <div ref={containerRef} className="relative">
       <WordHeadline
-        text={KNOW_MORE_HEADLINE_TEXT}
+        text={headlineText}
         className="mt-32 text-4xl sm:mt-40 sm:text-6xl md:text-8xl lg:text-[10rem]"
         wordRef={handleWordRef}
       />
-      {KNOW_MORE_ANNOTATIONS.map((annotation) => {
+      {annotations.map((annotation) => {
         const pos = dotPositions[annotation.id];
         if (!pos) return null;
         const isOpen = openDotId === annotation.id;
@@ -414,6 +436,78 @@ function AboutPage({ theme, onToggleTheme }) {
   );
   const body =
     status === "ready" ? { ...FALLBACK_BODY, ...content } : FALLBACK_BODY;
+
+  // `?sanityPreview=1` is the flag the Studio's Presentation tool loads
+  // this page with (see sanity.config.js's presentationTool location for
+  // aboutPage). Every other visit renders exactly as before — same
+  // client, same published-only data, same everything.
+  const preview = isPreviewMode();
+  const { data: about } = useSanityQuery(
+    aboutPageQuery,
+    {},
+    null,
+    preview && previewClient ? { client: previewClient } : undefined
+  );
+  // The visual-editing connector itself (enableVisualEditing) is now
+  // mounted once at the app root (App.jsx), not per-page — see that
+  // file for why. This page only owns the drafts-aware data client.
+
+  // Per-field OR-fallback (not an object spread) so a field left empty
+  // in the Studio falls back to FALLBACK_ABOUT's copy instead of
+  // rendering blank — `{...FALLBACK, ...about}` would let a genuine
+  // `null` from an unset Sanity field clobber the fallback string.
+  const scrollingTicker = about?.scrollingTicker || FALLBACK_ABOUT.scrollingTicker;
+  const heroHeadline = about?.heroHeadline || FALLBACK_ABOUT.heroHeadline;
+  const introParagraph = about?.introParagraph || FALLBACK_ABOUT.introParagraph;
+  const leftText = about?.leftText || FALLBACK_ABOUT.leftText;
+  const rightText = about?.rightText || FALLBACK_ABOUT.rightText;
+  const philosophyLabel = about?.philosophyLabel || FALLBACK_ABOUT.philosophyLabel;
+  const philosophyText = about?.philosophyText || FALLBACK_ABOUT.philosophyText;
+  const philosophyHeadline = about?.philosophyHeadline || FALLBACK_ABOUT.philosophyHeadline;
+  const experienceHeading = about?.experienceHeading || FALLBACK_ABOUT.experienceHeading;
+  const experienceEntries =
+    about?.experienceEntries?.length > 0
+      ? about.experienceEntries
+      : FALLBACK_ABOUT.experienceEntries;
+  const knowMoreHeadline = about?.knowMoreHeadline || FALLBACK_ABOUT.knowMoreHeadline;
+  const personalParagraphOne = about?.personalParagraphOne || FALLBACK_ABOUT.personalParagraphOne;
+  const personalParagraphTwo = about?.personalParagraphTwo || FALLBACK_ABOUT.personalParagraphTwo;
+  const exploringIndiaHeadline = about?.exploringIndiaHeadline || FALLBACK_ABOUT.exploringIndiaHeadline;
+  const exploringIndiaText = about?.exploringIndiaText || FALLBACK_ABOUT.exploringIndiaText;
+
+  const knowMoreAnnotations = KNOW_MORE_ANNOTATIONS_FALLBACK.map((fallback, i) => ({
+    ...fallback,
+    text: about?.annotationDots?.[i]?.tooltipText || fallback.text,
+  }));
+
+  const portraitImageUrl = urlFor(about?.portraitImage)?.width(1200).url();
+  const portraitImageAlt = about?.portraitImageAlt || "Tony";
+
+  const narrativeImageOneUrl = urlFor(about?.narrativeImageOne)?.width(2400).url();
+  const narrativeImageOneAlt = about?.narrativeImageOneAlt || "Tony";
+
+  const experienceBackgroundUrl = urlFor(about?.experienceBackgroundImage)?.width(2400).url();
+  const experienceBackgroundAlt =
+    about?.experienceBackgroundImageAlt || "Professional Experience background";
+
+  const travelPhotos =
+    about?.travelPhotoCollage?.length > 0
+      ? about.travelPhotoCollage.map((item) => ({
+          src: urlFor(item)?.width(1600).url(),
+          alt: item.alt || "Travel photo",
+        }))
+      : [{ src: travelCollageImg, alt: "Collage of travel photos across India" }];
+
+  const closingHeadlineLines = [about?.closingHeadlineOne, about?.closingHeadlineTwo].filter(
+    Boolean
+  );
+  const contactContent = {
+    headlineLines: closingHeadlineLines.length > 0 ? closingHeadlineLines : undefined,
+    eyebrow: about?.ctaEyebrow || undefined,
+    email: about?.contactEmail || undefined,
+    ctaLabel: about?.ctaButtonLabel || undefined,
+    ctaHref: about?.ctaButtonLink || undefined,
+  };
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
@@ -461,7 +555,7 @@ function AboutPage({ theme, onToggleTheme }) {
 
         {/* 547:715 — Hero headline */}
         <WordHeadline
-          text="SO WHO IS ACTUALLY BEHIND THIS"
+          text={heroHeadline}
           className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-8xl lg:text-[16rem]"
           animated={false}
         />
@@ -472,7 +566,7 @@ function AboutPage({ theme, onToggleTheme }) {
           <div className="flex whitespace-nowrap font-display text-xl font-semibold uppercase tracking-tight sm:text-3xl md:text-4xl">
             <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6">
               {MARQUEE_REPEATS.map((_, i) => (
-                <span key={i}>{MARQUEE_TEXT} •</span>
+                <span key={i}>{scrollingTicker} •</span>
               ))}
             </div>
             <div
@@ -480,7 +574,7 @@ function AboutPage({ theme, onToggleTheme }) {
               aria-hidden="true"
             >
               {MARQUEE_REPEATS.map((_, i) => (
-                <span key={i}>{MARQUEE_TEXT} •</span>
+                <span key={i}>{scrollingTicker} •</span>
               ))}
             </div>
           </div>
@@ -492,20 +586,35 @@ function AboutPage({ theme, onToggleTheme }) {
             as="p"
             className="mt-14 max-w-4xl font-display text-2xl font-semibold uppercase leading-[1.15] text-[#fafafa] sm:mt-20 sm:text-4xl md:text-5xl"
           >
-            I'm a product designer who builds the systems other people design
-            inside of — governed, not improvised.
+            {introParagraph}
           </Reveal>
 
           {/* 568:1348 portrait + 547:718 and 547:722 — two literal
               stacked instances of the same bio paragraph, as Figma has
-              them, rather than one paragraph. */}
+              them, rather than one paragraph. The bio paragraph itself
+              still comes from the existing homepageContent document
+              (shared with the homepage About ribbon), per scope. */}
           <div className="mt-16 grid grid-cols-1 gap-10 md:mt-20 md:grid-cols-12 md:gap-12">
             <Reveal className="relative h-[50vh] w-full overflow-hidden md:col-span-5 md:h-[38rem]">
               <img
-                src={portraitImg}
-                alt="Tony"
+                src={portraitImageUrl || portraitImg}
+                alt={portraitImageAlt}
                 className="h-full w-full object-cover"
               />
+              {(about?.portraitCaption || about?.portraitSubCaption) && (
+                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-4 py-3">
+                  {about?.portraitCaption && (
+                    <p className="font-display text-sm font-semibold normal-case text-white">
+                      {about.portraitCaption}
+                    </p>
+                  )}
+                  {about?.portraitSubCaption && (
+                    <p className="font-display text-xs normal-case text-white/70">
+                      {about.portraitSubCaption}
+                    </p>
+                  )}
+                </div>
+              )}
             </Reveal>
             <div className="flex flex-col gap-8 self-center md:col-span-6 md:col-start-7">
               <Reveal
@@ -536,8 +645,8 @@ function AboutPage({ theme, onToggleTheme }) {
               className="relative w-full overflow-hidden origin-center"
             >
               <img
-                src={tonyBlueImg}
-                alt="Tony"
+                src={narrativeImageOneUrl || tonyBlueImg}
+                alt={narrativeImageOneAlt}
                 loading="lazy"
                 className="w-full h-auto"
               />
@@ -549,21 +658,23 @@ function AboutPage({ theme, onToggleTheme }) {
 
 
         {/* 547:720 / 547:721 / 547:719 — the three-block repeated
-            cluster, kept literal rather than collapsed. */}
+            cluster, kept literal rather than collapsed. leftText/
+            rightText from the Experience Narrative group; the center
+            paragraph and the headline below it are Philosophy fields. */}
         <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-4 mt-2">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10">
             <Reveal
               as="p"
               className="font-display text-lg normal-case leading-relaxed text-[#fafafa] sm:text-xl md:text-2xl text-left sm:max-w-[75%]"
             >
-              {REPEAT_LEFT}
+              {leftText}
             </Reveal>
             <Reveal
               as="p"
               delay={80}
               className="font-display text-lg normal-case leading-relaxed text-[#fafafa] sm:text-xl md:text-2xl text-left sm:text-right sm:max-w-[75%] sm:ml-auto"
             >
-              {REPEAT_RIGHT}
+              {rightText}
             </Reveal>
           </div>
         </div>
@@ -571,18 +682,23 @@ function AboutPage({ theme, onToggleTheme }) {
 
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
           <div className="mt-8 sm:mt-40">
+            {philosophyLabel && (
+              <p className="mx-auto max-w-3xl text-center font-display text-xs font-semibold uppercase tracking-[0.25em] text-[#fafafa]/60 sm:text-sm">
+                {philosophyLabel}
+              </p>
+            )}
             <Reveal
               as="p"
               delay={160}
               className="mx-auto max-w-3xl text-center font-display text-xl normal-case leading-relaxed text-[#fafafa] sm:text-2xl md:text-3xl mt-12"
             >
-              {REPEAT_CENTER}
+              {philosophyText}
             </Reveal>
           </div>
 
           {/* 547:716 — second headline */}
           <WordHeadline
-            text="I design Applications and Websites that build credibility."
+            text={philosophyHeadline}
             className="mt-32 text-4xl sm:mt-20 sm:text-6xl md:text-8xl lg:text-[10rem]"
           />
         </div>
@@ -596,8 +712,8 @@ function AboutPage({ theme, onToggleTheme }) {
           <Reveal delay={0}>
             <div ref={parallaxContainerRef} className="relative w-full overflow-hidden">
               <motion.img
-                src={resumeBgImg}
-                alt="Professional Experience background"
+                src={experienceBackgroundUrl || resumeBgImg}
+                alt={experienceBackgroundAlt}
                 loading="lazy"
                 style={{ y: yVal, scale: 1.15 }}
                 className="w-full h-auto origin-center"
@@ -612,10 +728,10 @@ function AboutPage({ theme, onToggleTheme }) {
           >
             <img src={iconMark} alt="" className="h-12 w-12" />
             <h3 className="font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-4xl">
-              Professional Experience
+              {experienceHeading}
             </h3>
             <div className="flex flex-col">
-              {TIMELINE.map((item) => (
+              {experienceEntries.map((item) => (
                 <div
                   key={item.year}
                   className="flex gap-6 border-b border-ink/10 py-4 last:border-b-0"
@@ -624,7 +740,7 @@ function AboutPage({ theme, onToggleTheme }) {
                     {item.year}
                   </span>
                   <span className="font-display text-sm font-light normal-case leading-relaxed text-ink/70 md:text-base">
-                    {item.text}
+                    {item.description}
                   </span>
                 </div>
               ))}
@@ -634,37 +750,40 @@ function AboutPage({ theme, onToggleTheme }) {
 
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
           {/* 547:765 — third headline, with annotation dots */}
-          <KnowMoreHeadlineWithAnnotations />
+          <KnowMoreHeadlineWithAnnotations
+            headlineText={knowMoreHeadline}
+            annotations={knowMoreAnnotations}
+          />
+        </div>
 
-          {/* 564:1271 (left) and 564:1272 (right) — sits before the
-              "Exploring India" headline, exactly as ordered in Figma. */}
+        {/* 564:1271 (left) and 564:1272 (right) — sits before the
+            "Exploring India" headline, exactly as ordered in Figma. */}
+        <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-40">
           <div className="mt-10 w-full">
             <Reveal
               as="p"
               className="max-w-xl font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 sm:text-xl md:text-2xl"
             >
-              I love traveling around India, exploring greenery and snow.
-              But my wallet always seems to cry at the thought! It's like
-              every time I plan a trip, one of my friends decides it's a
-              great time to bail at the last minute. Perfect timing, right?
+              {personalParagraphOne}
             </Reveal>
           </div>
           <div className="mt-10 w-full sm:mt-16 md:mt-20">
             <Reveal
               as="p"
               delay={120}
-              className="ml-auto max-w-xl font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 sm:text-xl md:text-2xl"
+              className="ml-auto max-w-2xl font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 sm:text-xl md:text-2xl"
             >
-              I've always loved how design affects the way people feel and
-              interact. I work to create easy-to-use designs and visuals
-              that people remember, making every experience enjoyable and
-              valuable.
+              {personalParagraphTwo}
             </Reveal>
           </div>
+        </div>
+
+        <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
+
 
           {/* 564:1274 — Exploring India headline */}
           <WordHeadline
-            text="Exploring India"
+            text={exploringIndiaHeadline}
             className="mt-32 text-5xl sm:mt-40 sm:text-8xl md:text-9xl lg:text-[9rem]"
           />
 
@@ -673,25 +792,28 @@ function AboutPage({ theme, onToggleTheme }) {
             as="p"
             className="mx-auto mt-10 max-w-3xl text-center font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 md:text-2xl"
           >
-            As I mentioned, I love traveling! So far, I've explored 10 states
-            and over 30 cities across India, each place adding something
-            unique to my journey.
+            {exploringIndiaText}
           </Reveal>
 
-          {/* 568:1345 — travel collage image */}
+          {/* 568:1345 — travel collage image(s) */}
           <Reveal delay={200} className="mt-16 mb-24 w-full overflow-hidden sm:mt-20 sm:mb-32 md:mb-40">
-            <img
-              src={travelCollageImg}
-              alt="Collage of travel photos across India"
-              loading="lazy"
-              className="h-[50vh] w-full object-cover md:h-[46rem]"
-            />
+            <div className={travelPhotos.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : ""}>
+              {travelPhotos.map((photo, i) => (
+                <img
+                  key={i}
+                  src={photo.src || travelCollageImg}
+                  alt={photo.alt}
+                  loading="lazy"
+                  className="h-[50vh] w-full object-cover md:h-[46rem]"
+                />
+              ))}
+            </div>
           </Reveal>
         </div>
       </main>
 
       <Suspense fallback={null}>
-        <Footer variant="about" />
+        <Footer variant="about" contactContent={contactContent} />
         <MenuOverlay
           open={menuOpen}
           onClose={() => setMenuOpen(false)}

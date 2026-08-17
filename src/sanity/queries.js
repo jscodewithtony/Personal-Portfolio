@@ -20,6 +20,42 @@ export const homepageContentQuery = /* groq */ `*[_type == "homepageContent"][0]
   statementTrailingLine
 }`;
 
+export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
+  scrollingTicker,
+  heroHeadline,
+  introParagraph,
+  narrativeImageOne,
+  narrativeImageOneAlt,
+  narrativeImageTwo,
+  narrativeImageTwoAlt,
+  leftText,
+  rightText,
+  portraitImage,
+  portraitImageAlt,
+  portraitCaption,
+  portraitSubCaption,
+  philosophyLabel,
+  philosophyText,
+  philosophyHeadline,
+  experienceHeading,
+  experienceEntries[]{ year, description },
+  experienceBackgroundImage,
+  experienceBackgroundImageAlt,
+  knowMoreHeadline,
+  annotationDots[]{ label, tooltipText },
+  personalParagraphOne,
+  personalParagraphTwo,
+  exploringIndiaHeadline,
+  exploringIndiaText,
+  travelPhotoCollage[]{ ... },
+  closingHeadlineOne,
+  closingHeadlineTwo,
+  ctaEyebrow,
+  contactEmail,
+  ctaButtonLabel,
+  ctaButtonLink
+}`;
+
 export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOrder asc){
   _id,
   title,

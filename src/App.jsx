@@ -5,6 +5,8 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const CaseStudy = lazy(() => import("./pages/CaseStudy"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 import { ThemeTokensProvider } from "./theme/ThemeTokensContext";
+import { isPreviewMode } from "./sanity/preview";
+import { useVisualEditing } from "./sanity/useVisualEditing";
 
 // Lazy — AdminStudio pulls in the entire Sanity Studio package
 // (structureTool, visionTool, styled-components, its own ~170KB CSS
@@ -33,6 +35,15 @@ function App() {
     document.documentElement.classList.toggle("dark", theme === "dark");
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
+
+  // Mounted here (the true app root, rendered for every route) rather
+  // than inside a specific page — Presentation's preview iframe can
+  // load any route first (its default previewUrl.preview is "/"), so
+  // the connector has to be reachable regardless of which page happens
+  // to render. Still gated on `?sanityPreview=1` alone (isPreviewMode),
+  // so it never runs on a normal, non-preview page load — including
+  // /admin itself, since that route never carries the flag.
+  useVisualEditing(isPreviewMode());
 
   const toggleTheme = () =>
     setTheme((t) => (t === "light" ? "dark" : "light"));

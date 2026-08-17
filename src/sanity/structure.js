@@ -23,6 +23,12 @@ export const structure = (S) =>
             .documentId("homepageContent")
         ),
       S.listItem()
+        .title("About Page")
+        .id("aboutPage")
+        .child(
+          S.document().schemaType("aboutPage").documentId("aboutPage")
+        ),
+      S.listItem()
         .title("Site Settings")
         .id("siteSettings")
         .child(

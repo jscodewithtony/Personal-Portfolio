@@ -1,5 +1,6 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { presentationTool } from "sanity/presentation";
 import { visionTool } from "@sanity/vision";
 import { colorInput } from "@sanity/color-input";
 import { schemaTypes, singletonTypes } from "./src/sanity/schemaTypes";
@@ -7,6 +8,28 @@ import { structure } from "./src/sanity/structure";
 import { portfolioStudioTheme } from "./src/sanity/theme";
 import StudioLogo from "./src/sanity/StudioLogo";
 import { projectId, dataset } from "./src/sanity/env";
+
+// Site + Studio share one origin (Studio is embedded at /admin on the
+// same domain), so the Presentation preview iframe just points back at
+// this same origin's public routes.
+const PREVIEW_ORIGIN =
+  typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
+
+// Maps a schema type to the site route(s) it renders on, so Presentation
+// knows what to load in its preview iframe (and shows a "used on this
+// page" location bar on the document). Every href carries
+// `?sanityPreview=1` — the flag the target page checks (see
+// src/sanity/preview.js) to switch from the public, published-only
+// client to the drafts-aware preview client with live refetching. To
+// extend live preview to another document type: add an entry here, then
+// wire that page the same way AboutPage.jsx is wired (isPreviewMode() +
+// previewClient passed into useSanityQuery's 4th argument). Only
+// aboutPage is wired up today, per current scope.
+const PREVIEW_LOCATIONS = {
+  aboutPage: () => ({
+    locations: [{ title: "About Page", href: "/about?sanityPreview=1" }],
+  }),
+};
 
 export default defineConfig({
   name: "default",
@@ -21,7 +44,24 @@ export default defineConfig({
   theme: portfolioStudioTheme,
   icon: StudioLogo,
 
-  plugins: [structureTool({ structure }), visionTool(), colorInput()],
+  plugins: [
+    structureTool({ structure }),
+    // Live preview: shows the actual site rendering the document being
+    // edited, refetching as fields change (see useSanityQuery.js's
+    // `client.listen()` wiring). Click-to-edit overlays
+    // (@sanity/visual-editing) were deliberately left out for now — that
+    // package's postMessage handshake with this Presentation iframe
+    // couldn't be verified against a live Studio session here, and
+    // getting it subtly wrong is worse than not having it; the iframe
+    // preview + live refetch below stands on its own without it. Revisit
+    // as a follow-up once this is confirmed working end to end.
+    presentationTool({
+      previewUrl: { origin: PREVIEW_ORIGIN, preview: "/" },
+      resolve: { locations: PREVIEW_LOCATIONS },
+    }),
+    visionTool(),
+    colorInput(),
+  ],
 
   schema: {
     types: schemaTypes,
