@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
-import { animate, AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { animate, AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+
 import Header from "../components/Header";
 import Reveal from "../components/Reveal";
 import CanvasCursor from "../components/CanvasCursor";
@@ -8,6 +9,10 @@ import portraitImg from "../assets/about-page/portrait.webp";
 import groupPhotoImg from "../assets/about-page/group-photo.webp";
 import travelCollageImg from "../assets/about-page/travel-collage.webp";
 import iconMark from "../assets/about-page/icon-mark.svg";
+import tonyBlueImg from "../assets/about-page/tony-blue-strong-full.jpg";
+import resumeBgImg from "../assets/about-page/Resume-background.png";
+
+
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { homepageContentQuery } from "../sanity/queries";
 
@@ -36,7 +41,7 @@ const Footer = lazy(() => import("../components/Footer"));
 
 const FALLBACK_BODY = {
   aboutBodyParagraph1:
-    "For the last five years I've worked across Tekxera and a handful of freelance clients, mostly on design systems, AI-native product surfaces, and the occasional brand identity. Outside of client work I build NudgeFile, a solo Windows app, end to end — design, code, and ship.",
+    "Me at somewhere",
 };
 
 const MARQUEE_TEXT = "Most of my ideas comes in the morning";
@@ -55,10 +60,11 @@ const TIMELINE = [
 // headline. Kept as three literal, separate blocks per the brief,
 // rather than collapsed into one paragraph.
 const REPEAT_LEFT =
-  "For the last five years I've worked across Tekxera and a handful of freelance clients,";
-const REPEAT_RIGHT = REPEAT_LEFT;
+  "Me at somewhere  ";
+const REPEAT_RIGHT =
+  "Giving a Unique pose @2022";
 const REPEAT_CENTER =
-  "For the last five years I've worked across Tekxera and a handful of freelance clients, mostly on design systems, AI-native product surfaces,";
+  "The best products don't just work well, they feel like someone cared enough to get the details right. That's what I aim for in every screen I design.";
 
 // Curtain-mask reveal (adapted from Originkit's Mask Text Reveal) —
 // clip-path animates on the whole headline block rather than fading
@@ -413,6 +419,25 @@ function AboutPage({ theme, onToggleTheme }) {
   const menuButtonRef = useRef(null);
   const mainRef = useRef(null);
 
+  const zoomImageRef = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: zoomImageRef,
+    offset: ["start end", "center center"]
+  });
+  const imageScale = useTransform(scrollYProgress, [0, 1], [0.7, 1]);
+  const scale = shouldReduceMotion ? 1 : imageScale;
+
+  const parallaxContainerRef = useRef(null);
+  const { scrollYProgress: parallaxScrollProgress } = useScroll({
+    target: parallaxContainerRef,
+    offset: ["start end", "end start"],
+  });
+  const parallaxY = useTransform(parallaxScrollProgress, [0, 1], ["-12%", "12%"]);
+  const yVal = shouldReduceMotion ? 0 : parallaxY;
+
+
+
   return (
     <div className="site-shell relative min-h-[100dvh] bg-primary font-display text-[#fafafa] uppercase transition-colors duration-300 dark:bg-[#161616]">
       <CanvasCursor />
@@ -436,7 +461,7 @@ function AboutPage({ theme, onToggleTheme }) {
 
         {/* 547:715 — Hero headline */}
         <WordHeadline
-          text="Who is This Curious fellow"
+          text="SO WHO IS ACTUALLY BEHIND THIS"
           className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-8xl lg:text-[16rem]"
           animated={false}
         />
@@ -503,41 +528,53 @@ function AboutPage({ theme, onToggleTheme }) {
         </div>
 
         {/* 564:1268 stock photo — full width, no placeholder backdrop */}
-        <Reveal delay={100} className="mt-16 w-full sm:mt-20">
-          <div className="relative h-[42vh] w-full overflow-hidden md:h-[36rem]">
-            <img
-              src={groupPhotoImg}
-              alt="Tony with colleagues"
-              loading="lazy"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/20" />
+        <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-4">
+          <Reveal delay={100} className="mt-16 w-full sm:mt-20">
+            <motion.div
+              ref={zoomImageRef}
+              style={{ scale }}
+              className="relative w-full overflow-hidden origin-center"
+            >
+              <img
+                src={tonyBlueImg}
+                alt="Tony"
+                loading="lazy"
+                className="w-full h-auto"
+              />
+            </motion.div>
+          </Reveal>
+        </div>
+
+
+
+
+        {/* 547:720 / 547:721 / 547:719 — the three-block repeated
+            cluster, kept literal rather than collapsed. */}
+        <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-4 mt-2">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10">
+            <Reveal
+              as="p"
+              className="font-display text-lg normal-case leading-relaxed text-[#fafafa] sm:text-xl md:text-2xl text-left sm:max-w-[75%]"
+            >
+              {REPEAT_LEFT}
+            </Reveal>
+            <Reveal
+              as="p"
+              delay={80}
+              className="font-display text-lg normal-case leading-relaxed text-[#fafafa] sm:text-xl md:text-2xl text-left sm:text-right sm:max-w-[75%] sm:ml-auto"
+            >
+              {REPEAT_RIGHT}
+            </Reveal>
           </div>
-        </Reveal>
+        </div>
+
 
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
-          {/* 547:720 / 547:721 / 547:719 — the three-block repeated
-              cluster, kept literal rather than collapsed. */}
-          <div className="mt-16 sm:mt-20">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10">
-              <Reveal
-                as="p"
-                className="font-display text-lg normal-case leading-relaxed text-[#fafafa] sm:text-xl md:text-2xl"
-              >
-                {REPEAT_LEFT}
-              </Reveal>
-              <Reveal
-                as="p"
-                delay={80}
-                className="font-display text-lg normal-case leading-relaxed text-[#fafafa] sm:text-xl md:text-2xl"
-              >
-                {REPEAT_RIGHT}
-              </Reveal>
-            </div>
+          <div className="mt-8 sm:mt-40">
             <Reveal
               as="p"
               delay={160}
-              className="mx-auto mt-8 max-w-3xl text-center font-display text-xl normal-case leading-relaxed text-[#fafafa] sm:mt-10 sm:text-2xl md:text-3xl"
+              className="mx-auto max-w-3xl text-center font-display text-xl normal-case leading-relaxed text-[#fafafa] sm:text-2xl md:text-3xl mt-12"
             >
               {REPEAT_CENTER}
             </Reveal>
@@ -545,11 +582,11 @@ function AboutPage({ theme, onToggleTheme }) {
 
           {/* 547:716 — second headline */}
           <WordHeadline
-            text="I designed impactful website using a mix of Typography clean layouts"
-            className="mt-32 text-4xl sm:mt-40 sm:text-6xl md:text-8xl lg:text-[10rem]"
+            text="I design Applications and Websites that build credibility."
+            className="mt-32 text-4xl sm:mt-20 sm:text-6xl md:text-8xl lg:text-[10rem]"
           />
-
         </div>
+
 
         {/* 564:1269 second stock photo, full width, no placeholder
             backdrop — the 565:1320 "Professional Experience" white
@@ -557,16 +594,18 @@ function AboutPage({ theme, onToggleTheme }) {
             desktop, fully inside its bounds. */}
         <div className="relative mt-16 w-full sm:mt-20">
           <Reveal delay={0}>
-            <div className="relative h-[42vh] w-full overflow-hidden md:h-[42rem]">
-              <img
-                src={groupPhotoImg}
-                alt="Tony with colleagues, second angle"
+            <div ref={parallaxContainerRef} className="relative w-full overflow-hidden">
+              <motion.img
+                src={resumeBgImg}
+                alt="Professional Experience background"
                 loading="lazy"
-                className="h-full w-full object-cover"
+                style={{ y: yVal, scale: 1.15 }}
+                className="w-full h-auto origin-center"
               />
-              <div className="absolute inset-0 bg-black/20" />
             </div>
           </Reveal>
+
+
           <Reveal
             delay={150}
             className="relative mx-6 mt-6 flex flex-col gap-6 bg-white p-8 text-ink sm:mx-10 md:absolute md:inset-x-auto md:left-1/2 md:top-1/2 md:mx-0 md:mt-0 md:w-[34rem] md:-translate-x-1/2 md:-translate-y-1/2 md:p-9"

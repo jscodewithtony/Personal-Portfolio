@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 
 // Calibration size used purely to measure the text's natural (unwrapped)
 // aspect ratio at a known font-size, so we can solve for whatever size
@@ -67,10 +67,16 @@ function FitText({
           whiteSpace: "nowrap",
         }}
       >
-        {children}
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child)) {
+            return React.cloneElement(child, { fontSize });
+          }
+          return child;
+        })}
       </Tag>
     </div>
   );
 }
 
 export default FitText;
+

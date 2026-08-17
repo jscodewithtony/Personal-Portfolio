@@ -1,24 +1,12 @@
-// Replaces the default Sanity logo in the Studio's top nav with a
-// wordmark matching the public site's header branding (Header.jsx:
-// "I'M / TONY" stacked, font-display font-black uppercase).
+import Logo from "../components/Logo";
+
+// Replaces the default Sanity logo in the Studio's top nav with the
+// custom SVG branding matching the public site's logo.
 export default function StudioLogo() {
   return (
-    <span
-      style={{
-        fontFamily:
-          "'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif",
-        fontWeight: 900,
-        fontSize: "13px",
-        lineHeight: 0.95,
-        letterSpacing: "-0.01em",
-        textTransform: "uppercase",
-        color: "#f3efe3",
-        display: "block",
-      }}
-    >
-      I&rsquo;m
-      <br />
-      Tony
-    </span>
+    <Logo
+      className="w-auto text-[#f3efe3]"
+      style={{ height: "22px" }}
+    />
   );
 }

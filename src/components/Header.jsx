@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Sun, Moon } from "lucide-react";
 import AnimatedThemeToggler from "./AnimatedThemeToggler";
+import Logo from "./Logo";
 
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio?node-id=526-3749
 // "Input/Nav bar". Only a desktop variant was provided, so that spec is
@@ -66,13 +67,15 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
     >
       {/* Wordmark + (desktop-only) role subtitle */}
       <div className="flex items-center lg:w-[332px] lg:shrink-0 lg:gap-[39px] lg:tracking-[-1px]">
-        <span
-          className={`font-display font-black text-sm sm:text-base md:text-lg leading-[0.9] tracking-tight uppercase transition-colors duration-300 lg:text-[36px] lg:leading-[34px] lg:tracking-[-1px] ${
+        <Link
+          to="/"
+          aria-label="Home"
+          className={`transition-colors duration-300 flex items-center ${
             menuOpen ? "text-white" : "text-ink dark:text-white"
           }`}
         >
-          I&rsquo;M<br />TONY
-        </span>
+          <Logo className="h-6 w-auto sm:h-7 md:h-8 lg:h-[38px]" />
+        </Link>
         <span
           className={`hidden whitespace-nowrap font-display text-base font-medium normal-case leading-[42px] transition-colors duration-300 lg:inline ${
             menuOpen ? "text-white" : "text-ink dark:text-white"

@@ -56,7 +56,8 @@ const Shuffle = ({
   colorTo,
   triggerOnce = true,
   respectReducedMotion = true,
-  triggerOnHover = true
+  triggerOnHover = true,
+  fontSize
 }) => {
   const ref = useRef(null);
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -181,18 +182,20 @@ const Shuffle = ({
           ch.style.letterSpacing = originalLetterSpacing;
           if (!w) return;
 
+          const computedFs = parseFloat(getComputedStyle(ch).fontSize) || 16;
+          const wEm = w / computedFs;
+          const hEm = h / computedFs;
           const trackingPx = parseFloat(getComputedStyle(ch).letterSpacing) || 0;
+          const trackingEm = trackingPx / computedFs;
 
           const wrap = document.createElement('span');
           Object.assign(wrap.style, {
             display: 'inline-block',
             overflow: 'hidden',
-            width: w + 'px',
-            height: shuffleDirection === 'up' || shuffleDirection === 'down' ? h + 'px' : 'auto',
+            width: wEm + 'em',
+            height: shuffleDirection === 'up' || shuffleDirection === 'down' ? hEm + 'em' : 'auto',
             verticalAlign: 'bottom',
-            // Re-applies the headline's own tight tracking as a gap
-            // between characters instead of inside each one's clip box.
-            marginRight: trackingPx ? `${trackingPx}px` : ''
+            marginRight: trackingEm ? `${trackingEm}em` : ''
           });
 
           const inner = document.createElement('span');
@@ -208,7 +211,7 @@ const Shuffle = ({
           const firstOrig = ch.cloneNode(true);
           Object.assign(firstOrig.style, {
             display: shuffleDirection === 'up' || shuffleDirection === 'down' ? 'block' : 'inline-block',
-            width: w + 'px',
+            width: wEm + 'em',
             textAlign: 'center',
             letterSpacing: 'normal'
           });
@@ -216,7 +219,7 @@ const Shuffle = ({
           ch.setAttribute('data-orig', '1');
           Object.assign(ch.style, {
             display: shuffleDirection === 'up' || shuffleDirection === 'down' ? 'block' : 'inline-block',
-            width: w + 'px',
+            width: wEm + 'em',
             textAlign: 'center',
             letterSpacing: 'normal'
           });
@@ -228,7 +231,7 @@ const Shuffle = ({
             Object.assign(c.style, {
               display: shuffleDirection === 'up' || shuffleDirection === 'down' ? 'block' : 'inline-block',
               letterSpacing: 'normal',
-              width: w + 'px',
+              width: wEm + 'em',
               textAlign: 'center'
             });
             inner.appendChild(c);
@@ -244,33 +247,25 @@ const Shuffle = ({
             if (firstCopy) inner.appendChild(firstCopy);
           }
 
-          let startX = 0;
-          let finalX = 0;
-          let startY = 0;
-          let finalY = 0;
+          let startPct = 0;
+          let finalPct = 0;
 
-          if (shuffleDirection === 'right') {
-            startX = -steps * w;
-            finalX = 0;
-          } else if (shuffleDirection === 'left') {
-            startX = 0;
-            finalX = -steps * w;
-          } else if (shuffleDirection === 'down') {
-            startY = -steps * h;
-            finalY = 0;
-          } else if (shuffleDirection === 'up') {
-            startY = 0;
-            finalY = -steps * h;
+          if (shuffleDirection === 'right' || shuffleDirection === 'down') {
+            startPct = -steps * 100;
+            finalPct = 0;
+          } else {
+            startPct = 0;
+            finalPct = -steps * 100;
           }
 
           if (shuffleDirection === 'left' || shuffleDirection === 'right') {
-            gsap.set(inner, { x: startX, y: 0, force3D: true });
-            inner.setAttribute('data-start-x', String(startX));
-            inner.setAttribute('data-final-x', String(finalX));
+            gsap.set(inner, { xPercent: startPct, yPercent: 0, force3D: true });
+            inner.setAttribute('data-start-pct', String(startPct));
+            inner.setAttribute('data-final-pct', String(finalPct));
           } else {
-            gsap.set(inner, { x: 0, y: startY, force3D: true });
-            inner.setAttribute('data-start-y', String(startY));
-            inner.setAttribute('data-final-y', String(finalY));
+            gsap.set(inner, { xPercent: 0, yPercent: startPct, force3D: true });
+            inner.setAttribute('data-start-pct', String(startPct));
+            inner.setAttribute('data-final-pct', String(finalPct));
           }
 
           if (colorFrom) inner.style.color = colorFrom;
@@ -318,9 +313,9 @@ const Shuffle = ({
           onRepeat: () => {
             if (scrambleCharset) randomizeScrambles();
             if (isVertical) {
-              gsap.set(strips, { y: (i, t) => parseFloat(t.getAttribute('data-start-y') || '0') });
+              gsap.set(strips, { yPercent: (i, t) => parseFloat(t.getAttribute('data-start-pct') || '0'), y: 0 });
             } else {
-              gsap.set(strips, { x: (i, t) => parseFloat(t.getAttribute('data-start-x') || '0') });
+              gsap.set(strips, { xPercent: (i, t) => parseFloat(t.getAttribute('data-start-pct') || '0'), x: 0 });
             }
             onShuffleComplete?.();
           },
@@ -351,9 +346,11 @@ const Shuffle = ({
             stagger: animationMode === 'evenodd' ? stagger : 0
           };
           if (isVertical) {
-            vars.y = (i, t) => parseFloat(t.getAttribute('data-final-y') || '0');
+            vars.yPercent = (i, t) => parseFloat(t.getAttribute('data-final-pct') || '0');
+            vars.y = 0;
           } else {
-            vars.x = (i, t) => parseFloat(t.getAttribute('data-final-x') || '0');
+            vars.xPercent = (i, t) => parseFloat(t.getAttribute('data-final-pct') || '0');
+            vars.x = 0;
           }
 
           tl.to(targets, vars, at);
@@ -379,9 +376,11 @@ const Shuffle = ({
               force3D: true
             };
             if (isVertical) {
-              vars.y = parseFloat(strip.getAttribute('data-final-y') || '0');
+              vars.yPercent = parseFloat(strip.getAttribute('data-final-pct') || '0');
+              vars.y = 0;
             } else {
-              vars.x = parseFloat(strip.getAttribute('data-final-x') || '0');
+              vars.xPercent = parseFloat(strip.getAttribute('data-final-pct') || '0');
+              vars.x = 0;
             }
             tl.to(strip, vars, d);
             if (colorFrom && colorTo) tl.fromTo(strip, { color: colorFrom }, { color: colorTo, duration, ease }, d);
@@ -423,15 +422,13 @@ const Shuffle = ({
             let finalVal = 0;
 
             if (isVertical) {
-              const h = charH || parseFloat(strip.getAttribute('data-h') || '0');
-              startVal = shuffleDirection === 'down' ? -steps * h : 0;
-              finalVal = shuffleDirection === 'down' ? 0 : -steps * h;
-              gsap.set(strip, { y: startVal, force3D: true });
+              startVal = shuffleDirection === 'down' ? -steps * 100 : 0;
+              finalVal = shuffleDirection === 'down' ? 0 : -steps * 100;
+              gsap.set(strip, { yPercent: startVal, y: 0, force3D: true });
             } else {
-              const w = charW || parseFloat(strip.getAttribute('data-w') || '0');
-              startVal = shuffleDirection === 'right' ? -steps * w : 0;
-              finalVal = shuffleDirection === 'right' ? 0 : -steps * w;
-              gsap.set(strip, { x: startVal, force3D: true });
+              startVal = shuffleDirection === 'right' ? -steps * 100 : 0;
+              finalVal = shuffleDirection === 'right' ? 0 : -steps * 100;
+              gsap.set(strip, { xPercent: startVal, x: 0, force3D: true });
             }
 
             const vars = {
@@ -444,9 +441,11 @@ const Shuffle = ({
             };
 
             if (isVertical) {
-              vars.y = finalVal;
+              vars.yPercent = finalVal;
+              vars.y = 0;
             } else {
-              vars.x = finalVal;
+              vars.xPercent = finalVal;
+              vars.x = 0;
             }
 
             gsap.to(strip, vars);
@@ -535,7 +534,8 @@ const Shuffle = ({
         triggerOnce,
         respectReducedMotion,
         triggerOnHover,
-        onShuffleComplete
+        onShuffleComplete,
+        fontSize
       ],
       scope: ref
     }

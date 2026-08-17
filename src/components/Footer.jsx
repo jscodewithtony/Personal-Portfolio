@@ -121,12 +121,12 @@ function Footer({ variant = "site" }) {
           .then((decodedBuffer) => {
             bufferCacheRef.current.set(sample.midi, decodedBuffer);
           })
-          .catch(() => {});
+          .catch(() => { });
       });
     }
 
     if (audioCtxRef.current.state === "suspended") {
-      audioCtxRef.current.resume().catch(() => {});
+      audioCtxRef.current.resume().catch(() => { });
     }
 
     return { ctx: audioCtxRef.current, masterGain: masterGainRef.current };
@@ -599,16 +599,14 @@ function Footer({ variant = "site" }) {
                   aria-label={`Piano key ${note.name}`}
                   className={
                     isAbout
-                      ? `relative flex-1 h-full border-r border-black/40 dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${
-                          isActive
-                            ? "bg-[#e3f900] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
-                            : "bg-white hover:bg-[#e3f900] dark:bg-white dark:hover:bg-[#f1f5f9]"
-                        }`
-                      : `relative flex-1 h-full border-r border-[#0013B2] dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${
-                          isActive
-                            ? "bg-[#0013B2] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
-                            : "bg-[#114AFC] hover:bg-[#022CDB] dark:bg-white dark:hover:bg-[#f1f5f9]"
-                        }`
+                      ? `relative flex-1 h-full border-r border-black/40 dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${isActive
+                        ? "bg-[#e3f900] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
+                        : "bg-white hover:bg-[#e3f900] dark:bg-white dark:hover:bg-[#f1f5f9]"
+                      }`
+                      : `relative flex-1 h-full border-r border-[#0013B2] dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${isActive
+                        ? "bg-[#0013B2] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
+                        : "bg-[#114AFC] hover:bg-[#022CDB] dark:bg-white dark:hover:bg-[#f1f5f9]"
+                      }`
                   }
                 />
               );
@@ -631,16 +629,14 @@ function Footer({ variant = "site" }) {
                   }}
                   className={
                     isAbout
-                      ? `absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${
-                          isActive
-                            ? "bg-[#3a3a3a] dark:bg-[#332f48] translate-y-[3px]"
-                            : "bg-black hover:bg-[#262626] dark:bg-black dark:hover:bg-[#1a1a1a]"
-                        }`
-                      : `absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${
-                          isActive
-                            ? "bg-[#2a2640] dark:bg-[#332f48] translate-y-[3px]"
-                            : "bg-[#12101b] dark:bg-black hover:bg-[#1f1c2d] dark:hover:bg-[#1a1a1a]"
-                        }`
+                      ? `absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${isActive
+                        ? "bg-[#3a3a3a] dark:bg-[#332f48] translate-y-[3px]"
+                        : "bg-black hover:bg-[#262626] dark:bg-black dark:hover:bg-[#1a1a1a]"
+                      }`
+                      : `absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${isActive
+                        ? "bg-[#2a2640] dark:bg-[#332f48] translate-y-[3px]"
+                        : "bg-[#12101b] dark:bg-black hover:bg-[#1f1c2d] dark:hover:bg-[#1a1a1a]"
+                      }`
                   }
                 />
               );
