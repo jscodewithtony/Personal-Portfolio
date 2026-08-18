@@ -61,25 +61,22 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
 
   return (
     <header
-      className={`sticky top-0 z-[60] flex items-center justify-between bg-transparent px-6 py-6 transition-[transform,colors] duration-300 ease-out md:px-12 md:py-8 lg:px-24 lg:py-8 ${
-        hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
-      }`}
+      className={`sticky top-0 z-[60] flex items-center justify-between bg-transparent px-6 py-6 transition-[transform,colors] duration-300 ease-out md:px-12 md:py-8 lg:px-24 lg:py-8 ${hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
+        }`}
     >
       {/* Wordmark + (desktop-only) role subtitle */}
       <div className="flex items-center lg:w-[332px] lg:shrink-0 lg:gap-[39px] lg:tracking-[-1px]">
         <Link
           to="/"
           aria-label="Home"
-          className={`transition-colors duration-300 flex items-center ${
-            menuOpen ? "text-white" : "text-ink dark:text-white"
-          }`}
+          className={`transition-colors duration-300 flex items-center ${menuOpen ? "text-white" : "text-ink dark:text-white"
+            }`}
         >
           <Logo className="h-6 w-auto sm:h-7 md:h-8 lg:h-[38px]" />
         </Link>
         <span
-          className={`hidden whitespace-nowrap font-display text-base font-medium normal-case leading-[42px] transition-colors duration-300 lg:inline ${
-            menuOpen ? "text-white" : "text-ink dark:text-white"
-          }`}
+          className={`hidden whitespace-nowrap font-display text-base font-medium normal-case leading-[42px] transition-colors duration-300 lg:inline ${menuOpen ? "text-white" : "text-ink dark:text-white"
+            }`}
         >
           Product Designer
         </span>
@@ -126,9 +123,8 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           variant="rectangle"
           duration={500}
           aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-          className={`flex items-center justify-center rounded-full p-2 transition-[color,transform,background-color] duration-200 active:scale-90 hover:bg-black/5 lg:hidden dark:hover:bg-white/10 ${
-            menuOpen ? "text-white" : "text-ink dark:text-white"
-          }`}
+          className={`flex items-center justify-center rounded-full p-2 transition-[color,transform,background-color] duration-200 active:scale-90 hover:bg-black/5 lg:hidden dark:hover:bg-white/10 ${menuOpen ? "text-white" : "text-ink dark:text-white"
+            }`}
         />
 
         {/* Mobile MENU button — same MenuOverlay this already drives, hidden at lg: since the links render inline there instead. */}
@@ -139,16 +135,14 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           aria-expanded={menuOpen}
           aria-controls="site-menu"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className={`flex items-center gap-1.5 font-display font-black text-sm sm:text-base md:text-lg uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden ${
-            menuOpen ? "text-white" : "text-ink dark:text-white"
-          }`}
+          className={`flex items-center gap-1.5 font-display font-black text-sm sm:text-base md:text-lg uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden ${menuOpen ? "text-white" : "text-ink dark:text-white"
+            }`}
         >
           MENU
           <span
             aria-hidden="true"
-            className={`inline-block transition-transform duration-500 ${
-              menuOpen ? "rotate-45" : "rotate-0"
-            }`}
+            className={`inline-block transition-transform duration-500 ${menuOpen ? "rotate-45" : "rotate-0"
+              }`}
           >
             +
           </span>

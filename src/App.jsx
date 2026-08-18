@@ -7,6 +7,7 @@ const AboutPage = lazy(() => import("./pages/AboutPage"));
 import { ThemeTokensProvider } from "./theme/ThemeTokensContext";
 import { isPreviewMode } from "./sanity/preview";
 import { useVisualEditing } from "./sanity/useVisualEditing";
+import PageTransitionOverlay from "./transitions/PageTransitionOverlay";
 
 // Lazy — AdminStudio pulls in the entire Sanity Studio package
 // (structureTool, visionTool, styled-components, its own ~170KB CSS
@@ -50,6 +51,12 @@ function App() {
 
   return (
     <BrowserRouter>
+      {/* Intercepts internal <Link> clicks sitewide (Header, MenuOverlay,
+          project cards, etc.) to play the color-sweep + page-name intro
+          before the actual route swap — see PageTransitionOverlay.jsx.
+          Mounted once here, not per-page, and never modifies any of the
+          components whose links it's listening to. */}
+      <PageTransitionOverlay />
       <Suspense fallback={null}>
         <Routes>
           {/* /admin is intentionally its own top-level route, outside the

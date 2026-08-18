@@ -94,6 +94,7 @@ function MentorshipTestimonials() {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const cardsRef = useRef([]);
+  const buttonRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -119,6 +120,13 @@ function MentorshipTestimonials() {
           });
         }
       });
+      if (buttonRef.current) {
+        gsap.set(buttonRef.current, {
+          opacity: 1,
+          y: 0,
+          pointerEvents: "auto",
+        });
+      }
       return;
     }
 
@@ -161,50 +169,6 @@ function MentorshipTestimonials() {
       );
 
       /* =================================================================
-         VERSION 1: CONTINUOUS ARC MOTION (COMMENTED OUT AS REQUESTED)
-         =================================================================
-         cardsRef.current.forEach((card) => {
-           if (!card) return;
-           gsap.set(card, {
-             opacity: 1,
-             x: "60vw",
-             y: "50vh",
-             rotate: 10,
-             scale: 0.82,
-             force3D: true,
-           });
-         });
-
-         const startOffset = 0.12;
-         const cardSpacing = 0.28;
-         const totalDuration = 1.0;
-
-         TESTIMONIALS.forEach((_, idx) => {
-           const card = cardsRef.current[idx];
-           if (!card) return;
-
-           const cardStart = startOffset + idx * cardSpacing;
-           const halfDuration = totalDuration / 2;
-
-           tl.to(
-             card,
-             { x: "-60vw", rotate: -10, duration: totalDuration, ease: "none", force3D: true },
-             cardStart
-           );
-           tl.to(
-             card,
-             { y: "-4vh", scale: 1.0, duration: halfDuration, ease: "power1.out", force3D: true },
-             cardStart
-           );
-           tl.to(
-             card,
-             { y: "50vh", scale: 0.82, duration: halfDuration, ease: "power1.in", force3D: true },
-             cardStart + halfDuration
-           );
-         });
-         ================================================================= */
-
-      /* =================================================================
          VERSION 2: STACKED CARD DECK ANIMATION (ACTIVE - Testimoninal-Version-2.mp4)
          Cards fly up from bottom and stack on top of each other in the center
          ================================================================= */
@@ -242,6 +206,28 @@ function MentorshipTestimonials() {
           cardStart
         );
       });
+
+      // Initialize button hidden
+      if (buttonRef.current) {
+        gsap.set(buttonRef.current, {
+          opacity: 0,
+          y: 20,
+          pointerEvents: "none",
+        });
+
+        const lastCardStart = startOffset + (TESTIMONIALS.length - 1) * stackStep;
+        tl.to(
+          buttonRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            pointerEvents: "auto",
+            duration: 0.35,
+            ease: "power2.out",
+          },
+          lastCardStart + 0.38
+        );
+      }
     }, section);
 
     const timer = setTimeout(() => {
@@ -252,10 +238,6 @@ function MentorshipTestimonials() {
       clearTimeout(timer);
       ctx.revert();
     };
-    // Re-runs once `status` flips from "loading" to its resolved value
-    // so cardsRef gets fresh gsap.set/timeline targets sized to the
-    // real TESTIMONIALS list instead of staying keyed to the fallback
-    // array captured on first mount.
   }, [status]);
 
   return (
@@ -291,6 +273,17 @@ function MentorshipTestimonials() {
             />
           </div>
         ))}
+      </div>
+
+      {/* Book a Call Button */}
+      <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center pointer-events-none sm:bottom-12 md:bottom-16">
+        <a
+          href="mailto:Tony2742000@gmail.com"
+          ref={buttonRef}
+          className="pointer-events-auto select-none px-6 py-4 font-display text-base font-bold uppercase tracking-tight transition-colors sm:px-8 sm:py-5 sm:text-xl bg-primary text-white hover:bg-primary-dark active:bg-primary-active dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2] shadow-lg"
+        >
+          Book a call with me
+        </a>
       </div>
     </section>
   );
