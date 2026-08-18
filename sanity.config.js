@@ -48,15 +48,18 @@ export default defineConfig({
     structureTool({ structure }),
     // Live preview: shows the actual site rendering the document being
     // edited, refetching as fields change (see useSanityQuery.js's
-    // `client.listen()` wiring). Click-to-edit overlays
-    // (@sanity/visual-editing) were deliberately left out for now — that
-    // package's postMessage handshake with this Presentation iframe
-    // couldn't be verified against a live Studio session here, and
-    // getting it subtly wrong is worse than not having it; the iframe
-    // preview + live refetch below stands on its own without it. Revisit
-    // as a follow-up once this is confirmed working end to end.
+    // `client.listen()` wiring). Click-to-edit overlays run via
+    // @sanity/visual-editing's enableVisualEditing(), mounted at the
+    // frontend's app root (src/App.jsx) rather than per-page, since this
+    // tool's preview iframe can land on any route.
     presentationTool({
-      previewUrl: { origin: PREVIEW_ORIGIN, preview: "/" },
+      // `preview` is the route Presentation loads by DEFAULT — before
+      // you've drilled into a specific document via the right-hand
+      // panel (resolve.locations only kicks in once a document is
+      // selected). Without the flag here too, that default landing
+      // view never triggers the visual-editing connector at all, no
+      // matter where enableVisualEditing() is mounted on the frontend.
+      previewUrl: { origin: PREVIEW_ORIGIN, preview: "/?sanityPreview=1" },
       resolve: { locations: PREVIEW_LOCATIONS },
     }),
     visionTool(),
