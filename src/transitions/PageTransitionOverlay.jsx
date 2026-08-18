@@ -70,6 +70,7 @@ function PageTransitionOverlay() {
   const [active, setActive] = useState(false);
   const [label, setLabel] = useState("");
   const [panelColor, setPanelColor] = useState("#114AFC");
+  const [textColorClass, setTextColorClass] = useState("text-white");
 
   const runTransition = useCallback(
     // `navHref` is the full href as written (may carry a #hash, e.g.
@@ -98,13 +99,14 @@ function PageTransitionOverlay() {
         return;
       }
 
-      const { color, label: resolvedLabel } = resolveRouteTransition(
+      const { color, textColorClass: resolvedTextColor, label: resolvedLabel } = resolveRouteTransition(
         pathname,
         clickedLinkText,
         isDarkMode()
       );
 
       setPanelColor(color);
+      setTextColorClass(resolvedTextColor);
       setLabel(resolvedLabel);
       setActive(true);
       currentPathRef.current = pathname;
@@ -177,7 +179,8 @@ function PageTransitionOverlay() {
       if (destination === currentPathRef.current) return;
 
       event.preventDefault();
-      runTransition(href, destination, link.textContent?.trim());
+      const label = link.getAttribute("data-transition-label") || link.textContent?.trim();
+      runTransition(href, destination, label);
     };
 
     // Capture phase, not bubble — react-router's <Link> handles the
@@ -219,7 +222,7 @@ function PageTransitionOverlay() {
             key={label}
             text={label}
             tag="h2"
-            className="select-none whitespace-nowrap font-display font-black uppercase leading-[0.82] tracking-tighter text-white text-6xl sm:text-8xl md:text-9xl lg:text-[10rem]"
+            className={`select-none whitespace-nowrap font-display font-black uppercase leading-[0.82] tracking-tighter text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] ${textColorClass}`}
             shuffleDirection="right"
             duration={SHUFFLE_DURATION}
             animationMode="evenodd"

@@ -15,22 +15,26 @@ export const ROUTE_TRANSITIONS = [
   {
     match: (pathname) => pathname === "/about",
     color: { light: "#114AFC", dark: "#161616" },
+    textColor: { light: "text-white", dark: "text-white" },
     label: "ABOUT TONY",
   },
   {
     match: (pathname) => pathname === "/",
     color: { light: "#F9F9F9", dark: "#0c0a14" },
+    textColor: { light: "text-ink", dark: "text-white" },
     label: "TONY",
   },
   {
     match: (pathname) => pathname.startsWith("/projects/"),
     color: { light: "#114AFC", dark: "#0c0a14" },
+    textColor: { light: "text-white", dark: "text-white" },
     label: (_pathname, clickedLinkText) => clickedLinkText || "PROJECT",
   },
 ];
 
 const DEFAULT_TRANSITION = {
   color: { light: "#114AFC", dark: "#0c0a14" },
+  textColor: { light: "text-white", dark: "text-white" },
   label: (_pathname, clickedLinkText) => clickedLinkText || "TONY",
 };
 
@@ -38,9 +42,10 @@ export function resolveRouteTransition(pathname, clickedLinkText, isDark) {
   const entry =
     ROUTE_TRANSITIONS.find((t) => t.match(pathname)) || DEFAULT_TRANSITION;
   const color = isDark ? entry.color.dark : entry.color.light;
+  const textColorClass = isDark ? entry.textColor.dark : entry.textColor.light;
   const label =
     typeof entry.label === "function"
       ? entry.label(pathname, clickedLinkText)
       : entry.label;
-  return { color, label };
+  return { color, textColorClass, label };
 }

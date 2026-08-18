@@ -286,6 +286,7 @@ function FeaturedProjects() {
             >
               <CardTag
                 {...cardTagProps}
+                data-transition-label={project.client}
                 onMouseEnter={() => {
                   activeHoverCardRef.current = true;
                   document.body.dataset.cursorProjectHover = "true";

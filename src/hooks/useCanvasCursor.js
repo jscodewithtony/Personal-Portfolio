@@ -122,7 +122,10 @@ const useCanvasCursor = () => {
       ctx.globalCompositeOperation = "source-over";
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-      if (document.body.dataset.cursorProjectHover === "true") {
+      if (
+        document.body.dataset.cursorProjectHover === "true" ||
+        document.body.dataset.cursorTrailHover === "true"
+      ) {
         ctx.frame++;
         window.requestAnimationFrame(render);
         return;

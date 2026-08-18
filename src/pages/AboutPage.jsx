@@ -10,6 +10,7 @@ import travelCollageImg from "../assets/about-page/travel-collage.webp";
 import iconMark from "../assets/about-page/icon-mark.svg";
 import tonyBlueImg from "../assets/about-page/tony-blue-strong-full.jpg";
 import resumeBgImg from "../assets/about-page/Resume-background.png";
+import CursorImageTrail from "../components/CursorImageTrail";
 
 
 import { useSanityQuery } from "../sanity/useSanityQuery";
@@ -493,9 +494,9 @@ function AboutPage({ theme, onToggleTheme }) {
   const travelPhotos =
     about?.travelPhotoCollage?.length > 0
       ? about.travelPhotoCollage.map((item) => ({
-          src: urlFor(item)?.width(1600).url(),
-          alt: item.alt || "Travel photo",
-        }))
+        src: urlFor(item)?.width(1600).url(),
+        alt: item.alt || "Travel photo",
+      }))
       : [{ src: travelCollageImg, alt: "Collage of travel photos across India" }];
 
   const closingHeadlineLines = [about?.closingHeadlineOne, about?.closingHeadlineTwo].filter(
@@ -530,6 +531,12 @@ function AboutPage({ theme, onToggleTheme }) {
   const parallaxY = useTransform(parallaxScrollProgress, [0, 1], ["-12%", "12%"]);
   const yVal = shouldReduceMotion ? 0 : parallaxY;
 
+  useEffect(() => {
+    return () => {
+      document.body.dataset.cursorTrailHover = "false";
+    };
+  }, []);
+
 
 
   return (
@@ -553,12 +560,22 @@ function AboutPage({ theme, onToggleTheme }) {
           </Link>
         </div>
 
-        {/* 547:715 — Hero headline */}
-        <WordHeadline
-          text={heroHeadline}
-          className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-8xl lg:text-[16rem]"
-          animated={false}
-        />
+        {/* 547:715 — Hero headline with Cursor Image Trail */}
+        <CursorImageTrail
+          onMouseEnter={() => {
+            document.body.dataset.cursorTrailHover = "true";
+          }}
+          onMouseLeave={() => {
+            document.body.dataset.cursorTrailHover = "false";
+          }}
+          style={{ width: "100%", height: "auto", overflow: "visible" }}
+        >
+          <WordHeadline
+            text={heroHeadline}
+            className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-8xl lg:text-[16rem]"
+            animated={false}
+          />
+        </CursorImageTrail>
 
         {/* 547:763/764 — yellow ambient marquee band. Always dark text
             on the bright highlight, unchanged across both themes. */}
@@ -708,7 +725,48 @@ function AboutPage({ theme, onToggleTheme }) {
             backdrop — the 565:1320 "Professional Experience" white
             card sits dead-centered (both axes) over the photo on
             desktop, fully inside its bounds. */}
-        <div className="relative mt-16 w-full sm:mt-20">
+        {/* Mobile Viewport: Experience Card is inside the full-screen image cover */}
+        <div className="relative mt-16 w-full h-[100dvh] block md:hidden">
+          <div className="absolute inset-0 w-full h-full overflow-hidden">
+            <img
+              src={experienceBackgroundUrl || resumeBgImg}
+              alt={experienceBackgroundAlt}
+              loading="lazy"
+              className="w-full h-full object-cover origin-center"
+            />
+          </div>
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2.5rem)] z-10">
+            <Reveal
+              delay={150}
+              className="flex flex-col gap-8 bg-white p-5 text-ink xs:p-6 sm:p-8"
+            >
+              <div className="flex flex-col gap-6">
+                <img src={iconMark} alt="" className="h-8 w-8 xs:h-10 xs:w-10" />
+                <h3 className="font-display text-lg xs:text-xl font-extrabold uppercase tracking-tight text-ink sm:text-2xl">
+                  {experienceHeading}
+                </h3>
+              </div>
+              <div className="flex flex-col">
+                {experienceEntries.map((item) => (
+                  <div
+                    key={item.year}
+                    className="flex gap-4 border-b border-ink/10 py-4 xs:py-5 last:border-b-0"
+                  >
+                    <span className="w-12 shrink-0 font-display text-lg xs:text-xl font-extrabold tracking-tight text-ink sm:text-2xl">
+                      {item.year}
+                    </span>
+                    <span className="font-display text-xs font-light normal-case leading-relaxed text-ink/70 xs:text-sm">
+                      {item.description}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Desktop Viewport: Unchanged original layout */}
+        <div className="relative mt-16 w-full sm:mt-20 hidden md:block">
           <Reveal delay={0}>
             <div ref={parallaxContainerRef} className="relative w-full overflow-hidden">
               <motion.img
@@ -720,7 +778,6 @@ function AboutPage({ theme, onToggleTheme }) {
               />
             </div>
           </Reveal>
-
 
           <Reveal
             delay={150}
