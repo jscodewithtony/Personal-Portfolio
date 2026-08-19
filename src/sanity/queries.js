@@ -59,10 +59,9 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
 export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOrder asc){
   _id,
   title,
-  client,
   "slug": slug.current,
   mainImage,
-  thumbnailImage,
+  thumbnail,
   shortDescription,
   industry,
   role,
@@ -73,25 +72,30 @@ export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOr
 export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.current == $slug][0]{
   _id,
   title,
-  client,
+  coverImage,
   "slug": slug.current,
   mainImage,
-  thumbnailImage,
+  thumbnail,
   shortDescription,
   industry,
   role,
   externalLink,
-  timeline,
-  tools,
-  overviewParagraphs,
-  outcomeStats,
-  caseStudyBody,
+  bodyContent,
+  projectInfoFields[]{ label, fieldType, textValue, selectValue, numberValue },
+  tags,
+  styleSettings{
+    pagePadding{ paddingTop, paddingRight, paddingBottom, paddingLeft },
+    contentSpacing,
+    bodyBlockSpacing,
+    "pageBackgroundColor": pageBackgroundColor.hex,
+    "pageTextColor": pageTextColor.hex
+  },
   "nextProject": coalesce(
     *[_type == "project" && displayOrder > ^.displayOrder] | order(displayOrder asc)[0]{
-      title, "slug": slug.current, mainImage, client
+      title, "slug": slug.current, mainImage
     },
     *[_type == "project" && _id != ^._id] | order(displayOrder asc)[0]{
-      title, "slug": slug.current, mainImage, client
+      title, "slug": slug.current, mainImage
     }
   )
 }`;

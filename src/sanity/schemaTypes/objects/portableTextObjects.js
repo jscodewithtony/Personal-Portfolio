@@ -1,6 +1,8 @@
 // Custom block objects available inside every case study's Portable
-// Text body (project.js -> caseStudyBody), on top of the standard
+// Text body (project.js -> bodyContent), on top of the standard
 // heading/paragraph/blockquote block styles.
+
+import { blockSpacingField } from "./blockSpacing";
 
 export const captionedImage = {
   name: "captionedImage",
@@ -15,6 +17,7 @@ export const captionedImage = {
       validation: (Rule) => Rule.required(),
     },
     { name: "caption", title: "Caption", type: "string" },
+    blockSpacingField,
   ],
 };
 
@@ -35,6 +38,7 @@ export const videoEmbed = {
       type: "url",
     },
     { name: "caption", title: "Caption", type: "string" },
+    blockSpacingField,
   ],
   validation: (Rule) =>
     Rule.custom((value) => {
@@ -78,6 +82,7 @@ export const gallery = {
       ],
       validation: (Rule) => Rule.min(2),
     },
+    blockSpacingField,
   ],
   preview: {
     select: { images: "images" },

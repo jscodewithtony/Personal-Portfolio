@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
-import { Link } from "react-router-dom";
 import { animate, AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
 import Header from "../components/Header";
@@ -11,6 +10,11 @@ import iconMark from "../assets/about-page/icon-mark.svg";
 import tonyBlueImg from "../assets/about-page/tony-blue-strong-full.jpg";
 import resumeBgImg from "../assets/about-page/Resume-background.png";
 import CursorImageTrail from "../components/CursorImageTrail";
+import AntiGravityGallery from "../components/AntiGravityGallery";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 
 import { useSanityQuery } from "../sanity/useSanityQuery";
@@ -537,6 +541,15 @@ function AboutPage({ theme, onToggleTheme }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (about) {
+      const timer = setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [about]);
+
 
 
   return (
@@ -551,15 +564,6 @@ function AboutPage({ theme, onToggleTheme }) {
       />
 
       <main ref={mainRef} className="overflow-hidden">
-        <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
-          <Link
-            to="/"
-            className="inline-block font-display text-xs font-bold uppercase tracking-widest text-[#fafafa]/50 transition-colors hover:text-[#fafafa]"
-          >
-            ← Back
-          </Link>
-        </div>
-
         {/* 547:715 — Hero headline with Cursor Image Trail */}
         <CursorImageTrail
           onMouseEnter={() => {
@@ -835,37 +839,25 @@ function AboutPage({ theme, onToggleTheme }) {
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
-
-
-          {/* 564:1274 — Exploring India headline */}
-          <WordHeadline
-            text={exploringIndiaHeadline}
-            className="mt-32 text-5xl sm:mt-40 sm:text-8xl md:text-9xl lg:text-[9rem]"
+        {/* 568:1345 — travel collage image(s) replaced with AntiGravityGallery */}
+        <div className="w-full mt-16 mb-24 sm:mt-20 sm:mb-32 md:mb-40">
+          <AntiGravityGallery 
+            headline={exploringIndiaHeadline}
+            cards={
+              travelPhotos && travelPhotos.length > 1
+                ? travelPhotos.map((photo, i) => ({
+                    id: i + 1,
+                    src: photo.src,
+                    alt: photo.alt,
+                    xPercent: [0, -20, 20, -20, 20, 0, 0, -12, 12, -34, 34, -34, 34, -18, 18, -28, 28, -38, 38, -44, 44, -44, 44, -46, 46, -48, 48, -10, 10][i % 29],
+                    yPercent: [0, -24, -24, 24, 24, -36, 36, -12, 12, -12, -12, 20, 20, -42, -42, -32, 32, 4, -4, -36, -36, 36, 36, 2, 2, -18, 18, -48, 48][i % 29],
+                    z: [0, -50, -50, -50, -50, -80, -80, -40, -40, -120, -120, -140, -140, -150, -150, -130, -130, -110, -110, -220, -220, -220, -220, -200, -200, -240, -240, -210, -210][i % 29],
+                    depth: [0.1, 0.25, 0.25, 0.25, 0.25, 0.3, 0.3, 0.2, 0.2, 0.45, 0.45, 0.5, 0.5, 0.4, 0.4, 0.45, 0.45, 0.4, 0.4, 0.7, 0.7, 0.7, 0.7, 0.8, 0.8, 0.85, 0.85, 0.75, 0.75][i % 29],
+                    tier: [0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3][i % 29]
+                  }))
+                : undefined
+            }
           />
-
-          {/* 564:1276 — second travel paragraph */}
-          <Reveal
-            as="p"
-            className="mx-auto mt-10 max-w-3xl text-center font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 md:text-2xl"
-          >
-            {exploringIndiaText}
-          </Reveal>
-
-          {/* 568:1345 — travel collage image(s) */}
-          <Reveal delay={200} className="mt-16 mb-24 w-full overflow-hidden sm:mt-20 sm:mb-32 md:mb-40">
-            <div className={travelPhotos.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : ""}>
-              {travelPhotos.map((photo, i) => (
-                <img
-                  key={i}
-                  src={photo.src || travelCollageImg}
-                  alt={photo.alt}
-                  loading="lazy"
-                  className="h-[50vh] w-full object-cover md:h-[46rem]"
-                />
-              ))}
-            </div>
-          </Reveal>
         </div>
       </main>
 

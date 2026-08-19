@@ -7,7 +7,7 @@ import projectJewelry from "../assets/project-jewelry.webp";
 import projectStrategy from "../assets/project-strategy.webp";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectsQuery } from "../sanity/queries";
-import { urlFor } from "../sanity/client";
+import { urlFor, imageUrl } from "../sanity/client";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -57,10 +57,13 @@ const FALLBACK_PROJECTS = [
 
 function mapSanityProject(doc) {
   const mainImageUrl = urlFor(doc.mainImage)?.width(1200).url();
-  const thumbUrl = urlFor(doc.thumbnailImage)?.width(400).url();
+  const thumbUrl = imageUrl(doc.thumbnail, 400);
   return {
     id: doc._id,
-    client: doc.client,
+    // The schema no longer has a separate "client" field — this small
+    // eyebrow slot (and the alt text / transition label that reuse it)
+    // now shows industry instead, same position, same markup.
+    client: doc.industry,
     title: doc.title,
     description: doc.shortDescription,
     industry: doc.industry,
