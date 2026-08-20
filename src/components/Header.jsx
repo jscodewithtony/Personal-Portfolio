@@ -81,12 +81,12 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
 
       {/* Desktop nav links — right-anchored, sitting just before the
           theme toggle rather than spread across the header. */}
-      <nav className="hidden lg:ml-auto lg:mr-12 lg:flex lg:items-center lg:gap-10">
+      <nav className="hidden lg:ml-auto lg:mr-12 lg:flex lg:items-center lg:gap-8">
         {NAV_LINKS.map((item) => (
           <Link
             key={item.label}
             to={item.to}
-            className="font-display text-[28px] font-normal normal-case tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
+            className="font-display text-[20px] font-normal normal-case tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
           >
             {item.label}
           </Link>
