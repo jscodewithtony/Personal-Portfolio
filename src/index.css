@@ -7,8 +7,10 @@
 
 @theme {
   --color-primary: #114AFC;
-  --color-primary-dark: #022CDB; /* hover */
-  --color-primary-active: #0013B2; /* focused / pressed */
+  --color-primary-dark: #022CDB;
+  /* hover */
+  --color-primary-active: #0013B2;
+  /* focused / pressed */
   --color-bg: #F9F9F9;
   --color-ink: #0d0c14;
   --color-cream: #f3efe3;
@@ -35,13 +37,27 @@
    dark-on-light lines and a dark section's light-on-dark lines both
    resolve from the same flip. */
 :root {
-  --grid-line-color: transparent;
+  --grid-line-color: rgba(17, 74, 252, 0.05);
+  /* Minimal visibility signature blue grid */
 }
 
 .dark {
-  --grid-line-color: transparent;
+  --grid-line-color: rgba(250, 250, 250, 0.025);
+  /* Minimal visibility white grid for dark mode */
   --color-white: #FAFAFA;
 }
+
+/* Global Grid Overlay with minimal visibility, scoped to render as the background-image of sections, header, and footer */
+.site-shell header,
+.site-shell footer,
+.site-shell section {
+  background-size: 72px 72px;
+  background-image: 
+    linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+}
+
+
 
 html {
   background: var(--color-bg);
