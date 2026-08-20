@@ -254,7 +254,8 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
     <>
       <section 
         ref={containerRef} 
-        className="relative h-[100dvh] w-full overflow-hidden [perspective:1200px] flex items-center justify-center"
+        style={{ clipPath: 'inset(0%)' }}
+        className="relative z-0 h-[100dvh] w-full overflow-hidden [perspective:1200px] flex items-center justify-center"
       >
         {/* Background Headline */}
         {headline && (

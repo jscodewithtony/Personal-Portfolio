@@ -7,13 +7,10 @@ import Logo from "./Logo";
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio?node-id=526-3749
 // "Input/Nav bar". Only a desktop variant was provided, so that spec is
 // applied at lg: and up; below that the existing hamburger + MenuOverlay
-// behavior is unchanged. "Writing" links to the same #insights anchor
-// as before (that section's own id wasn't part of this scope) — only
-// the visible label changed, matching the new design.
+// behavior is unchanged.
 const NAV_LINKS = [
   { label: "About", to: "/about" },
   { label: "Work", to: "/#featured-projects" },
-  { label: "Writing", to: "/#insights" },
   { label: "Contact", to: "/#contact" },
 ];
 
@@ -82,14 +79,14 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
         </span>
       </div>
 
-      {/* Desktop nav links — justified across the available width between
-          the logo block and the toggle, not clustered to one side. */}
-      <nav className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-between lg:px-16">
+      {/* Desktop nav links — right-anchored, sitting just before the
+          theme toggle rather than spread across the header. */}
+      <nav className="hidden lg:ml-auto lg:mr-12 lg:flex lg:items-center lg:gap-10">
         {NAV_LINKS.map((item) => (
           <Link
             key={item.label}
             to={item.to}
-            className="font-display text-[28px] font-normal uppercase tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
+            className="font-display text-[28px] font-normal normal-case tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
           >
             {item.label}
           </Link>

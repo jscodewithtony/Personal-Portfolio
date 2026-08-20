@@ -113,7 +113,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         {links.map((item, i) => {
           const isRoute = item.link?.startsWith("/");
           const linkClassName =
-            "font-display text-5xl font-black tracking-tight opacity-90 transition-[opacity,transform] duration-200 ease-snap hover:opacity-100 active:scale-[0.97] sm:text-6xl md:text-7xl focus:outline-none focus-visible:outline-none";
+            "font-display text-5xl font-black normal-case tracking-tight opacity-90 transition-[opacity,transform] duration-200 ease-snap hover:opacity-100 active:scale-[0.97] sm:text-6xl md:text-7xl focus:outline-none focus-visible:outline-none";
 
           // Real routes (e.g. /about) navigate client-side via react-router
           // so they don't force a full page reload; same-page anchors

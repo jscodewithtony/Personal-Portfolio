@@ -16,6 +16,7 @@ function ArticleCard({ article }) {
         <img
           src={image}
           alt=""
+          loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
         {source && (

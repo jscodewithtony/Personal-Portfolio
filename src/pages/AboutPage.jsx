@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { animate, AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
 import Header from "../components/Header";
@@ -10,7 +10,7 @@ import iconMark from "../assets/about-page/icon-mark.svg";
 import tonyBlueImg from "../assets/about-page/tony-blue-strong-full.jpg";
 import resumeBgImg from "../assets/about-page/Resume-background.png";
 import CursorImageTrail from "../components/CursorImageTrail";
-import AntiGravityGallery from "../components/AntiGravityGallery";
+import LazyScroll from "../components/LazyScroll";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -25,6 +25,10 @@ import { previewClient } from "../sanity/previewClient";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
+// Dozens of images plus its own drag/physics-feel interaction logic —
+// code-split so its JS and image set only load once it's actually
+// scrolled near, not bundled into the page's initial load.
+const AntiGravityGallery = lazy(() => import("../components/AntiGravityGallery"));
 
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio
 //   Light: node-id=547-714 ("About-me-Blue-White-theme-enabled")
@@ -495,13 +499,29 @@ function AboutPage({ theme, onToggleTheme }) {
   const experienceBackgroundAlt =
     about?.experienceBackgroundImageAlt || "Professional Experience background";
 
-  const travelPhotos =
-    about?.travelPhotoCollage?.length > 0
+  const travelPhotos = useMemo(() => {
+    return about?.travelPhotoCollage?.length > 0
       ? about.travelPhotoCollage.map((item) => ({
         src: urlFor(item)?.width(1600).url(),
         alt: item.alt || "Travel photo",
       }))
       : [{ src: travelCollageImg, alt: "Collage of travel photos across India" }];
+  }, [about?.travelPhotoCollage]);
+
+  const galleryCards = useMemo(() => {
+    return travelPhotos && travelPhotos.length > 1
+      ? travelPhotos.map((photo, i) => ({
+          id: i + 1,
+          src: photo.src,
+          alt: photo.alt,
+          xPercent: [0, -20, 20, -20, 20, 0, 0, -12, 12, -34, 34, -34, 34, -18, 18, -28, 28, -38, 38, -44, 44, -44, 44, -46, 46, -48, 48, -10, 10][i % 29],
+          yPercent: [0, -24, -24, 24, 24, -36, 36, -12, 12, -12, -12, 20, 20, -42, -42, -32, 32, 4, -4, -36, -36, 36, 36, 2, 2, -18, 18, -48, 48][i % 29],
+          z: [0, -50, -50, -50, -50, -80, -80, -40, -40, -120, -120, -140, -140, -150, -150, -130, -130, -110, -110, -220, -220, -220, -220, -200, -200, -240, -240, -210, -210][i % 29],
+          depth: [0.1, 0.25, 0.25, 0.25, 0.25, 0.3, 0.3, 0.2, 0.2, 0.45, 0.45, 0.5, 0.5, 0.4, 0.4, 0.45, 0.45, 0.4, 0.4, 0.7, 0.7, 0.7, 0.7, 0.8, 0.8, 0.85, 0.85, 0.75, 0.75][i % 29],
+          tier: [0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3][i % 29]
+        }))
+      : undefined;
+  }, [travelPhotos]);
 
   const closingHeadlineLines = [about?.closingHeadlineOne, about?.closingHeadlineTwo].filter(
     Boolean
@@ -620,6 +640,7 @@ function AboutPage({ theme, onToggleTheme }) {
               <img
                 src={portraitImageUrl || portraitImg}
                 alt={portraitImageAlt}
+                loading="lazy"
                 className="h-full w-full object-cover"
               />
               {(about?.portraitCaption || about?.portraitSubCaption) && (
@@ -745,7 +766,7 @@ function AboutPage({ theme, onToggleTheme }) {
               className="flex flex-col gap-8 bg-white p-5 text-ink xs:p-6 sm:p-8"
             >
               <div className="flex flex-col gap-6">
-                <img src={iconMark} alt="" className="h-8 w-8 xs:h-10 xs:w-10" />
+                <img src={iconMark} alt="" loading="lazy" className="h-8 w-8 xs:h-10 xs:w-10" />
                 <h3 className="font-display text-lg xs:text-xl font-extrabold uppercase tracking-tight text-ink sm:text-2xl">
                   {experienceHeading}
                 </h3>
@@ -787,7 +808,7 @@ function AboutPage({ theme, onToggleTheme }) {
             delay={150}
             className="relative mx-6 mt-6 flex flex-col gap-6 bg-white p-8 text-ink sm:mx-10 md:absolute md:inset-x-auto md:left-1/2 md:top-1/2 md:mx-0 md:mt-0 md:w-[34rem] md:-translate-x-1/2 md:-translate-y-1/2 md:p-9"
           >
-            <img src={iconMark} alt="" className="h-12 w-12" />
+            <img src={iconMark} alt="" loading="lazy" className="h-12 w-12" />
             <h3 className="font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-4xl">
               {experienceHeading}
             </h3>
@@ -841,23 +862,14 @@ function AboutPage({ theme, onToggleTheme }) {
 
         {/* 568:1345 — travel collage image(s) replaced with AntiGravityGallery */}
         <div className="w-full mt-16 mb-24 sm:mt-20 sm:mb-32 md:mb-40">
-          <AntiGravityGallery 
-            headline={exploringIndiaHeadline}
-            cards={
-              travelPhotos && travelPhotos.length > 1
-                ? travelPhotos.map((photo, i) => ({
-                    id: i + 1,
-                    src: photo.src,
-                    alt: photo.alt,
-                    xPercent: [0, -20, 20, -20, 20, 0, 0, -12, 12, -34, 34, -34, 34, -18, 18, -28, 28, -38, 38, -44, 44, -44, 44, -46, 46, -48, 48, -10, 10][i % 29],
-                    yPercent: [0, -24, -24, 24, 24, -36, 36, -12, 12, -12, -12, 20, 20, -42, -42, -32, 32, 4, -4, -36, -36, 36, 36, 2, 2, -18, 18, -48, 48][i % 29],
-                    z: [0, -50, -50, -50, -50, -80, -80, -40, -40, -120, -120, -140, -140, -150, -150, -130, -130, -110, -110, -220, -220, -220, -220, -200, -200, -240, -240, -210, -210][i % 29],
-                    depth: [0.1, 0.25, 0.25, 0.25, 0.25, 0.3, 0.3, 0.2, 0.2, 0.45, 0.45, 0.5, 0.5, 0.4, 0.4, 0.45, 0.45, 0.4, 0.4, 0.7, 0.7, 0.7, 0.7, 0.8, 0.8, 0.85, 0.85, 0.75, 0.75][i % 29],
-                    tier: [0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3][i % 29]
-                  }))
-                : undefined
-            }
-          />
+          <LazyScroll placeholderHeight="100vh">
+            <Suspense fallback={null}>
+              <AntiGravityGallery
+                headline={exploringIndiaHeadline}
+                cards={galleryCards}
+              />
+            </Suspense>
+          </LazyScroll>
         </div>
       </main>
 

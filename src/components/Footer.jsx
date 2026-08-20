@@ -558,7 +558,7 @@ function Footer({ variant = "site", contactContent }) {
     <footer
       ref={footerRef}
       className={
-        "relative z-10 w-full overflow-hidden transition-colors duration-300 select-none py-6 " +
+        "relative z-30 w-full overflow-hidden transition-colors duration-300 select-none py-6 " +
         (isAbout
           ? "bg-primary text-white dark:bg-[#161616] dark:text-[#fafafa]"
           : "bg-bg text-ink dark:bg-[#0c0a14] dark:text-white")

@@ -38,6 +38,13 @@ const BIG =
 // How much extra scroll distance (relative to the viewport) the section
 // stays pinned for while the heading settles and the aside arrives.
 const PIN_DISTANCE_VH = 1.2;
+// Touch swipes cover roughly the same physical distance as a desktop
+// wheel-scroll tick, but this pin's distance is computed from
+// window.innerHeight — smaller on mobile — so the same gesture
+// consumes a bigger share of it there, making the scrub feel like
+// it's rushing by faster on phones. A larger mobile-only distance
+// restores a native-feeling pace without changing the animation.
+const MOBILE_PIN_DISTANCE_VH = 1.9;
 // Final scale of the heading once the aside has fully arrived.
 const HEADING_END_SCALE = 0.72;
 // Number of stacked poster lines the heading font-size budget is split
@@ -168,7 +175,8 @@ function Statement() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${window.innerHeight * PIN_DISTANCE_VH}`,
+          end: () =>
+            `+=${window.innerHeight * (window.innerWidth < 768 ? MOBILE_PIN_DISTANCE_VH : PIN_DISTANCE_VH)}`,
           pin: true,
           scrub: 0.6,
           anticipatePin: 1,

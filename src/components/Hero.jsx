@@ -10,6 +10,15 @@ import { homepageContentQuery } from "../sanity/queries";
 gsap.registerPlugin(ScrollTrigger);
 
 const PIN_DISTANCE_VH = 1.3;
+// Touch swipes cover roughly the same physical distance as a desktop
+// wheel-scroll tick, but this pin's scroll distance is computed from
+// window.innerHeight — which is smaller on mobile — so the same
+// gesture consumed a bigger share of it there, making the pinned
+// scrub (and the page generally) feel like it's rushing by faster on
+// phones. A larger mobile-only distance restores a native-feeling
+// scroll pace without changing the animation itself or anything on
+// desktop.
+const MOBILE_PIN_DISTANCE_VH = 2.1;
 const MERGE_COVER_MARGIN = 1.35;
 
 // Easily adjust the font size of mobile sub-details here (e.g., text-[12px], text-sm, text-base)
@@ -127,7 +136,9 @@ function Hero() {
         }, 0.4);
     });
 
-    // Mobile Layout Scroll Motion
+    // Mobile Layout Scroll Motion — same choreography as desktop above,
+    // just a longer pin distance (MOBILE_PIN_DISTANCE_VH) so it doesn't
+    // fly by as fast under touch scrolling.
     mm.add("(max-width: 767px)", () => {
       const headlineWrap = mobileHeadlineWrapRef.current;
       const leftLabel = mobileLeftLabelRef.current;
@@ -142,7 +153,7 @@ function Hero() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${window.innerHeight * PIN_DISTANCE_VH}`,
+          end: () => `+=${window.innerHeight * MOBILE_PIN_DISTANCE_VH}`,
           pin: true,
           scrub: 1,
           anticipatePin: 1,

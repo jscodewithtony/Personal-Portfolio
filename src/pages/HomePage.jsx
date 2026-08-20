@@ -1,17 +1,23 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
 import About from "../components/About";
-import Statement from "../components/Statement";
 import CanvasCursor from "../components/CanvasCursor";
-import FeaturedProjects from "../components/FeaturedProjects";
-import Stats from "../components/Stats";
-import MentorshipTestimonials from "../components/MentorshipTestimonials";
-import Insight from "../components/Insight";
-import Footer from "../components/Footer";
 import MenuOverlay from "../components/MenuOverlay";
 import LazyScroll from "../components/LazyScroll";
+
+// Each of these is already deferred to mount only once scrolled near
+// (via <LazyScroll> below) — lazy-importing them too means their JS
+// (Stats pulls in the full three.js library for its 3D cube) isn't
+// even downloaded until then either, instead of loading eagerly with
+// the rest of the homepage bundle regardless of scroll position.
+const Statement = lazy(() => import("../components/Statement"));
+const FeaturedProjects = lazy(() => import("../components/FeaturedProjects"));
+const Stats = lazy(() => import("../components/Stats"));
+const MentorshipTestimonials = lazy(() => import("../components/MentorshipTestimonials"));
+const Insight = lazy(() => import("../components/Insight"));
+const Footer = lazy(() => import("../components/Footer"));
 
 function HomePage({ theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -47,27 +53,39 @@ function HomePage({ theme, onToggleTheme }) {
       <About theme={theme} />
 
       <LazyScroll placeholderHeight="200px">
-        <Statement />
+        <Suspense fallback={null}>
+          <Statement />
+        </Suspense>
       </LazyScroll>
 
       <LazyScroll placeholderHeight="100vh">
-        <FeaturedProjects />
+        <Suspense fallback={null}>
+          <FeaturedProjects />
+        </Suspense>
       </LazyScroll>
 
       <LazyScroll placeholderHeight="100vh">
-        <Stats theme={theme} />
+        <Suspense fallback={null}>
+          <Stats theme={theme} />
+        </Suspense>
       </LazyScroll>
 
       <LazyScroll placeholderHeight="600px">
-        <MentorshipTestimonials theme={theme} />
+        <Suspense fallback={null}>
+          <MentorshipTestimonials theme={theme} />
+        </Suspense>
       </LazyScroll>
 
       <LazyScroll placeholderHeight="400px">
-        <Insight />
+        <Suspense fallback={null}>
+          <Insight />
+        </Suspense>
       </LazyScroll>
 
       <LazyScroll placeholderHeight="400px">
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </LazyScroll>
 
       <MenuOverlay

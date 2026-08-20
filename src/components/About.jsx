@@ -20,6 +20,13 @@ const FALLBACK_BODY = {
 };
 
 const PIN_DISTANCE_VH = 1.1;
+// Touch swipes cover roughly the same physical distance as a desktop
+// wheel-scroll tick, but this pin's scroll distance is computed from
+// window.innerHeight — which is smaller on mobile — so the same
+// gesture consumes a bigger share of it there, making the scrub feel
+// like it's rushing by faster on phones. A larger mobile-only distance
+// restores a native-feeling pace without changing the animation.
+const MOBILE_PIN_DISTANCE_VH = 1.8;
 
 // =========================================================================
 // RIBBON & MARQUEE WORD CUSTOMIZATION
@@ -147,7 +154,8 @@ function About({ theme }) {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${window.innerHeight * PIN_DISTANCE_VH}`,
+          end: () =>
+            `+=${window.innerHeight * (window.innerWidth < 768 ? MOBILE_PIN_DISTANCE_VH : PIN_DISTANCE_VH)}`,
           pin: true,
           scrub: 0.6,
           anticipatePin: 1,

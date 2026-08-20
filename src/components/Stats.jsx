@@ -380,7 +380,15 @@ function Stats({ theme }) {
     let ctx;
     if (!reduceMotion) {
       ctx = gsap.context(() => {
-        const totalPinHeight = window.innerHeight * PIN_DISTANCE_VH;
+        // Touch swipes cover roughly the same physical distance as a
+        // desktop wheel-scroll tick, but this pin's distance is
+        // computed from window.innerHeight — smaller on mobile — so
+        // the same gesture consumed a bigger share of it there, making
+        // the scrub feel like it's rushing by faster on phones. A
+        // larger mobile multiplier restores a native-feeling pace,
+        // animation unchanged.
+        const isMobile = window.innerWidth < 768;
+        const totalPinHeight = window.innerHeight * (isMobile ? 4 : PIN_DISTANCE_VH);
 
         const tl = gsap.timeline({
           scrollTrigger: {
