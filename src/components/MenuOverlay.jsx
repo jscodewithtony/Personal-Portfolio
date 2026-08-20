@@ -24,7 +24,7 @@ const FALLBACK_LINKS = [
 
 const SOCIAL_LINKS = [
   { label: "LinkedIn", href: "#" },
-  { label: "Behance", href: "#" },
+  { label: "behance", href: "#" },
   { label: "Instagram", href: "#" },
 ];
 const CONTACT_EMAIL = "Tony2742000@gmail.com";
@@ -115,7 +115,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
   }, [open, onClose]);
 
   const navLinkClassName =
-    "font-display text-3xl font-black uppercase tracking-tight text-white transition-opacity duration-200 ease-snap hover:opacity-80 active:scale-[0.97] sm:text-5xl focus:outline-none focus-visible:outline-none";
+    "font-display text-4xl font-bold uppercase tracking-tight text-white transition-opacity duration-200 ease-snap hover:opacity-80 active:scale-[0.97] sm:text-3xl focus:outline-none focus-visible:outline-none";
 
   return (
     <div
@@ -192,7 +192,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               tabIndex={open ? 0 : -1}
-              className="font-display text-2xl font-bold text-white transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none"
+              className="font-display text-lg font-normal normal-case text-white transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none"
             >
               {CONTACT_EMAIL}
             </a>
@@ -207,7 +207,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
                   key={label}
                   href={href}
                   tabIndex={open ? 0 : -1}
-                  className="font-display text-2xl font-bold text-white transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none"
+                  className="font-display text-lg font-normal normal-case text-white transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none"
                 >
                   {label}
                 </a>
