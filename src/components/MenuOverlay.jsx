@@ -1,8 +1,16 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { X } from "lucide-react";
 import gsap from "gsap";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { navigationQuery } from "../sanity/queries";
+import Logo from "./Logo";
+
+// Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio?node-id=716-783
+// "Menu page - mobile". Solid blue full-bleed panel, always this color
+// regardless of site theme (matching the About page's own deliberate
+// blue-regardless-of-toggle treatment) — not a themed dark/light
+// overlay like this component used to be.
 
 // Original hardcoded nav, kept as the fallback for the "empty"/"error"
 // Sanity states so the menu is never left with nothing to show. "About"
@@ -14,9 +22,16 @@ const FALLBACK_LINKS = [
   { label: "Resume", link: "#" },
 ];
 
+const SOCIAL_LINKS = [
+  { label: "LinkedIn", href: "#" },
+  { label: "Behance", href: "#" },
+  { label: "Instagram", href: "#" },
+];
+const CONTACT_EMAIL = "Tony2742000@gmail.com";
+
 function MenuOverlay({ open, onClose, anchorRef }) {
   const overlayRef = useRef(null);
-  const linksRef = useRef(null);
+  const contentRef = useRef(null);
   const firstLinkRef = useRef(null);
 
   const { data: navigation, status } = useSanityQuery(
@@ -58,9 +73,13 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         ease: reduceMotion ? "power1.out" : "elastic.out(1, 0.78)",
       });
 
-      if (linksRef.current) {
+      // Same stagger/fade/blur entrance as before, now applied to every
+      // direct block of content (header row, nav links, contact/social
+      // footer) instead of just the nav links, so the whole redesigned
+      // panel settles in together.
+      if (contentRef.current) {
         gsap.fromTo(
-          linksRef.current.children,
+          contentRef.current.children,
           { y: 28, opacity: 0, filter: "blur(6px)" },
           {
             y: 0,
@@ -68,7 +87,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
             filter: "blur(0px)",
             duration: reduceMotion ? 0.15 : 0.55,
             ease: "power3.out",
-            stagger: reduceMotion ? 0 : 0.05,
+            stagger: reduceMotion ? 0 : 0.08,
             delay: reduceMotion ? 0 : 0.3,
           }
         );
@@ -95,6 +114,9 @@ function MenuOverlay({ open, onClose, anchorRef }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
+  const navLinkClassName =
+    "font-display text-3xl font-black uppercase tracking-tight text-white transition-opacity duration-200 ease-snap hover:opacity-80 active:scale-[0.97] sm:text-5xl focus:outline-none focus-visible:outline-none";
+
   return (
     <div
       id="site-menu"
@@ -103,45 +125,97 @@ function MenuOverlay({ open, onClose, anchorRef }) {
       aria-modal="true"
       aria-label="Site navigation"
       aria-hidden={!open}
-      className="fixed inset-0 z-50 hidden flex-col items-center justify-center gap-10 bg-bg/95 text-ink backdrop-blur-2xl dark:bg-[#0c0a14]/95 dark:text-white"
+      className="fixed inset-0 z-50 hidden flex-col overflow-y-auto bg-[#114AFC] px-5 pb-10 pt-6 text-white"
       style={{ clipPath: "circle(1% at 90% 8%)" }}
     >
-      <nav
-        ref={linksRef}
-        className="flex flex-col items-center gap-4 md:gap-6"
-      >
-        {links.map((item, i) => {
-          const isRoute = item.link?.startsWith("/");
-          const linkClassName =
-            "font-display text-5xl font-black normal-case tracking-tight opacity-90 transition-[opacity,transform] duration-200 ease-snap hover:opacity-100 active:scale-[0.97] sm:text-6xl md:text-7xl focus:outline-none focus-visible:outline-none";
+      <div ref={contentRef} className="flex flex-1 flex-col">
+        {/* Top row — logo/wordmark left, close button right (hidden since Header renders on top of the menu overlay) */}
+        <div className="hidden items-center justify-between">
+          <Link
+            to="/"
+            aria-label="Home"
+            onClick={onClose}
+            className="flex items-center text-white"
+          >
+            <Logo className="h-6 w-auto sm:h-7" />
+          </Link>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close menu"
+            className="flex items-center justify-center text-white transition-transform active:scale-90"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
 
-          // Real routes (e.g. /about) navigate client-side via react-router
-          // so they don't force a full page reload; same-page anchors
-          // (e.g. #contact) and external links keep the plain <a>.
-          return isRoute ? (
-            <Link
-              key={item.link + item.label}
-              ref={i === 0 ? firstLinkRef : null}
-              to={item.link}
-              onClick={onClose}
-              tabIndex={open ? 0 : -1}
-              className={linkClassName}
-            >
-              {item.label}
-            </Link>
-          ) : (
+        {/* Nav links — left-aligned, stacked (adjusted margin-top to clear Header) */}
+        <nav className="mt-32 flex flex-col items-start gap-8 sm:mt-40">
+          {links.map((item, i) => {
+            const isRoute = item.link?.startsWith("/");
+
+            // Real routes (e.g. /about) navigate client-side via
+            // react-router so they don't force a full page reload;
+            // same-page anchors (e.g. #contact) and external links
+            // keep the plain <a>.
+            return isRoute ? (
+              <Link
+                key={item.link + item.label}
+                ref={i === 0 ? firstLinkRef : null}
+                to={item.link}
+                onClick={onClose}
+                tabIndex={open ? 0 : -1}
+                className={navLinkClassName}
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <a
+                key={item.link + item.label}
+                ref={i === 0 ? firstLinkRef : null}
+                href={item.link}
+                tabIndex={open ? 0 : -1}
+                className={navLinkClassName}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+        </nav>
+
+        {/* Contact + Social footer */}
+        <div className="mt-12 flex flex-col gap-8 pt-4">
+          <div className="flex flex-col items-start gap-3">
+            <p className="font-display text-sm font-normal uppercase tracking-wide text-white/80">
+              Contact
+            </p>
             <a
-              key={item.link + item.label}
-              ref={i === 0 ? firstLinkRef : null}
-              href={item.link}
+              href={`mailto:${CONTACT_EMAIL}`}
               tabIndex={open ? 0 : -1}
-              className={linkClassName}
+              className="font-display text-2xl font-bold text-white transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none"
             >
-              {item.label}
+              {CONTACT_EMAIL}
             </a>
-          );
-        })}
-      </nav>
+          </div>
+          <div className="flex flex-col items-start gap-4">
+            <p className="font-display text-sm font-normal uppercase tracking-wide text-white/80">
+              Social
+            </p>
+            <div className="flex flex-col items-start gap-3">
+              {SOCIAL_LINKS.map(({ label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  tabIndex={open ? 0 : -1}
+                  className="font-display text-2xl font-bold text-white transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none"
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

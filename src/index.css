@@ -46,6 +46,7 @@
 html {
   background: var(--color-bg);
   transition: background-color 0.3s ease;
+  scroll-behavior: smooth;
 }
 
 html.dark {
