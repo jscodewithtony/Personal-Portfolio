@@ -86,6 +86,7 @@ const useCanvasCursor = () => {
   };
 
   function onMousemove(e) {
+    if (window.innerWidth < 1024) return;
     function o() {
       lines = [];
       for (var idx = 0; idx < E.trails; idx++) {
@@ -118,6 +119,16 @@ const useCanvasCursor = () => {
   }
 
   function render() {
+    if (window.innerWidth < 1024) {
+      if (ctx && ctx.canvas) {
+        ctx.canvas.style.display = "none";
+      }
+      return;
+    }
+    if (ctx && ctx.canvas) {
+      ctx.canvas.style.display = "block";
+    }
+
     if (ctx && ctx.running) {
       ctx.globalCompositeOperation = "source-over";
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -147,8 +158,13 @@ const useCanvasCursor = () => {
 
   function resizeCanvas() {
     if (ctx && ctx.canvas) {
-      ctx.canvas.width = window.innerWidth;
-      ctx.canvas.height = window.innerHeight;
+      if (window.innerWidth < 1024) {
+        ctx.canvas.style.display = "none";
+      } else {
+        ctx.canvas.style.display = "block";
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+      }
     }
   }
 

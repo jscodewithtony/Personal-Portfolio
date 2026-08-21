@@ -16,7 +16,7 @@ import Logo from "./Logo";
 // Sanity states so the menu is never left with nothing to show. "About"
 // now points at the dedicated /about route instead of a same-page anchor.
 const FALLBACK_LINKS = [
-  { label: "Work", link: "#" },
+  { label: "Work", link: "/work" },
   { label: "About", link: "/about" },
   { label: "Contact", link: "#" },
   { label: "Resume", link: "#" },
@@ -125,7 +125,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
       aria-modal="true"
       aria-label="Site navigation"
       aria-hidden={!open}
-      className="fixed inset-0 z-50 hidden flex-col overflow-y-auto bg-[#114AFC] px-5 pb-10 pt-6 text-white"
+      className="fixed inset-0 z-50 hidden flex-col overflow-y-auto bg-[#114AFC] dark:bg-[#0c0a14] px-5 pb-10 pt-6 text-white"
       style={{ clipPath: "circle(1% at 90% 8%)" }}
     >
       <div ref={contentRef} className="flex flex-1 flex-col">
@@ -150,7 +150,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         </div>
 
         {/* Nav links — left-aligned, stacked (adjusted margin-top to clear Header) */}
-        <nav className="mt-32 flex flex-col items-start gap-8 sm:mt-40">
+        <nav className="mt-24 flex flex-col items-start gap-5 sm:mt-40 sm:gap-8">
           {links.map((item, i) => {
             const isRoute = item.link?.startsWith("/");
 
@@ -184,8 +184,8 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         </nav>
 
         {/* Contact + Social footer */}
-        <div className="mt-12 flex flex-col gap-8 pt-4">
-          <div className="flex flex-col items-start gap-3">
+        <div className="mt-8 flex flex-col gap-6 pt-4 sm:mt-12 sm:gap-8">
+          <div className="flex flex-col items-start gap-1.5 sm:gap-3">
             <p className="font-display text-sm font-normal uppercase tracking-wide text-white/80">
               Contact
             </p>
@@ -197,11 +197,11 @@ function MenuOverlay({ open, onClose, anchorRef }) {
               {CONTACT_EMAIL}
             </a>
           </div>
-          <div className="flex flex-col items-start gap-4">
+          <div className="flex flex-col items-start gap-3 sm:gap-4">
             <p className="font-display text-sm font-normal uppercase tracking-wide text-white/80">
               Social
             </p>
-            <div className="flex flex-col items-start gap-3">
+            <div className="flex flex-col items-start gap-2 sm:gap-3">
               {SOCIAL_LINKS.map(({ label, href }) => (
                 <a
                   key={label}

@@ -8,5 +8,19 @@ export default defineConfig({
   server: {
     host: true,
   },
+  build: {
+    rolldownOptions: {
+      moduleTypes: {
+        '.js': 'jsx',
+      },
+    },
+  },
+  optimizeDeps: {
+    rolldownOptions: {
+      moduleTypes: {
+        '.js': 'jsx',
+      },
+    },
+  },
 })
 

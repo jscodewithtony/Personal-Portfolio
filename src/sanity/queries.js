@@ -66,7 +66,8 @@ export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOr
   industry,
   role,
   displayOrder,
-  externalLink
+  externalLink,
+  projectInfoFields[]{ label, fieldType, textValue, selectValue, numberValue }
 }`;
 
 export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.current == $slug][0]{

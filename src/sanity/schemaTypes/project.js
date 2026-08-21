@@ -192,6 +192,17 @@ export default {
               hidden: ({ parent }) => parent?.fieldType !== "number",
             },
           ],
+          // The Work index page resolves "Year" specifically by matching
+          // this label (case-insensitive) and requires it to be a Number
+          // row — this warns editors at entry time rather than silently
+          // failing to resolve later.
+          validation: (Rule) =>
+            Rule.custom((value) => {
+              if (value?.label?.trim().toLowerCase() === "year" && value?.fieldType !== "number") {
+                return 'When Label is "Year", Value Type should be Number so it can be picked up as the project year.';
+              }
+              return true;
+            }).warning(),
           preview: {
             select: {
               label: "label",

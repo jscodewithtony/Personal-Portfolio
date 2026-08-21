@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
-    "@portabletext/react": "^7.0.1",
-    "@sanity/client": "^7.26.2",
+    "@portabletext/react": "^8.0.0",
+    "@sanity/client": "^8.2.0",
     "@sanity/color-input": "^6.1.2",
     "@sanity/image-url": "^2.1.1",
     "@sanity/vision": "^6.9.1",
@@ -42,5 +42,8 @@
     "postcss": "^8.5.25",
     "tailwindcss": "^4.3.3",
     "vite": "^8.2.0"
+  },
+  "overrides": {
+    "js-yaml": "^4.1.0"
   }
 }

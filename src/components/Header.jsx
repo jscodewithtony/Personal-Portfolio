@@ -10,7 +10,7 @@ import Logo from "./Logo";
 // behavior is unchanged.
 const NAV_LINKS = [
   { label: "About", to: "/about" },
-  { label: "Work", to: "/#featured-projects" },
+  { label: "Work", to: "/work" },
   { label: "Contact", to: "/#contact" },
 ];
 
@@ -132,13 +132,13 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           aria-expanded={menuOpen}
           aria-controls="site-menu"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className={`flex items-center gap-1.5 font-display font-black text-sm sm:text-base md:text-lg uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden ${menuOpen ? "text-white" : "text-ink dark:text-white"
+          className={`flex items-center gap-2 font-display font-black text-lg sm:text-xl md:text-2xl uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden ${menuOpen ? "text-white" : "text-ink dark:text-white"
             }`}
         >
           MENU
           <span
             aria-hidden="true"
-            className={`inline-block transition-transform duration-500 ${menuOpen ? "rotate-45" : "rotate-0"
+            className={`inline-block text-xl sm:text-2xl font-normal transition-transform duration-500 ${menuOpen ? "rotate-45" : "rotate-0"
               }`}
           >
             +
