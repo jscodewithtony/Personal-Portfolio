@@ -343,59 +343,55 @@ function WorkIndex() {
       <section
         ref={sectionRef}
         id="work-index"
-        className="relative w-full overflow-hidden bg-bg pl-6 text-ink transition-colors duration-300 md:pl-12 lg:pl-24 dark:bg-[#0c0a14] dark:text-white"
+        className="relative w-full overflow-hidden bg-bg pl-6 text-ink transition-colors duration-300 md:pl-12 lg:pl-18 dark:bg-[#0c0a14] dark:text-white"
       >
-      {/* Desktop/tablet — pinned, scrub-synced two-column layout. */}
-      <div className="hidden h-screen w-full lg:grid lg:grid-cols-2 lg:gap-x-16">
-        <div className="relative overflow-hidden">
-          <ul
-            ref={listRef}
-            className="flex flex-col gap-4"
-            style={{ paddingTop: "calc(45vh - 1rem)" }}
-          >
-            {projects.map((project, i) => (
-              <li key={project.id}>
-                <button
-                  ref={(el) => (rowRefs.current[i] = el)}
-                  type="button"
-                  onClick={() => handleRowClick(i)}
-                  onFocus={() => handleRowFocus(i)}
-                  aria-current={activeIndex === i ? "true" : undefined}
-                  className="block text-left font-display text-5xl font-bold uppercase leading-tight tracking-tight text-ink focus:outline-none focus-visible:underline xl:text-6xl dark:text-white"
-                  style={{ opacity: activeIndex === i ? 1 : 0.3 }}
-                >
-                  {project.title}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="relative flex flex-col justify-center">
-          <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
-            <MediaLayer project={slots[0]} mediaRef={mediaRefs[0]} />
-            <MediaLayer project={slots[1]} mediaRef={mediaRefs[1]} />
+        {/* Desktop/tablet — pinned, scrub-synced two-column layout. */}
+        <div className="hidden h-screen w-full lg:grid lg:grid-cols-2 lg:gap-x-60">
+          <div className="relative flex flex-col justify-center">
+            <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
+              <MediaLayer project={slots[0]} mediaRef={mediaRefs[0]} />
+              <MediaLayer project={slots[1]} mediaRef={mediaRefs[1]} />
+            </div>
+            <div className="relative mt-6 grid">
+              <MetaPanel project={slots[0]} metaRef={metaRefs[0]} />
+              <MetaPanel project={slots[1]} metaRef={metaRefs[1]} />
+            </div>
           </div>
-          <div className="relative mt-6 grid">
-            <MetaPanel project={slots[0]} metaRef={metaRefs[0]} />
-            <MetaPanel project={slots[1]} metaRef={metaRefs[1]} />
+
+          <div className="relative overflow-hidden">
+            <ul
+              ref={listRef}
+              className="flex flex-col gap-4"
+              style={{ paddingTop: "calc(45vh - 1rem)" }}
+            >
+              {projects.map((project, i) => (
+                <li key={project.id}>
+                  <div
+                    ref={(el) => (rowRefs.current[i] = el)}
+                    className="block text-left font-display text-5xl font-bold uppercase leading-tight tracking-tight text-ink xl:text-6xl dark:text-white"
+                    style={{ opacity: activeIndex === i ? 1 : 0.3 }}
+                  >
+                    {project.title}
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </div>
 
-      {/* Below 1024px (Figma node 736:1009) — no pin, no scrub, no
+        {/* Below 1024px (Figma node 736:1009) — no pin, no scrub, no
           odometer: a single active project up top, the rest listed
           below at the dim/inactive token. Tapping a name calls the
           same handleSelect the desktop path's onFocus uses, so both
           breakpoints drive the identical activeIndex/slots state. */}
-      <div className="lg:hidden">
-        <MobileWork
-          projects={projects}
-          activeIndex={activeIndex}
-          onSelect={handleSelect}
-        />
-      </div>
-    </section>
+        <div className="lg:hidden">
+          <MobileWork
+            projects={projects}
+            activeIndex={activeIndex}
+            onSelect={handleSelect}
+          />
+        </div>
+      </section>
     </>
   );
 }
