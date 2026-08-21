@@ -333,7 +333,7 @@ function WorkIndex() {
           same scale CaseStudy.jsx already uses for its own giant
           display title, rather than the raw 224px/56.8px Figma values
           (each tuned for one fixed frame width). */}
-      <section className="bg-bg pl-6 pt-20 pb-12 sm:pb-16 text-ink transition-colors duration-300 md:pl-12 lg:pl-24 dark:bg-[#0c0a14] dark:text-white">
+      <section className="bg-bg pl-6 pt-20 pb-12 sm:pb-16 text-ink transition-colors duration-300 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white">
         <h2 className="font-display text-5xl font-extrabold uppercase leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
           Every move
           <br />
@@ -343,10 +343,10 @@ function WorkIndex() {
       <section
         ref={sectionRef}
         id="work-index"
-        className="relative w-full overflow-hidden bg-bg pl-6 text-ink transition-colors duration-300 md:pl-12 lg:pl-18 dark:bg-[#0c0a14] dark:text-white"
+        className="relative w-full overflow-hidden bg-bg pl-6 text-ink transition-colors duration-300 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white"
       >
         {/* Desktop/tablet — pinned, scrub-synced two-column layout. */}
-        <div className="hidden h-screen w-full lg:grid lg:grid-cols-2 lg:gap-x-60">
+        <div className="hidden h-screen w-full lg:grid lg:grid-cols-2 lg:gap-x-24">
           <div className="relative flex flex-col justify-center">
             <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
               <MediaLayer project={slots[0]} mediaRef={mediaRefs[0]} />
