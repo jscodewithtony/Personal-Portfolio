@@ -19,17 +19,17 @@ const SWEEP_OUT_EASE = "power3.out";
 // deceleration tail, matching the "dissolves" not "gently grows" brief.
 const EXIT_SCALE_EASE = "power2.in";
 
-const SWEEP_IN_DURATION = 0.55;
-const HOLD_SECONDS = 0.05;
-const SWEEP_OUT_DURATION = 0.25;
+const SWEEP_IN_DURATION = 0.35;
+const HOLD_SECONDS = 0.02;
+const SWEEP_OUT_DURATION = 0.2;
 // This overlay's own <Shuffle> instance is intentionally slower here
 // than Hero.jsx's original 0.55s — Hero's own source/timing is
 // untouched; only the props passed to this separate instance changed.
-const SHUFFLE_DURATION = 0.9;
+const SHUFFLE_DURATION = 0.45;
 // Text exit: scales up aggressively from the center while fading out,
 // large enough to overflow the viewport and clip at the edges (the
 // overlay's own `overflow-hidden` handles the clipping).
-const EXIT_DURATION = 0.8;
+const EXIT_DURATION = 0.4;
 const EXIT_SCALE_TARGET = 3.5;
 
 function isDarkMode() {
