@@ -269,7 +269,7 @@ function WorkIndex() {
       const st = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: () => `+=${(projects.length - 1) * window.innerHeight * 0.9 + window.innerHeight}`,
+        end: () => `+=${(projects.length - 1) * window.innerHeight * 0.4 + window.innerHeight}`,
         pin: true,
         scrub: true,
         anticipatePin: 1,
