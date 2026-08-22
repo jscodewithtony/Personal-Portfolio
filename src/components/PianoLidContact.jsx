@@ -44,7 +44,7 @@ function PianoLidContact({
             the two-column row rather than stacked inside the left column. */}
         <h2
           className={
-            "select-none font-display text-5xl font-black uppercase leading-[1] tracking-tight sm:text-4xl md:text-8xl lg:text-[10rem] mb-10 sm:mb-12 md:mb-14 text-center " +
+            "select-none font-display text-5xl font-black uppercase leading-[1  ] tracking-tight sm:text-3xl md:text-8xl lg:text-[10rem] mb-10 sm:mb-12 md:mb-14 text-center " +
             (isAbout ? "text-white dark:text-[#fafafa]" : "text-ink dark:text-white")
           }
         >
