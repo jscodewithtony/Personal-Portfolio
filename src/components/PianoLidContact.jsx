@@ -75,17 +75,6 @@ function PianoLidContact({
             >
               {email}
             </a>
-            <a
-              href={ctaHref}
-              className={
-                "w-fit select-none px-6 py-4 font-display text-base font-bold uppercase tracking-tight transition-colors sm:px-8 sm:py-5 sm:text-xl " +
-                (isAbout
-                  ? "bg-[#e3f900] text-[#161616] hover:bg-[#c7db00] active:bg-[#a8ba00]"
-                  : "bg-primary text-white hover:bg-primary-dark active:bg-primary-active dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2]")
-              }
-            >
-              {ctaLabel}
-            </a>
           </div>
 
           {/* Right: nav + social columns */}
