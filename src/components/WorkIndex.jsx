@@ -65,8 +65,8 @@ function MetaPanel({ project, metaRef, compact }) {
   const gridCols = compact ? "grid-cols-[170px_1fr]" : "grid-cols-[140px_1fr]";
   const rowGap = compact ? "gap-3" : "gap-6";
   const rowPad = compact ? "py-3" : "py-4";
-  const labelSize = compact ? "text-[12px] leading-[21px]" : "text-sm";
-  const valueSize = compact ? "text-[10px] leading-normal" : "text-sm leading-relaxed";
+  const labelSize = compact ? "text-[12px] leading-[21px]" : "text-lg";
+  const valueSize = compact ? "text-[10px] leading-normal" : "text-lg leading-relaxed";
   return (
     <div ref={metaRef} className={`col-start-1 row-start-1 flex flex-col ${metaRef ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
       {project.overview && (
@@ -89,13 +89,21 @@ function MetaPanel({ project, metaRef, compact }) {
         </div>
       )}
       {project.slug && (
-        <Link
-          to={`/projects/${project.slug}`}
-          data-transition-label={project.title}
-          className={`mt-2 inline-block font-display ${compact ? "text-[12px]" : "text-sm"} normal-case tracking-wide text-primary transition-opacity hover:opacity-70`}
-        >
-          View Case study →
-        </Link>
+        compact ? (
+          <Link
+            to={`/projects/${project.slug}`}
+            data-transition-label={project.title}
+            className={`mt-2 inline-block font-display text-[12px] normal-case tracking-wide text-primary transition-opacity hover:opacity-70`}
+          >
+            View Case study →
+          </Link>
+        ) : (
+          <span
+            className={`mt-2 inline-block font-display text-sm normal-case tracking-wide text-primary transition-opacity hover:opacity-70`}
+          >
+            View Case study →
+          </span>
+        )
       )}
     </div>
   );
@@ -181,6 +189,49 @@ function WorkIndex() {
   const reduceMotionRef = useRef(false);
   useLayoutEffect(() => {
     reduceMotionRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  // Mouse & Custom Cursor Refs (no re-renders, 60fps persistent RAF)
+  const followerRef = useRef(null);
+  const mousePosRef = useRef({ x: -200, y: -200 });
+  const posRef = useRef({ x: -200, y: -200 });
+  const scaleRef = useRef(0);
+  const activeHoverCardRef = useRef(false);
+
+  useEffect(() => {
+    // Only run on desktop/fine pointer devices
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    if (isTouch) return;
+
+    const handleMouseMove = (e) => {
+      mousePosRef.current = { x: e.clientX, y: e.clientY };
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+
+    let animId;
+    const tick = () => {
+      posRef.current.x += (mousePosRef.current.x - posRef.current.x) * 0.2;
+      posRef.current.y += (mousePosRef.current.y - posRef.current.y) * 0.2;
+
+      const targetScale = activeHoverCardRef.current ? 1 : 0;
+      scaleRef.current += (targetScale - scaleRef.current) * 0.22;
+
+      if (followerRef.current) {
+        followerRef.current.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0) translate(-50%, -50%) scale(${scaleRef.current})`;
+        followerRef.current.style.opacity = scaleRef.current > 0.01 ? "1" : "0";
+      }
+
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+
+    return () => {
+      document.body.dataset.cursorProjectHover = "false";
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (animId) cancelAnimationFrame(animId);
+    };
   }, []);
 
   // Seed slot 0 with the initially-active project once data arrives.
@@ -333,6 +384,20 @@ function WorkIndex() {
 
   return (
     <>
+      {/* SCOPED CUSTOM CIRCULAR CURSOR FOLLOWER */}
+      <div
+        ref={followerRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed top-0 left-0 z-50 flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-primary text-white shadow-2xl shadow-primary/40 opacity-0 will-change-transform dark:bg-[#114AFC] dark:shadow-[#114AFC]/40"
+        style={{ transform: "translate3d(-200px, -200px, 0) translate(-50%, -50%) scale(0)" }}
+      >
+        <div className="select-none font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-center leading-[1.15] text-white drop-shadow-sm">
+          VIEW
+          <br />
+          PROJECT
+        </div>
+      </div>
+
       {/* Figma: node 735:869 (desktop) / 736:1009 (mobile) — "Every move
           so far" headline sits above the list on both breakpoints, per
           the mobile frame — kept visible at every width. Sized off the
@@ -353,7 +418,19 @@ function WorkIndex() {
       >
         {/* Desktop/tablet — pinned, scrub-synced two-column layout. */}
         <div className="hidden h-screen w-full lg:grid lg:grid-cols-2 lg:gap-x-24">
-          <div className="relative flex flex-col justify-center">
+          <Link
+            to={projects[activeIndex]?.slug ? `/projects/${projects[activeIndex].slug}` : "#"}
+            data-transition-label={projects[activeIndex]?.title}
+            onMouseEnter={() => {
+              activeHoverCardRef.current = true;
+              document.body.dataset.cursorProjectHover = "true";
+            }}
+            onMouseLeave={() => {
+              activeHoverCardRef.current = false;
+              document.body.dataset.cursorProjectHover = "false";
+            }}
+            className="relative flex flex-col justify-center group cursor-pointer lg:cursor-none text-ink dark:text-white hover:no-underline"
+          >
             <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
               <MediaLayer project={slots[0]} mediaRef={mediaRefs[0]} />
               <MediaLayer project={slots[1]} mediaRef={mediaRefs[1]} />
@@ -362,7 +439,7 @@ function WorkIndex() {
               <MetaPanel project={slots[0]} metaRef={metaRefs[0]} />
               <MetaPanel project={slots[1]} metaRef={metaRefs[1]} />
             </div>
-          </div>
+          </Link>
 
           <div className="relative overflow-hidden">
             <ul
