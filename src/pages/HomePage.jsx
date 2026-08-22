@@ -5,10 +5,9 @@ import Hero from "../components/Hero";
 import About from "../components/About";
 import CanvasCursor from "../components/CanvasCursor";
 import MenuOverlay from "../components/MenuOverlay";
-import LazyScroll from "../components/LazyScroll";
 
 // Each of these is already deferred to mount only once scrolled near
-// (via <LazyScroll> below) — lazy-importing them too means their JS
+// lazy-importing them too means their JS
 // (Stats pulls in the full three.js library for its 3D cube) isn't
 // even downloaded until then either, instead of loading eagerly with
 // the rest of the homepage bundle regardless of scroll position.
@@ -52,41 +51,29 @@ function HomePage({ theme, onToggleTheme }) {
       <Hero />
       <About theme={theme} />
 
-      <LazyScroll placeholderHeight="200px">
-        <Suspense fallback={null}>
-          <Statement />
-        </Suspense>
-      </LazyScroll>
+      <Suspense fallback={null}>
+        <Statement />
+      </Suspense>
 
-      <LazyScroll placeholderHeight="100vh">
-        <Suspense fallback={null}>
-          <FeaturedProjects />
-        </Suspense>
-      </LazyScroll>
+      <Suspense fallback={null}>
+        <FeaturedProjects />
+      </Suspense>
 
-      <LazyScroll placeholderHeight="100vh">
-        <Suspense fallback={null}>
-          <Stats theme={theme} />
-        </Suspense>
-      </LazyScroll>
+      <Suspense fallback={null}>
+        <Stats theme={theme} />
+      </Suspense>
 
-      <LazyScroll placeholderHeight="600px">
-        <Suspense fallback={null}>
-          <MentorshipTestimonials theme={theme} />
-        </Suspense>
-      </LazyScroll>
+      <Suspense fallback={null}>
+        <MentorshipTestimonials theme={theme} />
+      </Suspense>
 
-      <LazyScroll placeholderHeight="400px">
-        <Suspense fallback={null}>
-          <Insight />
-        </Suspense>
-      </LazyScroll>
+      <Suspense fallback={null}>
+        <Insight />
+      </Suspense>
 
-      <LazyScroll placeholderHeight="400px">
-        <Suspense fallback={null}>
-          <Footer />
-        </Suspense>
-      </LazyScroll>
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
 
       <MenuOverlay
         open={menuOpen}

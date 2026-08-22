@@ -120,7 +120,7 @@ function Insight() {
       <div className="mx-auto flex w-full flex-col gap-12 sm:gap-14 md:gap-16">
         <h2
           ref={headlineRef}
-          className="select-none font-display text-6xl font-black uppercase leading-[0.85] tracking-tight text-ink dark:text-white sm:text-7xl md:text-8xl"
+          className="select-none font-display text-6xl font-black uppercase leading-[0.85] tracking-tight text-ink dark:text-white sm:text-7xl md:text-8xl text-center"
         >
           Insight
         </h2>

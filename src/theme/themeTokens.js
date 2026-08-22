@@ -5,7 +5,7 @@
 // Sanity connectivity.
 export const LIGHT_THEME_DEFAULTS = {
   name: "Light",
-  primaryAccent: "#114AFC",
+  primaryAccent: "#0D38BF",
   primaryAccentHover: "#022CDB",
   backgroundColor: "#F9F9F9",
   textColor: "#0d0c14",

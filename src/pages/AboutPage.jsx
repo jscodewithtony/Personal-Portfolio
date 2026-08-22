@@ -9,10 +9,9 @@ import travelCollageImg from "../assets/about-page/travel-collage.webp";
 import iconMark from "../assets/about-page/icon-mark.svg";
 import tonyBlueImg from "../assets/about-page/tony-blue-strong-full.jpg";
 import resumeBgImg from "../assets/about-page/Resume-background.png";
-import CursorImageTrail from "../components/CursorImageTrail";
-import LazyScroll from "../components/LazyScroll";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import CursorImageTrail from "../components/CursorImageTrail";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -584,8 +583,7 @@ function AboutPage({ theme, onToggleTheme }) {
       />
 
       <main ref={mainRef} className="overflow-hidden">
-        {/* 547:715 — Hero headline with Cursor Image Trail */}
-        <CursorImageTrail
+        {/* <CursorImageTrail
           onMouseEnter={() => {
             document.body.dataset.cursorTrailHover = "true";
           }}
@@ -593,13 +591,13 @@ function AboutPage({ theme, onToggleTheme }) {
             document.body.dataset.cursorTrailHover = "false";
           }}
           style={{ width: "100%", height: "auto", overflow: "visible" }}
-        >
+        > */}
           <WordHeadline
             text={heroHeadline}
             className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-8xl lg:text-[16rem]"
             animated={false}
           />
-        </CursorImageTrail>
+        {/* </CursorImageTrail> */}
 
         {/* 547:763/764 — yellow ambient marquee band. Always dark text
             on the bright highlight, unchanged across both themes. */}
@@ -860,16 +858,13 @@ function AboutPage({ theme, onToggleTheme }) {
           </div>
         </div>
 
-        {/* 568:1345 — travel collage image(s) replaced with AntiGravityGallery */}
         <div className="w-full mt-16 mb-24 sm:mt-20 sm:mb-32 md:mb-40">
-          <LazyScroll placeholderHeight="100vh">
-            <Suspense fallback={null}>
-              <AntiGravityGallery
-                headline={exploringIndiaHeadline}
-                cards={galleryCards}
-              />
-            </Suspense>
-          </LazyScroll>
+          <Suspense fallback={null}>
+            <AntiGravityGallery
+              headline={exploringIndiaHeadline}
+              cards={galleryCards}
+            />
+          </Suspense>
         </div>
       </main>
 

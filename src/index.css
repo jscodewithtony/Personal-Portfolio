@@ -6,7 +6,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #114AFC;
+  --color-primary: #0D38BF;
   --color-primary-dark: #022CDB;
   /* hover */
   --color-primary-active: #0013B2;
@@ -52,7 +52,7 @@
 .site-shell footer,
 .site-shell section {
   background-size: 72px 72px;
-  background-image: 
+  background-image:
     linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
 }
