@@ -29,7 +29,7 @@ const SHUFFLE_DURATION = 0.45;
 // Text exit: scales up aggressively from the center while fading out,
 // large enough to overflow the viewport and clip at the edges (the
 // overlay's own `overflow-hidden` handles the clipping).
-const EXIT_DURATION = 0.4;
+const EXIT_DURATION = 0.8;
 const EXIT_SCALE_TARGET = 3.5;
 
 function isDarkMode() {
