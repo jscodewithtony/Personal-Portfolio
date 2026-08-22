@@ -18,7 +18,7 @@ import Logo from "./Logo";
 const FALLBACK_LINKS = [
   { label: "Work", link: "/work" },
   { label: "About", link: "/about" },
-  { label: "Contact", link: "#" },
+  { label: "Say Hi", link: "mailto:tony2742000@gmail.com" },
   { label: "Resume", link: "#" },
 ];
 

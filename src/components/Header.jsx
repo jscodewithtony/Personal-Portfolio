@@ -11,7 +11,7 @@ import Logo from "./Logo";
 const NAV_LINKS = [
   { label: "About", to: "/about" },
   { label: "Work", to: "/work" },
-  { label: "Contact", to: "/#contact" },
+  { label: "Say Hi", to: "mailto:tony2742000@gmail.com", isExternal: true },
 ];
 
 // Minimum scroll delta (px) before a direction change is acted on —
@@ -82,15 +82,25 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
       {/* Desktop nav links — right-anchored, sitting just before the
           theme toggle rather than spread across the header. */}
       <nav className="hidden lg:ml-auto lg:mr-12 lg:flex lg:items-center lg:gap-8">
-        {NAV_LINKS.map((item) => (
-          <Link
-            key={item.label}
-            to={item.to}
-            className="font-display text-[20px] font-normal normal-case tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
-          >
-            {item.label}
-          </Link>
-        ))}
+        {NAV_LINKS.map((item) =>
+          item.isExternal ? (
+            <a
+              key={item.label}
+              href={item.to}
+              className="font-display text-[20px] font-normal normal-case tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
+            >
+              {item.label}
+            </a>
+          ) : (
+            <Link
+              key={item.label}
+              to={item.to}
+              className="font-display text-[20px] font-normal normal-case tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
+            >
+              {item.label}
+            </Link>
+          )
+        )}
       </nav>
 
       <div className="flex items-center gap-4 sm:gap-6 md:gap-8">

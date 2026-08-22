@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 // Contact / outro section sitting directly above the piano keyboard in
 // Footer.jsx — flat panel (no piano-lid silhouette), synced from Figma
 // file I84MayZQYr2Bri3Se2lfRT, node 412:95. Supports light/dark theme,
@@ -30,6 +32,30 @@ function PianoLidContact({
 }) {
   const isAbout = variant === "about";
 
+  const [indiaTime, setIndiaTime] = useState(() => {
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(new Date());
+  });
+
+  useEffect(() => {
+    const updateTime = () => {
+      setIndiaTime(
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).format(new Date())
+      );
+    };
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section
       id="contact"
@@ -40,11 +66,12 @@ function PianoLidContact({
       }
     >
       <div className="relative z-10 w-full px-6 pt-14 pb-10 sm:px-10 sm:pt-16 sm:pb-12 md:px-14 md:pt-20 md:pb-14 lg:px-16">
-        {/* Standalone headline for the whole contact block, sitting above
-            the two-column row rather than stacked inside the left column. */}
+        <p className="select-none font-display text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#5F87FF] dark:text-[#8ba7ff] mb-3 text-left md:text-center">
+          Get In Touch
+        </p>
         <h2
           className={
-            "select-none font-display text-5xl font-black uppercase leading-[1  ] tracking-tight sm:text-3xl md:text-8xl lg:text-[10rem] mb-10 sm:mb-12 md:mb-14 text-center " +
+            "select-none font-display text-5xl font-black uppercase leading-[1 ] tracking-tight sm:text-3xl md:text-8xl lg:text-[10rem] mb-10 sm:mb-12 md:mb-14 text-left md:text-center " +
             (isAbout ? "text-white dark:text-[#fafafa]" : "text-ink dark:text-white")
           }
         >
@@ -61,31 +88,36 @@ function PianoLidContact({
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
           {/* Left: eyebrow, email CTA, book-a-call button */}
           <div className="flex flex-col items-start gap-5 sm:gap-6 lg:col-span-7">
-            <p
-              className={
-                "select-none font-display text-xs sm:text-sm md:text-base font-semibold uppercase tracking-[0.25em] " +
-                (isAbout ? "text-[#e3f900]" : "text-primary dark:text-[#7F9DFD]")
-              }
-            >
-              {eyebrow}
-            </p>
             <a
               href={`mailto:${email}`}
-              className="block select-none whitespace-nowrap font-display text-xl font-black leading-[1.04] tracking-tight transition-opacity hover:opacity-70 sm:text-2xl md:text-3xl lg:text-2xl xl:text-7xl"
+              className="block select-none whitespace-nowrap font-normal normal-case text-2xl font-semibold leading-[1.04] tracking-tight transition-opacity hover:opacity-70 sm:text-xl md:text-3xl lg:text-2xl xl:text-6xl"
             >
               {email}
             </a>
           </div>
 
           {/* Right: social column */}
-          <div className="flex flex-col gap-3 font-display text-sm font-medium uppercase sm:gap-4 sm:text-base md:text-lg lg:col-span-5 lg:items-end">
+          <div className="flex flex-row flex-wrap gap-x-6 gap-y-2 font-display text-sm font-medium uppercase sm:gap-x-8 sm:gap-y-3 sm:text-base md:text-lg lg:col-span-5 lg:justify-end lg:items-end">
             {SOCIAL_LINKS.map(({ label, href }) => (
               <a
                 key={label}
                 href={href}
-                className="w-fit transition-opacity hover:opacity-70"
+                className="group flex w-fit items-center gap-1.5 transition-opacity hover:opacity-70 whitespace-nowrap"
               >
-                {label}
+                <span>{label}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                >
+                  <line x1="7" y1="17" x2="17" y2="7"></line>
+                  <polyline points="7 7 17 7 17 17"></polyline>
+                </svg>
               </a>
             ))}
           </div>
@@ -100,7 +132,7 @@ function PianoLidContact({
               : "border-t border-black/10 text-ink/70 dark:border-white/10 dark:text-white/70")
           }
         >
-          <p className="select-none">New Delhi, India: (GMT +5:30) 12:45</p>
+          <p className={`select-none text-base sm:text-lg font-semibold ${isAbout ? "text-white" : "text-ink dark:text-white"}`}>New Delhi, India: (GMT +5:30) {indiaTime}</p>
           <p className="select-none">© 2026 · Made by I&apos;m Tony, not Framer</p>
         </div>
       </div>
