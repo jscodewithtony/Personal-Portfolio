@@ -58,33 +58,47 @@ function HomePage({ theme, onToggleTheme }) {
         onToggleTheme={onToggleTheme}
       />
       <Hero />
-      <About theme={theme} />
+      <div>
+        <About theme={theme} />
+      </div>
 
       {introFinished && (
         <>
-          <Suspense fallback={null}>
-            <Statement />
-          </Suspense>
+          <div>
+            <Suspense fallback={null}>
+              <Statement />
+            </Suspense>
+          </div>
 
-          <Suspense fallback={null}>
-            <FeaturedProjects />
-          </Suspense>
+          <div>
+            <Suspense fallback={null}>
+              <FeaturedProjects />
+            </Suspense>
+          </div>
 
-          <Suspense fallback={null}>
-            <Stats theme={theme} />
-          </Suspense>
+          <div>
+            <Suspense fallback={null}>
+              <Stats theme={theme} />
+            </Suspense>
+          </div>
 
-          <Suspense fallback={null}>
-            <MentorshipTestimonials theme={theme} />
-          </Suspense>
+          <div>
+            <Suspense fallback={null}>
+              <MentorshipTestimonials theme={theme} />
+            </Suspense>
+          </div>
 
-          <Suspense fallback={null}>
-            <Insight />
-          </Suspense>
+          <div>
+            <Suspense fallback={null}>
+              <Insight />
+            </Suspense>
+          </div>
 
-          <Suspense fallback={null}>
-            <Footer />
-          </Suspense>
+          <div>
+            <Suspense fallback={null}>
+              <Footer />
+            </Suspense>
+          </div>
         </>
       )}
 
