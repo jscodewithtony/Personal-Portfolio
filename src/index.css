@@ -49,7 +49,6 @@
 
 /* Global Grid Overlay with minimal visibility, scoped to render as the background-image of sections, header, and footer */
 .site-shell header,
-.site-shell footer,
 .site-shell section {
   background-size: 72px 72px;
   background-image:
