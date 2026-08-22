@@ -277,6 +277,17 @@ function About({ theme }) {
         ref={bgLayerRef}
         className="pointer-events-none absolute inset-0 z-0 bg-primary dark:bg-[#114AFC]"
       />
+      {/* Grid overlay for About section background */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          backgroundSize: "72px 72px",
+          backgroundImage: `
+            linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px)
+          `
+        }}
+      />
 
       <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 gap-y-14 md:grid-cols-12 md:gap-x-8 md:gap-y-24">
         {/* Headline with Interactive Play Button & Single-Word Marquee Box */}
