@@ -31,7 +31,7 @@ function PianoLidContact({
   const isAbout = variant === "about";
 
   return (
-    <div
+    <section
       id="contact"
       className={
         isAbout
@@ -128,7 +128,7 @@ function PianoLidContact({
           <p className="select-none">© 2026 · Made by I&apos;m Tony, not Framer</p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
