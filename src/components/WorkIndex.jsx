@@ -272,6 +272,12 @@ function WorkIndex() {
         end: () => `+=${(projects.length - 1) * window.innerHeight * 0.4 + window.innerHeight}`,
         pin: true,
         scrub: true,
+        snap: {
+          snapTo: projects.length > 1 ? 1 / (projects.length - 1) : 0,
+          duration: { min: 0.25, max: 0.45 },
+          delay: 0.05,
+          ease: "power2.inOut",
+        },
         anticipatePin: 1,
         onRefresh: () => {
           rowHeight = rows[0]?.getBoundingClientRect().height || rowHeight;
