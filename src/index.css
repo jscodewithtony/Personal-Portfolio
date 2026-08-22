@@ -11,7 +11,7 @@
   /* hover */
   --color-primary-active: #0013B2;
   /* focused / pressed */
-  --color-bg: #F9F9F9;
+  --color-bg: #F6EFDC;
   --color-ink: #0d0c14;
   --color-cream: #f3efe3;
   /* Stats section's big figures ("20+" etc). Same value as --color-ink
