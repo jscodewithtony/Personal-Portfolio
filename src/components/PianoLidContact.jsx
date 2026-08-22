@@ -77,30 +77,17 @@ function PianoLidContact({
             </a>
           </div>
 
-          {/* Right: nav + social columns */}
-          <div className="grid grid-cols-2 gap-8 sm:gap-10 lg:col-span-5 lg:justify-items-end">
-            <div className="flex flex-col gap-3 font-display text-sm font-medium uppercase sm:gap-4 sm:text-base md:text-lg">
-              {NAV_LINKS.map(({ label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  className="w-fit transition-opacity hover:opacity-70"
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
-            <div className="flex flex-col gap-3 font-display text-sm font-medium uppercase sm:gap-4 sm:text-base md:text-lg">
-              {SOCIAL_LINKS.map(({ label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  className="w-fit transition-opacity hover:opacity-70"
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
+          {/* Right: social column */}
+          <div className="flex flex-col gap-3 font-display text-sm font-medium uppercase sm:gap-4 sm:text-base md:text-lg lg:col-span-5 lg:items-end">
+            {SOCIAL_LINKS.map(({ label, href }) => (
+              <a
+                key={label}
+                href={href}
+                className="w-fit transition-opacity hover:opacity-70"
+              >
+                {label}
+              </a>
+            ))}
           </div>
         </div>
 
