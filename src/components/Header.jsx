@@ -31,7 +31,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
       const now = new Date();
       const timeStr = new Intl.DateTimeFormat("en-US", {
         timeZone: "Asia/Kolkata",
-        hour: "numeric",
+        hour: "2-digit",
         minute: "2-digit",
         hour12: true,
       }).format(now);
