@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import PianoLidContact from "./PianoLidContact";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { footerContactQuery } from "../sanity/queries";
 
 // --- 3 OCTAVES PIANO NOTES (C3 to C6: 22 White Keys, 15 Black Keys) ---
 const PIANO_NOTES = [
@@ -78,6 +80,27 @@ function getMidiFrequency(midi) {
 // passes them, so Home and CaseStudy keep rendering exactly as before.
 function Footer({ variant = "site", contactContent }) {
   const isAbout = variant === "about";
+
+  // Footer Contact singleton — the default "site" variant's content
+  // source. AboutPage's own explicit `contactContent` override (sourced
+  // from its own aboutPage document) still wins per-field below, since
+  // spreading `undefined` for a key that isn't in the singleton doc
+  // just falls through to PianoLidContact's own default parameter.
+  const { data: footerDoc } = useSanityQuery(footerContactQuery, {}, null);
+  const sanityContactContent = footerDoc
+    ? {
+        eyebrow: footerDoc.eyebrow,
+        headlineLines: footerDoc.heading ? footerDoc.heading.split("\n") : undefined,
+        email: footerDoc.email,
+        socialLinks: footerDoc.socialLinks?.length
+          ? footerDoc.socialLinks.map(({ label, url }) => ({ label, href: url }))
+          : undefined,
+        location: footerDoc.location,
+        timezone: footerDoc.timezone,
+        copyrightSuffix: footerDoc.copyrightSuffix,
+      }
+    : undefined;
+  const mergedContactContent = { ...sanityContactContent, ...contactContent };
   const [activeKeys, setActiveKeys] = useState(new Set());
 
   const footerRef = useRef(null);
@@ -571,7 +594,7 @@ function Footer({ variant = "site", contactContent }) {
       />
 
       {/* Contact / outro panel */}
-      <PianoLidContact variant={variant} {...contactContent} />
+      <PianoLidContact variant={variant} {...mergedContactContent} />
 
       {/* --- 100% FULL WIDTH EDGE-TO-EDGE TALL PIANO KEYBOARD --- */}
       <div

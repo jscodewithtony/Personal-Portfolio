@@ -16,12 +16,36 @@ const SOCIAL_LINKS = [
   { label: "Instagram", href: "#" },
 ];
 
+// Formats the live clock + GMT offset for an IANA timezone name (e.g.
+// "Asia/Kolkata") — never a raw offset, so it stays correct across DST
+// changes and is independent of the visitor's own timezone.
+function getZonedClock(timeZone) {
+  const now = new Date();
+  const time = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(now);
+  const offsetPart = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "shortOffset",
+  })
+    .formatToParts(now)
+    .find((part) => part.type === "timeZoneName")?.value;
+  // formatToParts gives e.g. "GMT+5:30" (or bare "GMT" at UTC) — strip
+  // the "GMT" prefix since the surrounding markup already supplies it.
+  const offset = offsetPart ? offsetPart.replace("GMT", "") || "+0" : "";
+  return { time, offset };
+}
+
 // `variant="about"` is opt-in — only AboutPage.jsx passes it, so Home and
 // CaseStudy keep the default site palette untouched. The content props
-// (headlineLines, eyebrow, email, ctaLabel, ctaHref) are likewise
-// opt-in overrides — AboutPage.jsx is the only caller passing them
-// (sourced from the aboutPage Sanity document), so every default below
-// stays exactly what Home/CaseStudy already render today.
+// (headlineLines, eyebrow, email, ctaLabel, ctaHref, socialLinks,
+// location, timezone, copyrightSuffix) are likewise opt-in overrides —
+// callers pass them from their own Sanity document, so every default
+// below stays exactly what this component rendered before any of that
+// content was wired up.
 function PianoLidContact({
   variant = "site",
   headlineLines = ["Let's Create a Remarkable Journey"],
@@ -29,32 +53,26 @@ function PianoLidContact({
   email = "Tony2742000@gmail.com",
   ctaLabel = "Book a call with me",
   ctaHref = "mailto:Tony2742000@gmail.com",
+  socialLinks = SOCIAL_LINKS,
+  location = "New Delhi, India",
+  timezone = "Asia/Kolkata",
+  copyrightSuffix = "· Made by I'm Tony, not Framer",
 }) {
   const isAbout = variant === "about";
 
-  const [indiaTime, setIndiaTime] = useState(() => {
-    return new Intl.DateTimeFormat("en-US", {
-      timeZone: "Asia/Kolkata",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(new Date());
-  });
+  // Starts null (rendered as a stable placeholder) rather than computed
+  // during the initial render — this app is client-rendered only today,
+  // but keeping `new Date()` out of render/useState-initializer means
+  // this never becomes a hydration mismatch if server rendering is ever
+  // added later. The real value is filled in on mount, client-only.
+  const [clock, setClock] = useState(null);
 
   useEffect(() => {
-    const updateTime = () => {
-      setIndiaTime(
-        new Intl.DateTimeFormat("en-US", {
-          timeZone: "Asia/Kolkata",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }).format(new Date())
-      );
-    };
-    const interval = setInterval(updateTime, 1000);
+    const update = () => setClock(getZonedClock(timezone));
+    update();
+    const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [timezone]);
 
   return (
     <section
@@ -66,9 +84,11 @@ function PianoLidContact({
       }
     >
       <div className="relative z-10 w-full px-6 pt-14 pb-10 sm:px-10 sm:pt-16 sm:pb-12 md:px-14 md:pt-20 md:pb-14 lg:px-16">
-        <p className="select-none font-display text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#5F87FF] dark:text-[#8ba7ff] mb-3 text-left md:text-center">
-          Get In Touch
-        </p>
+        {eyebrow && (
+          <p className="select-none font-display text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#5F87FF] dark:text-[#8ba7ff] mb-3 text-left md:text-center">
+            {eyebrow}
+          </p>
+        )}
         <h2
           className={
             "select-none font-display text-5xl font-black uppercase leading-[1 ] tracking-tight sm:text-3xl md:text-8xl lg:text-[10rem] mb-10 sm:mb-12 md:mb-14 text-left md:text-center " +
@@ -96,34 +116,45 @@ function PianoLidContact({
             </a>
           </div>
 
-          {/* Right: social column */}
-          <div className="flex flex-row flex-wrap gap-x-6 gap-y-2 font-display text-sm font-medium uppercase sm:gap-x-8 sm:gap-y-3 sm:text-base md:text-lg lg:col-span-5 lg:justify-end lg:items-end">
-            {SOCIAL_LINKS.map(({ label, href }) => (
-              <a
-                key={label}
-                href={href}
-                className="group flex w-fit items-center gap-1.5 transition-opacity hover:opacity-70 whitespace-nowrap"
-              >
-                <span>{label}</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          {/* Right: social column. 0 links renders nothing (no empty
+              wrapper); flex-wrap already handles 6+ links wrapping to a
+              new row instead of overflowing. Platform is never assumed
+              — iterated in stored order from whatever `socialLinks`
+              holds. */}
+          {socialLinks.length > 0 && (
+            <div className="flex flex-row flex-wrap gap-x-6 gap-y-2 font-display text-sm font-medium uppercase sm:gap-x-8 sm:gap-y-3 sm:text-base md:text-lg lg:col-span-5 lg:justify-end lg:items-end">
+              {socialLinks.map(({ label, href }) => (
+                <a
+                  key={label + href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex w-fit items-center gap-1.5 transition-opacity hover:opacity-70 whitespace-nowrap"
                 >
-                  <line x1="7" y1="17" x2="17" y2="7"></line>
-                  <polyline points="7 7 17 7 17 17"></polyline>
-                </svg>
-              </a>
-            ))}
-          </div>
+                  <span>{label}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  >
+                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                    <polyline points="7 7 17 7 17 17"></polyline>
+                  </svg>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Bottom bar: location + copyright */}
+        {/* Bottom bar: location + copyright. Clock/offset stay a stable
+            placeholder ("--:--" / no offset) until the client-only
+            effect above computes the real value, avoiding any
+            server/client mismatch if this ever renders server-side. */}
         <div
           className={
             "mt-12 flex flex-col gap-3 pt-6 font-display text-xs uppercase tracking-wide sm:mt-14 sm:flex-row sm:items-center sm:justify-between sm:text-sm md:mt-16 " +
@@ -132,8 +163,10 @@ function PianoLidContact({
               : "border-t border-black/10 text-ink/70 dark:border-white/10 dark:text-white/70")
           }
         >
-          <p className={`select-none text-base sm:text-lg font-semibold ${isAbout ? "text-white" : "text-ink dark:text-white"}`}>New Delhi, India: (GMT +5:30) {indiaTime}</p>
-          <p className="select-none">© 2026 · Made by I&apos;m Tony, not Framer</p>
+          <p className={`select-none text-base sm:text-lg font-semibold ${isAbout ? "text-white" : "text-ink dark:text-white"}`}>
+            {location}: (GMT {clock?.offset ?? ""}) {clock?.time ?? "--:--"}
+          </p>
+          <p className="select-none">© {new Date().getFullYear()} {copyrightSuffix}</p>
         </div>
       </div>
     </section>

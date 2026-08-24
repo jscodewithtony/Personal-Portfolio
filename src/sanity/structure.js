@@ -34,6 +34,12 @@ export const structure = (S) =>
         .child(
           S.document().schemaType("siteSettings").documentId("siteSettings")
         ),
+      S.listItem()
+        .title("Footer Contact")
+        .id("footerContact")
+        .child(
+          S.document().schemaType("footerContact").documentId("footerContact")
+        ),
       S.divider(),
       ...S.documentTypeListItems().filter(
         (item) => !singletonTypes.has(item.getId())

@@ -592,11 +592,11 @@ function AboutPage({ theme, onToggleTheme }) {
           }}
           style={{ width: "100%", height: "auto", overflow: "visible" }}
         > */}
-          <WordHeadline
-            text={heroHeadline}
-            className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-8xl lg:text-[16rem]"
-            animated={false}
-          />
+        <WordHeadline
+          text={heroHeadline}
+          className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-8xl lg:text-[16rem]"
+          animated={false}
+        />
         {/* </CursorImageTrail> */}
 
         {/* 547:763/764 — yellow ambient marquee band. Always dark text
@@ -623,7 +623,7 @@ function AboutPage({ theme, onToggleTheme }) {
           {/* 547:717 — intro line */}
           <Reveal
             as="p"
-            className="mt-14 max-w-4xl font-display text-2xl font-semibold uppercase leading-[1.15] text-[#fafafa] sm:mt-20 sm:text-4xl md:text-5xl"
+            className="mt-14 max-w-5xl font-display text-2xl font-light normal-case leading-[1.15] text-[#fafafa] sm:mt-20 sm:text-4xl md:text-[5rem]"
           >
             {introParagraph}
           </Reveal>

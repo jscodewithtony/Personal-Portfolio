@@ -2,6 +2,7 @@ import navigation from "./navigation";
 import homepageContent from "./homepageContent";
 import aboutPage from "./aboutPage";
 import siteSettings from "./siteSettings";
+import footerContact from "./footerContact";
 import theme from "./theme";
 import project from "./project";
 import statCard from "./statCard";
@@ -14,6 +15,7 @@ export const singletonTypes = new Set([
   "homepageContent",
   "aboutPage",
   "siteSettings",
+  "footerContact",
 ]);
 
 export const schemaTypes = [
@@ -21,6 +23,7 @@ export const schemaTypes = [
   homepageContent,
   aboutPage,
   siteSettings,
+  footerContact,
   theme,
   project,
   statCard,

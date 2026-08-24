@@ -7,6 +7,16 @@ export const navigationQuery = /* groq */ `*[_type == "navigation"][0]{
   items[]{ label, link }
 }`;
 
+export const footerContactQuery = /* groq */ `*[_type == "footerContact"][0]{
+  eyebrow,
+  heading,
+  email,
+  socialLinks[]{ label, url },
+  location,
+  timezone,
+  copyrightSuffix
+}`;
+
 export const homepageContentQuery = /* groq */ `*[_type == "homepageContent"][0]{
   heroHeadline,
   heroBasedInLocation,

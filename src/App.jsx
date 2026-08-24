@@ -5,6 +5,7 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const CaseStudy = lazy(() => import("./pages/CaseStudy"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const WorkPage = lazy(() => import("./pages/WorkPage"));
+const SayHiPage = lazy(() => import("./pages/SayHiPage"));
 import { ThemeTokensProvider } from "./theme/ThemeTokensContext";
 import { isPreviewMode } from "./sanity/preview";
 import { useVisualEditing } from "./sanity/useVisualEditing";
@@ -93,6 +94,14 @@ function App() {
             element={
               <ThemeTokensProvider>
                 <WorkPage theme={theme} onToggleTheme={toggleTheme} />
+              </ThemeTokensProvider>
+            }
+          />
+          <Route
+            path="/say-hi"
+            element={
+              <ThemeTokensProvider>
+                <SayHiPage theme={theme} onToggleTheme={toggleTheme} />
               </ThemeTokensProvider>
             }
           />

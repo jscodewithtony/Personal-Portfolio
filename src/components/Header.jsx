@@ -11,7 +11,7 @@ import Logo from "./Logo";
 const NAV_LINKS = [
   { label: "About", to: "/about" },
   { label: "Work", to: "/work" },
-  { label: "Say Hi", to: "mailto:tony2742000@gmail.com", isExternal: true },
+  { label: "Say Hi", to: "/say-hi" },
 ];
 
 // Minimum scroll delta (px) before a direction change is acted on —
@@ -24,6 +24,24 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
   const rafId = useRef(null);
+  const [indiaTime, setIndiaTime] = useState("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const timeStr = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Kolkata",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }).format(now);
+      setIndiaTime(`${timeStr} IST`);
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     lastScrollY.current = window.scrollY;
@@ -75,7 +93,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           className={`hidden whitespace-nowrap font-display text-base font-medium normal-case leading-[42px] transition-colors duration-300 lg:inline ${menuOpen ? "text-white" : "text-ink dark:text-white"
             }`}
         >
-          Product Designer
+          {indiaTime}
         </span>
       </div>
 
