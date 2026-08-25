@@ -154,3 +154,9 @@ export const activeThemeQuery = /* groq */ `*[_type == "siteSettings"][0]{
     "statsCubeLineColor": statsCubeLineColor.hex
   }
 }`;
+
+export const siteSettingsQuery = /* groq */ `*[_type == "siteSettings"][0]{
+  customFontUrl,
+  "customFontFileUrl": customFontFile.asset->url,
+  customFontFamily
+}`;

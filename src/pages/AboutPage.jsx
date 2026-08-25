@@ -619,15 +619,17 @@ function AboutPage({ theme, onToggleTheme }) {
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
+        <div className="mx-auto w-full max-w-8xl px-6 sm:px-10 md:px-14">
           {/* 547:717 — intro line */}
           <Reveal
             as="p"
-            className="mt-14 max-w-5xl font-display text-2xl font-light normal-case leading-[1.15] text-[#fafafa] sm:mt-20 sm:text-4xl md:text-[5rem]"
+            className="mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#fafafa] sm:mt-20 sm:text-4xl md:text-[5rem]"
           >
             {introParagraph}
           </Reveal>
+        </div>
 
+        <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
           {/* 568:1348 portrait + 547:718 and 547:722 — two literal
               stacked instances of the same bio paragraph, as Figma has
               them, rather than one paragraph. The bio paragraph itself
