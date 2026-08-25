@@ -26,12 +26,22 @@ function getInfoRowValue(field) {
   return field.textValue;
 }
 
+function toTitleCase(str) {
+  if (!str) return "";
+  const normalized = str.replace(/\n/g, " ");
+  return normalized
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function mapProject(doc) {
   const infoRows = doc.projectInfoFields || [];
   return {
     id: doc._id,
     slug: doc.slug,
-    title: doc.title,
+    title: toTitleCase(doc.title),
     mediaUrl: imageUrl(doc.mainImage, 1600),
     overview: doc.shortDescription,
     infoRows: infoRows
@@ -126,7 +136,7 @@ function MobileWork({ projects, activeIndex, onSelect }) {
               <button
                 type="button"
                 onClick={() => onSelect(i)}
-                className="block w-full text-left font-display text-[46px] font-bold uppercase leading-[52.81px] tracking-[-0.271px] text-ink transition-opacity duration-300 focus:outline-none focus-visible:underline dark:text-white"
+                className="block w-full text-left font-display text-[46px] font-bold normal-case leading-[52.81px] tracking-[-0.271px] text-ink transition-opacity duration-300 focus:outline-none focus-visible:underline dark:text-white"
                 style={{ opacity: isActive ? 1 : 0.3 }}
               >
                 {project.title}
@@ -451,7 +461,7 @@ function WorkIndex() {
                 <li key={project.id}>
                   <div
                     ref={(el) => (rowRefs.current[i] = el)}
-                    className="block text-left font-display text-5xl font-bold uppercase leading-tight tracking-tight text-ink xl:text-6xl dark:text-white"
+                    className="block text-left font-display text-5xl font-bold normal-case leading-tight tracking-tight text-ink xl:text-6xl dark:text-white"
                     style={{ opacity: activeIndex === i ? 1 : 0.3 }}
                   >
                     {project.title}

@@ -636,12 +636,12 @@ function AboutPage({ theme, onToggleTheme }) {
               still comes from the existing homepageContent document
               (shared with the homepage About ribbon), per scope. */}
           <div className="mt-16 grid grid-cols-1 gap-10 md:mt-20 md:grid-cols-12 md:gap-12">
-            <Reveal className="relative h-[50vh] w-full overflow-hidden md:col-span-5 md:h-[38rem]">
+            <Reveal className="relative h-[40vh] w-full overflow-hidden md:col-span-4 md:h-[30rem] md:self-end">
               <img
                 src={portraitImageUrl || portraitImg}
                 alt={portraitImageAlt}
                 loading="lazy"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-bottom"
               />
               {(about?.portraitCaption || about?.portraitSubCaption) && (
                 <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-4 py-3">
