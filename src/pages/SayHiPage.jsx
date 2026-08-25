@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState, useEffect } from "react";
 import Header from "../components/Header";
 import CanvasCursor from "../components/CanvasCursor";
 import Reveal from "../components/Reveal";
@@ -33,11 +33,15 @@ const FIELDS = [
 
 const EMPTY_FORM = { name: "", email: "", phone: "", message: "" };
 
+// Set to false to easily disable hCaptcha in the future
+const ENABLE_CAPTCHA = true;
+
 function SayHiPage({ theme, onToggleTheme }) {
   const menuButtonRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
+  const [submitStatus, setSubmitStatus] = useState("idle"); // idle, submitting, success, error
 
   const handleChange = (field) => (e) => {
     const val = e.target.value;
@@ -51,11 +55,34 @@ function SayHiPage({ theme, onToggleTheme }) {
     }
   };
 
-  // No backend on this static site, so submission opens the visitor's
-  // own mail client with the form content pre-filled — same pattern the
-  // rest of the site already relies on for contact (mailto: links in
-  // Header/MenuOverlay/PianoLidContact).
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (!ENABLE_CAPTCHA) return;
+
+    const renderCaptcha = () => {
+      if (window.hcaptcha) {
+        const el = document.querySelector(".h-captcha");
+        if (el && el.innerHTML === "") {
+          window.hcaptcha.render(el, {
+            sitekey: "50b2fe65-b00b-4b9e-ad62-3ba471098be2",
+            theme: "dark"
+          });
+        }
+        return true;
+      }
+      return false;
+    };
+
+    if (!renderCaptcha()) {
+      const interval = setInterval(() => {
+        if (renderCaptcha()) {
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = {};
@@ -76,19 +103,48 @@ function SayHiPage({ theme, onToggleTheme }) {
       return;
     }
 
-    const subject = `New message from ${form.name || "your website"}`;
-    const phoneFull = form.phone ? form.phone : "";
-    const bodyLines = [
-      `Name: ${form.name}`,
-      `Email: ${form.email}`,
-      phoneFull && `Phone: ${phoneFull}`,
-      "",
-      form.message,
-    ].filter(Boolean);
-    const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
-    window.location.href = mailto;
+    let token = "";
+    if (ENABLE_CAPTCHA) {
+      token = window.hcaptcha?.getResponse();
+      if (!token) {
+        alert("Please complete the hCaptcha puzzle.");
+        return;
+      }
+    }
+
+    setSubmitStatus("submitting");
+
+    const payload = {
+      access_key: "e17348f6-2eda-424e-9d4a-833ef8f27e76",
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      message: form.message,
+      ...(ENABLE_CAPTCHA && { "h-captcha-response": token }),
+    };
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setSubmitStatus("success");
+        setForm(EMPTY_FORM);
+        window.hcaptcha?.reset();
+      } else {
+        setSubmitStatus("error");
+        window.hcaptcha?.reset();
+      }
+    } catch (error) {
+      setSubmitStatus("error");
+      window.hcaptcha?.reset();
+    }
   };
 
   return (
@@ -157,48 +213,74 @@ function SayHiPage({ theme, onToggleTheme }) {
 
           {/* Right: contact form */}
           <Reveal delay={140} className="lg:col-span-6">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-9 w-full max-w-2xl lg:ml-auto">
-              {FIELDS.map((field) => (
-                <div key={field.name} className="flex flex-col gap-2">
-                  <label className="flex flex-col gap-3">
-                    <span className="sr-only">{field.label}</span>
-                    {field.type === "textarea" ? (
-                      <textarea
-                        name={field.name}
-                        required={field.required}
-                        value={form[field.name]}
-                        onChange={handleChange(field.name)}
-                        placeholder={field.label}
-                        rows={2}
-                        className="w-full resize-none border-b border-ink/20 bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors focus:border-ink dark:border-white/20 dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 dark:focus:border-white sm:text-2xl"
-                      />
-                    ) : (
-                      <input
-                        type={field.type}
-                        name={field.name}
-                        required={field.required}
-                        value={form[field.name]}
-                        onChange={handleChange(field.name)}
-                        placeholder={field.label}
-                        className="w-full border-b border-ink/20 bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors focus:border-ink dark:border-white/20 dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 dark:focus:border-white sm:text-2xl"
-                      />
+            {submitStatus === "success" ? (
+              <div className="flex flex-col items-start gap-6 w-full max-w-2xl lg:ml-auto py-10">
+                <h2 className="font-display text-4xl font-medium normal-case leading-tight sm:text-5xl">
+                  Message Sent!
+                </h2>
+                <p className="font-display text-lg text-ink/70 dark:text-white/70 normal-case">
+                  Thank you for reaching out. Your message has been sent successfully. I'll be in touch soon!
+                </p>
+                <button
+                  onClick={() => setSubmitStatus("idle")}
+                  className="mt-4 select-none bg-primary px-9 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98]"
+                >
+                  Send Another Message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-9 w-full max-w-2xl lg:ml-auto">
+                {FIELDS.map((field) => (
+                  <div key={field.name} className="flex flex-col gap-2">
+                    <label className="flex flex-col gap-3">
+                      <span className="sr-only">{field.label}</span>
+                      {field.type === "textarea" ? (
+                        <textarea
+                          name={field.name}
+                          required={field.required}
+                          value={form[field.name]}
+                          onChange={handleChange(field.name)}
+                          placeholder={field.label}
+                          rows={2}
+                          className="w-full resize-none border-b border-ink/20 bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors focus:border-ink dark:border-white/20 dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 dark:focus:border-white sm:text-2xl"
+                        />
+                      ) : (
+                        <input
+                          type={field.type}
+                          name={field.name}
+                          required={field.required}
+                          value={form[field.name]}
+                          onChange={handleChange(field.name)}
+                          placeholder={field.label}
+                          className="w-full border-b border-ink/20 bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors focus:border-ink dark:border-white/20 dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 dark:focus:border-white sm:text-2xl"
+                        />
+                      )}
+                    </label>
+                    {errors[field.name] && (
+                      <span className="text-red-500 font-display text-sm font-semibold !normal-case tracking-wide mt-1">
+                        {errors[field.name]}
+                      </span>
                     )}
-                  </label>
-                  {errors[field.name] && (
-                    <span className="text-red-500 font-display text-sm font-semibold !normal-case tracking-wide mt-1">
-                      {errors[field.name]}
-                    </span>
-                  )}
-                </div>
-              ))}
+                  </div>
+                ))}
 
-              <button
-                type="submit"
-                className="mt-4 w-fit select-none bg-primary px-9 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98]"
-              >
-                Send Message
-              </button>
-            </form>
+                {ENABLE_CAPTCHA && <div className="h-captcha" data-captcha="true"></div>}
+
+                {submitStatus === "error" && (
+                  <span className="text-red-500 font-display text-sm font-semibold !normal-case tracking-wide">
+                    Something went wrong. Please try again.
+                  </span>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={submitStatus === "submitting"}
+                  className="mt-4 w-fit select-none bg-primary px-9 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98] disabled:opacity-50"
+                >
+                  {submitStatus === "submitting" ? "Sending..." : "Send Message"}
+                </button>
+              </form>
+            )}
           </Reveal>
         </div>
       </main>

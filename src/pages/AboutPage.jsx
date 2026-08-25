@@ -679,21 +679,18 @@ function AboutPage({ theme, onToggleTheme }) {
         </div>
 
         {/* 564:1268 stock photo — full width, no placeholder backdrop */}
-        <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-4">
-          <Reveal delay={100} className="mt-16 w-full sm:mt-20">
-            <motion.div
-              ref={zoomImageRef}
-              style={{ scale }}
-              className="relative w-full overflow-hidden origin-center"
-            >
-              <img
-                src={narrativeImageOneUrl || tonyBlueImg}
-                alt={narrativeImageOneAlt}
-                loading="lazy"
-                className="w-full h-auto"
-              />
-            </motion.div>
-          </Reveal>
+        <div ref={zoomImageRef} className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-4 mt-16 sm:mt-20 overflow-hidden">
+          <motion.div
+            style={{ scale }}
+            className="relative w-full overflow-hidden origin-center"
+          >
+            <img
+              src={narrativeImageOneUrl || tonyBlueImg}
+              alt={narrativeImageOneAlt}
+              loading="lazy"
+              className="w-full h-auto"
+            />
+          </motion.div>
         </div>
 
 

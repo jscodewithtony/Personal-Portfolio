@@ -2,6 +2,7 @@ import { lazy, Suspense, useRef, useState } from "react";
 import Header from "../components/Header";
 import WorkIndex from "../components/WorkIndex";
 import CanvasCursor from "../components/CanvasCursor";
+import ProjectContactForm from "../components/ProjectContactForm";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
@@ -21,6 +22,8 @@ function WorkPage({ theme, onToggleTheme }) {
       />
 
       <WorkIndex />
+
+      <ProjectContactForm />
 
       <Suspense fallback={null}>
         <Footer />
