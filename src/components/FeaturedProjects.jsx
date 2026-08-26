@@ -305,6 +305,17 @@ function FeaturedProjects() {
                   activeHoverCardRef.current = false;
                   document.body.dataset.cursorProjectHover = "false";
                 }}
+                onFocus={() => {
+                  const section = document.getElementById("featured-projects");
+                  if (!section) return;
+                  const isMobile = window.innerWidth < 768;
+                  const pinDistance = window.innerHeight * (isMobile ? 5.4 : 3.4);
+                  const startScroll = section.offsetTop;
+                  let progress = 0.15;
+                  if (index === 1) progress = 0.5;
+                  if (index === 2) progress = 0.77;
+                  window.scrollTo({ top: startScroll + (pinDistance * progress), behavior: "auto" });
+                }}
                 className="relative w-full max-w-5xl lg:max-w-6xl overflow-hidden rounded-none border-none bg-white shadow-2xl transition-colors duration-300 dark:bg-[#141418] group cursor-pointer md:cursor-none"
               >
                 <div className="grid grid-cols-1 md:grid-cols-12 min-h-[480px] sm:min-h-[600px] lg:min-h-[640px]">

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Sun, Moon } from "lucide-react";
 import AnimatedThemeToggler from "./AnimatedThemeToggler";
 import Logo from "./Logo";
+import DirectionHover from "./DirectionHover";
 
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio?node-id=526-3749
 // "Input/Nav bar". Only a desktop variant was provided, so that spec is
@@ -105,17 +106,17 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
             <a
               key={item.label}
               href={item.to}
-              className="font-display text-[20px] font-normal normal-case tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
+              className="font-display text-[20px] font-normal normal-case tracking-[-1px] text-ink dark:text-white"
             >
-              {item.label}
+              <DirectionHover>{item.label}</DirectionHover>
             </a>
           ) : (
             <Link
               key={item.label}
               to={item.to}
-              className="font-display text-[20px] font-normal normal-case tracking-[-1px] text-ink transition-opacity hover:opacity-70 dark:text-white"
+              className="font-display text-[20px] font-normal normal-case tracking-[-1px] text-ink dark:text-white"
             >
-              {item.label}
+              <DirectionHover>{item.label}</DirectionHover>
             </Link>
           )
         )}
@@ -163,7 +164,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           className={`flex items-center gap-2 font-display font-black text-lg sm:text-xl md:text-2xl uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden ${menuOpen ? "text-white" : "text-ink dark:text-white"
             }`}
         >
-          MENU
+          <DirectionHover duration={220}>MENU</DirectionHover>
           <span
             aria-hidden="true"
             className={`inline-block text-xl sm:text-2xl font-normal transition-transform duration-500 ${menuOpen ? "rotate-45" : "rotate-0"

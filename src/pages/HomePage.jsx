@@ -65,37 +65,37 @@ function HomePage({ theme, onToggleTheme }) {
       {introFinished && (
         <>
           <div>
-            <Suspense fallback={null}>
+            <Suspense fallback={<div className="h-[60vh] bg-bg/20 dark:bg-white/5 animate-pulse" />}>
               <Statement />
             </Suspense>
           </div>
 
           <div>
-            <Suspense fallback={null}>
+            <Suspense fallback={<div className="h-[80vh] bg-bg/20 dark:bg-white/5 animate-pulse" />}>
               <FeaturedProjects />
             </Suspense>
           </div>
 
           <div>
-            <Suspense fallback={null}>
+            <Suspense fallback={<div className="h-[80vh] bg-bg/20 dark:bg-white/5 animate-pulse" />}>
               <Stats theme={theme} />
             </Suspense>
           </div>
 
           <div>
-            <Suspense fallback={null}>
+            <Suspense fallback={<div className="h-[60vh] bg-bg/20 dark:bg-white/5 animate-pulse" />}>
               <MentorshipTestimonials theme={theme} />
             </Suspense>
           </div>
 
           <div>
-            <Suspense fallback={null}>
+            <Suspense fallback={<div className="h-[80vh] bg-bg/20 dark:bg-white/5 animate-pulse" />}>
               <Insight />
             </Suspense>
           </div>
 
           <div>
-            <Suspense fallback={null}>
+            <Suspense fallback={<div className="h-[20vh] bg-bg/20 dark:bg-white/5 animate-pulse" />}>
               <Footer />
             </Suspense>
           </div>

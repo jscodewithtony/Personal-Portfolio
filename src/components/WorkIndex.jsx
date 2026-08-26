@@ -459,13 +459,16 @@ function WorkIndex() {
             >
               {projects.map((project, i) => (
                 <li key={project.id}>
-                  <div
+                  <button
+                    type="button"
                     ref={(el) => (rowRefs.current[i] = el)}
-                    className="block text-left font-display text-5xl font-bold normal-case leading-tight tracking-tight text-ink xl:text-6xl dark:text-white"
+                    onFocus={() => handleRowClick(i)}
+                    onClick={() => handleRowClick(i)}
+                    className="block w-full text-left font-display text-5xl font-bold normal-case leading-tight tracking-tight text-ink xl:text-6xl dark:text-white focus:outline-none focus-visible:underline"
                     style={{ opacity: activeIndex === i ? 1 : 0.3 }}
                   >
                     {project.title}
-                  </div>
+                  </button>
                 </li>
               ))}
             </ul>

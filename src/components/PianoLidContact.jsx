@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DirectionHover from "./DirectionHover";
 
 // Contact / outro section sitting directly above the piano keyboard in
 // Footer.jsx — flat panel (no piano-lid silhouette), synced from Figma
@@ -110,9 +111,9 @@ function PianoLidContact({
           <div className="flex flex-col items-start gap-5 sm:gap-6 lg:col-span-7">
             <a
               href={`mailto:${email}`}
-              className="block select-none whitespace-nowrap font-normal normal-case text-2xl font-semibold leading-[1.04] tracking-tight transition-opacity hover:opacity-70 sm:text-xl md:text-3xl lg:text-2xl xl:text-6xl"
+              className="block select-none whitespace-nowrap font-normal normal-case text-2xl font-semibold leading-[1.04] tracking-tight sm:text-xl md:text-3xl lg:text-2xl xl:text-6xl"
             >
-              {email}
+              <DirectionHover>{email}</DirectionHover>
             </a>
           </div>
 
@@ -129,9 +130,9 @@ function PianoLidContact({
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex w-fit items-center gap-1.5 transition-opacity hover:opacity-70 whitespace-nowrap"
+                  className="group flex w-fit items-center gap-1.5 whitespace-nowrap"
                 >
-                  <span>{label}</span>
+                  <DirectionHover>{label}</DirectionHover>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"

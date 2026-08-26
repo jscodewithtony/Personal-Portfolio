@@ -2,6 +2,7 @@ import { lazy, Suspense, useRef, useState, useEffect } from "react";
 import Header from "../components/Header";
 import CanvasCursor from "../components/CanvasCursor";
 import Reveal from "../components/Reveal";
+import DirectionHover from "../components/DirectionHover";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
@@ -158,7 +159,7 @@ function SayHiPage({ theme, onToggleTheme }) {
         onToggleTheme={onToggleTheme}
       />
 
-      <main className="w-full px-6 pb-24 pt-14 sm:px-10 sm:pt-16 md:px-14 md:pb-32 md:pt-20 lg:px-16">
+      <section className="w-full px-6 pb-24 pt-14 sm:px-10 sm:pt-16 md:px-14 md:pb-32 md:pt-20 lg:px-16">
         <Reveal as="h1" className="max-w-5xl font-display text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl md:text-8xl lg:text-[7rem]">
           Let&rsquo;s see what we can dream up together.
         </Reveal>
@@ -172,9 +173,9 @@ function SayHiPage({ theme, onToggleTheme }) {
               </p>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
-                className="block select-none break-words font-display text-2xl font-semibold leading-tight tracking-tight transition-opacity hover:opacity-70 sm:text-3xl"
+                className="block select-none break-words font-display text-2xl font-semibold leading-tight tracking-tight sm:text-3xl"
               >
-                {CONTACT_EMAIL}
+                <DirectionHover>{CONTACT_EMAIL}</DirectionHover>
               </a>
             </div>
 
@@ -189,9 +190,9 @@ function SayHiPage({ theme, onToggleTheme }) {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex w-fit items-center gap-1.5 whitespace-nowrap transition-opacity hover:opacity-70"
+                    className="group flex w-fit items-center gap-1.5 whitespace-nowrap"
                   >
-                    <span>{label}</span>
+                    <DirectionHover>{label}</DirectionHover>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -225,7 +226,7 @@ function SayHiPage({ theme, onToggleTheme }) {
                   onClick={() => setSubmitStatus("idle")}
                   className="mt-4 select-none bg-primary px-9 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98]"
                 >
-                  Send Another Message
+                  <DirectionHover>Send Another Message</DirectionHover>
                 </button>
               </div>
             ) : (
@@ -242,7 +243,11 @@ function SayHiPage({ theme, onToggleTheme }) {
                           onChange={handleChange(field.name)}
                           placeholder={field.label}
                           rows={2}
-                          className="w-full resize-none border-b border-ink/20 bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors focus:border-ink dark:border-white/20 dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 dark:focus:border-white sm:text-2xl"
+                          className={`w-full resize-none border-b bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 sm:text-2xl ${
+                            errors[field.name]
+                              ? "border-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-500"
+                              : "border-ink/20 focus:border-ink dark:border-white/20 dark:focus:border-white"
+                          }`}
                         />
                       ) : (
                         <input
@@ -252,7 +257,11 @@ function SayHiPage({ theme, onToggleTheme }) {
                           value={form[field.name]}
                           onChange={handleChange(field.name)}
                           placeholder={field.label}
-                          className="w-full border-b border-ink/20 bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors focus:border-ink dark:border-white/20 dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 dark:focus:border-white sm:text-2xl"
+                          className={`w-full border-b bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 sm:text-2xl ${
+                            errors[field.name]
+                              ? "border-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-500"
+                              : "border-ink/20 focus:border-ink dark:border-white/20 dark:focus:border-white"
+                          }`}
                         />
                       )}
                     </label>
@@ -277,13 +286,15 @@ function SayHiPage({ theme, onToggleTheme }) {
                   disabled={submitStatus === "submitting"}
                   className="mt-4 w-fit select-none bg-primary px-9 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98] disabled:opacity-50"
                 >
-                  {submitStatus === "submitting" ? "Sending..." : "Send Message"}
+                  <DirectionHover>
+                    {submitStatus === "submitting" ? "Sending..." : "Send Message"}
+                  </DirectionHover>
                 </button>
               </form>
             )}
           </Reveal>
         </div>
-      </main>
+      </section>
 
       <Suspense fallback={null}>
         <Footer />

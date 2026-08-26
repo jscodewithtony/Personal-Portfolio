@@ -11,7 +11,7 @@
   /* hover */
   --color-primary-active: #0013B2;
   /* focused / pressed */
-  --color-bg: #F6EFDC;
+  --color-bg: #F9f9f9;
   --color-ink: #0d0c14;
   --color-cream: #f3efe3;
   /* Stats section's big figures ("20+" etc). Same value as --color-ink
@@ -370,8 +370,8 @@ header a,
 
 /* Force browser autofill styles to match site theme colors */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 textarea:-webkit-autofill:hover,
 textarea:-webkit-autofill:focus,

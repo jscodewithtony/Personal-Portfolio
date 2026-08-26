@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import TestimonialCard from "./TestimonialCard";
+import DirectionHover from "./DirectionHover";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { testimonialsQuery } from "../sanity/queries";
 import { urlFor } from "../sanity/client";
@@ -289,7 +290,7 @@ function MentorshipTestimonials() {
           ref={buttonRef}
           className="pointer-events-auto select-none px-6 py-4 font-display text-base font-bold uppercase tracking-tight transition-colors sm:px-8 sm:py-5 sm:text-xl bg-primary text-white hover:bg-primary-dark active:bg-primary-active dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2] shadow-lg"
         >
-          Book a call with me
+          <DirectionHover>Book a call with me</DirectionHover>
         </a>
       </div>
     </section>

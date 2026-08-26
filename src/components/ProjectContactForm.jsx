@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import Reveal from "./Reveal";
+import DirectionHover from "./DirectionHover";
 
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio?node-id=837-508
 // "Project-form" — sits at the very end of the Work page, after every
@@ -120,7 +121,7 @@ function ProjectContactForm() {
               onClick={() => setSubmitStatus("idle")}
               className="mt-6 select-none bg-primary px-9 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98]"
             >
-              Send Another Enquiry
+              <DirectionHover>Send Another Enquiry</DirectionHover>
             </button>
           </Reveal>
         </div>
@@ -244,7 +245,9 @@ function ProjectContactForm() {
               disabled={submitStatus === "submitting"}
               className="w-fit select-none bg-primary px-9 py-4 font-display text-base font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98] disabled:opacity-50"
             >
-              {submitStatus === "submitting" ? "Sending..." : "Send Enquiry"}
+              <DirectionHover>
+                {submitStatus === "submitting" ? "Sending..." : "Send Enquiry"}
+              </DirectionHover>
             </button>
           </form>
         </Reveal>

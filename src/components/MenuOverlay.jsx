@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { navigationQuery } from "../sanity/queries";
 import Logo from "./Logo";
+import DirectionHover from "./DirectionHover";
 
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio?node-id=716-783
 // "Menu page - mobile". Solid blue full-bleed panel, always this color
@@ -115,7 +116,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
   }, [open, onClose]);
 
   const navLinkClassName =
-    "font-display text-4xl font-bold uppercase tracking-tight text-white transition-opacity duration-200 ease-snap hover:opacity-80 active:scale-[0.97] sm:text-3xl focus:outline-none focus-visible:outline-none";
+    "font-display text-4xl font-bold uppercase tracking-tight text-white active:scale-[0.97] sm:text-3xl focus:outline-none focus-visible:outline-none";
 
   return (
     <div
@@ -167,7 +168,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
                 tabIndex={open ? 0 : -1}
                 className={navLinkClassName}
               >
-                {item.label}
+                <DirectionHover>{item.label}</DirectionHover>
               </Link>
             ) : (
               <a
@@ -177,7 +178,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
                 tabIndex={open ? 0 : -1}
                 className={navLinkClassName}
               >
-                {item.label}
+                <DirectionHover>{item.label}</DirectionHover>
               </a>
             );
           })}
@@ -192,9 +193,9 @@ function MenuOverlay({ open, onClose, anchorRef }) {
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               tabIndex={open ? 0 : -1}
-              className="font-display text-lg font-normal normal-case text-white transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none"
+              className="font-display text-lg font-normal normal-case text-white focus:outline-none focus-visible:outline-none"
             >
-              {CONTACT_EMAIL}
+              <DirectionHover>{CONTACT_EMAIL}</DirectionHover>
             </a>
           </div>
           <div className="flex flex-col items-start gap-3 sm:gap-4">
@@ -207,9 +208,9 @@ function MenuOverlay({ open, onClose, anchorRef }) {
                   key={label}
                   href={href}
                   tabIndex={open ? 0 : -1}
-                  className="font-display text-lg font-normal normal-case text-white transition-opacity hover:opacity-80 focus:outline-none focus-visible:outline-none"
+                  className="font-display text-lg font-normal normal-case text-white focus:outline-none focus-visible:outline-none"
                 >
-                  {label}
+                  <DirectionHover>{label}</DirectionHover>
                 </a>
               ))}
             </div>

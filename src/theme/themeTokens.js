@@ -7,7 +7,7 @@ export const LIGHT_THEME_DEFAULTS = {
   name: "Light",
   primaryAccent: "#0D38BF",
   primaryAccentHover: "#022CDB",
-  backgroundColor: "#F6EFDC",
+  backgroundColor: "#F9F9F9",
   textColor: "#0d0c14",
   statValueColor: "#0d0c14",
   statsCubeFrontColor: "#0D38BF",
