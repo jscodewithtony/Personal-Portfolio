@@ -43,6 +43,7 @@ const DEFAULT_CARDS = [
 ];
 
 export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
+  const pinWrapperRef = useRef(null);
   const containerRef = useRef(null);
   const stageRef = useRef(null);
   const innerCardsRef = useRef(new Map());
@@ -143,7 +144,7 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
     // Scroll timeline with pinning
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: containerRef.current,
+        trigger: pinWrapperRef.current,
         start: 'top top',
         end: '+=4000', // Increased scroll height to accommodate the initial shrink/fade + existing stages
         scrub: 1.2,
@@ -206,7 +207,7 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
     return () => {
       clearTimeout(refreshTimer);
     };
-  }, { scope: containerRef, dependencies: [cards] });
+  }, { scope: pinWrapperRef, dependencies: [cards] });
 
   useEffect(() => {
     // Mouse Parallax Animation Loop
@@ -251,7 +252,7 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
   }, [cards]);
 
   return (
-    <>
+    <div ref={pinWrapperRef} className="w-full relative">
       <section 
         ref={containerRef} 
         style={{ clipPath: 'inset(0%)' }}
@@ -260,7 +261,7 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
         {/* Background Headline */}
         {headline && (
           <div className="gallery-headline absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none text-center select-none w-full flex justify-center items-center px-6">
-            <h2 className="font-display font-extrabold uppercase leading-[0.95] tracking-tight text-[#fafafa] text-5xl sm:text-8xl md:text-[8vw] lg:text-[9rem]">
+            <h2 className="font-display font-extrabold uppercase leading-[0.95] tracking-tight text-[#0d0c14] dark:text-[#fafafa] text-5xl sm:text-8xl md:text-[8vw] lg:text-[9rem]">
               {headline}
             </h2>
           </div>
@@ -374,7 +375,7 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 

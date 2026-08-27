@@ -18,6 +18,27 @@ export default {
     { name: "closingCta", title: "Closing / CTA" },
   ],
   fields: [
+    {
+      name: "customColorTheme",
+      title: "Custom Color Theme Override",
+      type: "object",
+      group: "intro",
+      fields: [
+        {
+          name: "isEnabled",
+          title: "Enable custom color theme",
+          type: "boolean",
+          description: "When ON, the custom color below replaces the default Light theme background on this page. Dark theme is never affected by this setting. When OFF, the page uses the standard Light/Dark toggle behavior with default colors.",
+          initialValue: false,
+        },
+        {
+          name: "customColor",
+          title: "Custom background color",
+          type: "color",
+          hidden: ({ parent }) => !parent?.isEnabled,
+        },
+      ],
+    },
     // --- Group 1: Intro ---
     {
       name: "scrollingTicker",

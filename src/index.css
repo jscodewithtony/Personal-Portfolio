@@ -47,8 +47,10 @@
   --color-white: #FAFAFA;
 }
 
-/* Global Grid Overlay with minimal visibility, scoped to render as the background-image of sections, header, and footer */
+/* Global Grid Overlay with minimal visibility, scoped to render as the background-image of sections, header, main, and footer */
 .site-shell header,
+.site-shell main,
+.site-shell footer,
 .site-shell section {
   background-size: 72px 72px;
   background-image:

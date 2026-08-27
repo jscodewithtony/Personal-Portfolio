@@ -24,6 +24,7 @@ import { previewClient } from "../sanity/previewClient";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
+
 // Dozens of images plus its own drag/physics-feel interaction logic —
 // code-split so its JS and image set only load once it's actually
 // scrolled near, not bundled into the page's initial load.
@@ -53,6 +54,16 @@ const FALLBACK_BODY = {
   aboutBodyParagraph1:
     "Me at somewhere",
 };
+
+// Fallback for custom background feature to ensure text readability
+function getReadableTextColor(hex) {
+  if (!hex || !/^#[0-9a-fA-F]{6}$/.test(hex)) return null;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? "#0d0c14" : "#ffffff";
+}
 
 const MARQUEE_REPEATS = Array.from({ length: 10 });
 
@@ -237,7 +248,7 @@ function WordHeadline({
   return (
     <h2
       ref={elRef}
-      className={`select-none flex flex-wrap justify-center gap-x-[0.28em] font-display font-extrabold uppercase leading-[0.95] tracking-tight text-[#fafafa] ${className}`}
+      className={`select-none flex flex-wrap justify-center gap-x-[0.28em] font-display font-extrabold uppercase leading-[0.95] tracking-tight text-[#0d0c14] dark:text-white ${className}`}
       style={isAnimated ? { clipPath: startClip, willChange: "clip-path" } : undefined}
     >
       {text.split(" ").map((word, i) => (
@@ -483,6 +494,11 @@ function AboutPage({ theme, onToggleTheme }) {
   const exploringIndiaHeadline = about?.exploringIndiaHeadline || FALLBACK_ABOUT.exploringIndiaHeadline;
   const exploringIndiaText = about?.exploringIndiaText || FALLBACK_ABOUT.exploringIndiaText;
 
+  const customColorTheme = about?.customColorTheme;
+  const isCustomLightActive = customColorTheme?.isEnabled && theme !== "dark" && customColorTheme?.customColor;
+  const pageBackgroundColor = isCustomLightActive ? customColorTheme.customColor : undefined;
+  const pageTextColor = pageBackgroundColor ? getReadableTextColor(pageBackgroundColor) || "#0d0c14" : undefined;
+
   const knowMoreAnnotations = KNOW_MORE_ANNOTATIONS_FALLBACK.map((fallback, i) => ({
     ...fallback,
     text: about?.annotationDots?.[i]?.tooltipText || fallback.text,
@@ -572,7 +588,10 @@ function AboutPage({ theme, onToggleTheme }) {
 
 
   return (
-    <div className="site-shell relative min-h-[100dvh] bg-primary font-display text-[#fafafa] uppercase transition-colors duration-300 dark:bg-[#161616]">
+    <div
+      className={`site-shell relative min-h-[100dvh] font-display uppercase transition-colors duration-300 ${pageBackgroundColor ? "about-page-locked-colors" : "bg-[#fbfbf9] text-[#0d0c14] dark:bg-[#0c0a14] dark:text-white"}`}
+      style={pageBackgroundColor ? { backgroundColor: pageBackgroundColor, color: pageTextColor } : undefined}
+    >
       <CanvasCursor />
       <Header
         menuButtonRef={menuButtonRef}
@@ -582,7 +601,15 @@ function AboutPage({ theme, onToggleTheme }) {
         onToggleTheme={onToggleTheme}
       />
 
-      <main ref={mainRef} className="overflow-hidden">
+      <main ref={mainRef}>
+        {pageTextColor && (
+          <style>{`
+            .about-page-locked-colors,
+            .about-page-locked-colors [class*="dark:text-white"] {
+              color: ${pageTextColor} !important;
+            }
+          `}</style>
+        )}
         {/* <CursorImageTrail
           onMouseEnter={() => {
             document.body.dataset.cursorTrailHover = "true";
@@ -621,12 +648,10 @@ function AboutPage({ theme, onToggleTheme }) {
 
         <div className="mx-auto w-full max-w-8xl px-6 sm:px-10 md:px-14">
           {/* 547:717 — intro line */}
-          <Reveal
-            as="p"
-            className="mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#fafafa] sm:mt-20 sm:text-4xl md:text-[5rem]"
+          <p className="mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-20 sm:text-4xl md:text-[5rem]"
           >
-            {introParagraph}
-          </Reveal>
+  {introParagraph}
+</p>
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
@@ -646,33 +671,26 @@ function AboutPage({ theme, onToggleTheme }) {
               {(about?.portraitCaption || about?.portraitSubCaption) && (
                 <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-4 py-3">
                   {about?.portraitCaption && (
-                    <p className="font-display text-sm font-semibold normal-case text-white">
-                      {about.portraitCaption}
-                    </p>
+                    <p className="font-display text-sm font-semibold normal-case text-white" 
+                    >
+  {about.portraitCaption}
+</p>
                   )}
                   {about?.portraitSubCaption && (
                     <p className="font-display text-xs normal-case text-white/70">
-                      {about.portraitSubCaption}
-                    </p>
+  {about.portraitSubCaption}
+</p>
                   )}
                 </div>
               )}
             </Reveal>
             <div className="flex flex-col gap-8 self-center md:col-span-6 md:col-start-7">
-              <Reveal
-                as="p"
-                delay={120}
-                className="font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 sm:text-xl md:text-2xl"
-              >
-                {body.aboutBodyParagraph1}
-              </Reveal>
-              <Reveal
-                as="p"
-                delay={200}
-                className="font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 sm:text-xl md:text-2xl"
-              >
-                {body.aboutBodyParagraph1}
-              </Reveal>
+              <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
+  {body.aboutBodyParagraph1}
+</p>
+              <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
+  {body.aboutBodyParagraph1}
+</p>
             </div>
           </div>
 
@@ -688,6 +706,7 @@ function AboutPage({ theme, onToggleTheme }) {
               src={narrativeImageOneUrl || tonyBlueImg}
               alt={narrativeImageOneAlt}
               loading="lazy"
+              onLoad={() => ScrollTrigger.refresh()}
               className="w-full h-auto"
             />
           </motion.div>
@@ -702,19 +721,14 @@ function AboutPage({ theme, onToggleTheme }) {
             paragraph and the headline below it are Philosophy fields. */}
         <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-4 mt-2">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10">
-            <Reveal
-              as="p"
-              className="font-display text-lg normal-case leading-relaxed text-[#fafafa] sm:text-xl md:text-2xl text-left sm:max-w-[75%]"
+            <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-xl md:text-2xl text-left sm:max-w-[75%]"
             >
-              {leftText}
-            </Reveal>
-            <Reveal
-              as="p"
-              delay={80}
-              className="font-display text-lg normal-case leading-relaxed text-[#fafafa] sm:text-xl md:text-2xl text-left sm:text-right sm:max-w-[75%] sm:ml-auto"
+  {leftText}
+</p>
+            <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-xl md:text-2xl text-left sm:text-right sm:max-w-[75%] sm:ml-auto"
             >
-              {rightText}
-            </Reveal>
+  {rightText}
+</p>
           </div>
         </div>
 
@@ -722,17 +736,14 @@ function AboutPage({ theme, onToggleTheme }) {
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
           <div className="mt-8 sm:mt-40">
             {philosophyLabel && (
-              <p className="mx-auto max-w-3xl text-center font-display text-xs font-semibold uppercase tracking-[0.25em] text-[#fafafa]/60 sm:text-sm">
-                {philosophyLabel}
-              </p>
+              <p className="mx-auto max-w-3xl text-center font-display text-xs font-semibold uppercase tracking-[0.25em] text-[#0d0c14]/60 dark:text-white/60 sm:text-sm">
+  {philosophyLabel}
+</p>
             )}
-            <Reveal
-              as="p"
-              delay={160}
-              className="mx-auto max-w-3xl text-center font-display text-xl normal-case leading-relaxed text-[#fafafa] sm:text-2xl md:text-3xl mt-12"
+            <p className="mx-auto max-w-3xl text-center font-display text-xl normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-2xl md:text-3xl mt-12"
             >
-              {philosophyText}
-            </Reveal>
+  {philosophyText}
+</p>
           </div>
 
           {/* 547:716 — second headline */}
@@ -795,6 +806,7 @@ function AboutPage({ theme, onToggleTheme }) {
                 src={experienceBackgroundUrl || resumeBgImg}
                 alt={experienceBackgroundAlt}
                 loading="lazy"
+                onLoad={() => ScrollTrigger.refresh()}
                 style={{ y: yVal, scale: 1.15 }}
                 className="w-full h-auto origin-center"
               />
@@ -839,21 +851,14 @@ function AboutPage({ theme, onToggleTheme }) {
             "Exploring India" headline, exactly as ordered in Figma. */}
         <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-40">
           <div className="mt-10 w-full">
-            <Reveal
-              as="p"
-              className="max-w-xl font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 sm:text-xl md:text-2xl"
-            >
-              {personalParagraphOne}
-            </Reveal>
+            <p className="max-w-xl font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
+  {personalParagraphOne}
+</p>
           </div>
           <div className="mt-10 w-full sm:mt-16 md:mt-20">
-            <Reveal
-              as="p"
-              delay={120}
-              className="ml-auto max-w-2xl font-display text-lg normal-case leading-relaxed text-[#fafafa]/80 sm:text-xl md:text-2xl"
-            >
-              {personalParagraphTwo}
-            </Reveal>
+            <p className="ml-auto max-w-2xl font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl sm:ml-auto sm:text-right">
+  {personalParagraphTwo}
+</p>
           </div>
         </div>
 

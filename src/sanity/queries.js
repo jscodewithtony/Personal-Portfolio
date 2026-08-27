@@ -31,6 +31,10 @@ export const homepageContentQuery = /* groq */ `*[_type == "homepageContent"][0]
 }`;
 
 export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
+  customColorTheme {
+    isEnabled,
+    "customColor": customColor.hex
+  },
   scrollingTicker,
   heroHeadline,
   introParagraph,
