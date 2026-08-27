@@ -64,6 +64,12 @@ function MenuOverlay({ open, onClose, anchorRef }) {
     gsap.killTweensOf(overlay);
 
     if (open) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      if (window.lenis) window.lenis.stop();
+
       gsap.set(overlay, {
         display: "flex",
         clipPath: `circle(1% at ${originX}% ${originY}%)`,
@@ -100,7 +106,18 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         clipPath: `circle(1% at ${originX}% ${originY}%)`,
         duration: reduceMotion ? 0.15 : 0.55,
         ease: "power3.in",
-        onComplete: () => gsap.set(overlay, { display: "none" }),
+        onComplete: () => {
+          gsap.set(overlay, { display: "none" });
+          
+          if (document.body.style.position === 'fixed') {
+            const topStr = document.body.style.top;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            window.scrollTo(0, parseInt(topStr || '0') * -1);
+            if (window.lenis) window.lenis.start();
+          }
+        },
       });
       anchorRef.current?.focus({ preventScroll: true });
     }
@@ -115,8 +132,22 @@ function MenuOverlay({ open, onClose, anchorRef }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
+  useEffect(() => {
+    return () => {
+      // Unmount cleanup for scroll lock
+      if (document.body.style.position === 'fixed') {
+        const topStr = document.body.style.top;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, parseInt(topStr || '0') * -1);
+        if (window.lenis) window.lenis.start();
+      }
+    };
+  }, []);
+
   const navLinkClassName =
-    "font-display text-4xl font-bold uppercase tracking-tight text-white active:scale-[0.97] sm:text-3xl focus:outline-none focus-visible:outline-none";
+    "font-display text-[clamp(3.75rem,1.86rem+6.85vw,6.25rem)] font-bold uppercase tracking-tight text-white active:scale-[0.97] focus:outline-none focus-visible:outline-none";
 
   return (
     <div
@@ -126,7 +157,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
       aria-modal="true"
       aria-label="Site navigation"
       aria-hidden={!open}
-      className="fixed inset-0 z-50 hidden flex-col overflow-y-auto bg-[#114AFC] dark:bg-[#0c0a14] px-5 pb-10 pt-6 text-white"
+      className="fixed inset-0 z-50 hidden flex-col overflow-y-auto bg-[#114AFC] dark:bg-[#0c0a14] px-[clamp(1.25rem,-0.07rem+4.79vw,3rem)] pb-10 pt-6 text-white"
       style={{ clipPath: "circle(1% at 90% 8%)" }}
     >
       <div ref={contentRef} className="flex flex-1 flex-col">
@@ -138,7 +169,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
             onClick={onClose}
             className="flex items-center text-white"
           >
-            <Logo className="h-6 w-auto sm:h-7" />
+            <Logo className="h-[clamp(1.5rem,0.75rem+2.74vw,2.5rem)] w-auto" />
           </Link>
           <button
             type="button"
@@ -146,12 +177,12 @@ function MenuOverlay({ open, onClose, anchorRef }) {
             aria-label="Close menu"
             className="flex items-center justify-center text-white transition-transform active:scale-90"
           >
-            <X className="h-6 w-6" />
+            <X className="h-[clamp(1.5rem,0.75rem+2.74vw,2.5rem)] w-[clamp(1.5rem,0.75rem+2.74vw,2.5rem)]" />
           </button>
         </div>
 
         {/* Nav links — left-aligned, stacked (adjusted margin-top to clear Header) */}
-        <nav className="mt-24 flex flex-col items-start gap-5 sm:mt-40 sm:gap-8">
+        <nav className="mt-24 flex flex-col items-start gap-[clamp(0.5rem,-0.62rem+4.1vw,2rem)] sm:mt-40">
           {links.map((item, i) => {
             const isRoute = item.link?.startsWith("/");
 
@@ -185,21 +216,21 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         </nav>
 
         {/* Contact + Social footer */}
-        <div className="mt-8 flex flex-col gap-6 pt-4 sm:mt-12 sm:gap-8">
+        <div className="mt-8 flex flex-col gap-[clamp(1.5rem,0.37rem+4.11vw,3rem)] pt-4 sm:mt-12">
           <div className="flex flex-col items-start gap-1.5 sm:gap-3">
-            <p className="font-display text-sm font-normal uppercase tracking-wide text-white/80">
+            <p className="font-display text-[clamp(0.875rem,0.59rem+1.03vw,1.25rem)] font-normal uppercase tracking-wide text-white/80">
               Contact
             </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               tabIndex={open ? 0 : -1}
-              className="font-display text-lg font-normal normal-case text-white focus:outline-none focus-visible:outline-none"
+              className="font-display text-[clamp(1.125rem,0.47rem+2.4vw,2rem)] font-normal normal-case text-white focus:outline-none focus-visible:outline-none"
             >
               <DirectionHover>{CONTACT_EMAIL}</DirectionHover>
             </a>
           </div>
           <div className="flex flex-col items-start gap-3 sm:gap-4">
-            <p className="font-display text-sm font-normal uppercase tracking-wide text-white/80">
+            <p className="font-display text-[clamp(0.875rem,0.59rem+1.03vw,1.25rem)] font-normal uppercase tracking-wide text-white/80">
               Social
             </p>
             <div className="flex flex-col items-start gap-2 sm:gap-3">
@@ -208,7 +239,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
                   key={label}
                   href={href}
                   tabIndex={open ? 0 : -1}
-                  className="font-display text-lg font-normal normal-case text-white focus:outline-none focus-visible:outline-none"
+                  className="font-display text-[clamp(1.125rem,0.47rem+2.4vw,2rem)] font-normal normal-case text-white focus:outline-none focus-visible:outline-none"
                 >
                   <DirectionHover>{label}</DirectionHover>
                 </a>

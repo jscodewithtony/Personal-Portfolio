@@ -36,7 +36,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
         minute: "2-digit",
         hour12: true,
       }).format(now);
-      setIndiaTime(`${timeStr} IST`);
+      setIndiaTime(`Time : ${timeStr} IST`);
     };
 
     updateTime();
