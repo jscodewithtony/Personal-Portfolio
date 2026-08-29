@@ -67,6 +67,47 @@ function getReadableTextColor(hex) {
 
 const MARQUEE_REPEATS = Array.from({ length: 10 });
 
+// "Exploring India" scatter-gallery layout — position, rotation (via
+// tier), scale, and z-order for each of AntiGravityGallery's 29 fixed
+// slots. This is presentation, not content: it stays in code exactly
+// as it always has (per explicit scope), and Sanity only ever supplies
+// the images that get mapped onto these slots by array order, cycling
+// via `i % LAYOUT_SLOTS.length` if there are ever more than 29 photos.
+// Values are unchanged from the previous per-field parallel arrays —
+// just consolidated into one array-of-objects for a straightforward
+// index -> slot mapping.
+const EXPLORING_INDIA_LAYOUT_SLOTS = [
+  { xPercent: 0, yPercent: 0, z: 0, depth: 0.1, tier: 0 },
+  { xPercent: -20, yPercent: -24, z: -50, depth: 0.25, tier: 1 },
+  { xPercent: 20, yPercent: -24, z: -50, depth: 0.25, tier: 1 },
+  { xPercent: -20, yPercent: 24, z: -50, depth: 0.25, tier: 1 },
+  { xPercent: 20, yPercent: 24, z: -50, depth: 0.25, tier: 1 },
+  { xPercent: 0, yPercent: -36, z: -80, depth: 0.3, tier: 1 },
+  { xPercent: 0, yPercent: 36, z: -80, depth: 0.3, tier: 1 },
+  { xPercent: -12, yPercent: -12, z: -40, depth: 0.2, tier: 1 },
+  { xPercent: 12, yPercent: 12, z: -40, depth: 0.2, tier: 1 },
+  { xPercent: -34, yPercent: -12, z: -120, depth: 0.45, tier: 2 },
+  { xPercent: 34, yPercent: -12, z: -120, depth: 0.45, tier: 2 },
+  { xPercent: -34, yPercent: 20, z: -140, depth: 0.5, tier: 2 },
+  { xPercent: 34, yPercent: 20, z: -140, depth: 0.5, tier: 2 },
+  { xPercent: -18, yPercent: -42, z: -150, depth: 0.4, tier: 2 },
+  { xPercent: 18, yPercent: -42, z: -150, depth: 0.4, tier: 2 },
+  { xPercent: -28, yPercent: -32, z: -130, depth: 0.45, tier: 2 },
+  { xPercent: 28, yPercent: 32, z: -130, depth: 0.45, tier: 2 },
+  { xPercent: -38, yPercent: 4, z: -110, depth: 0.4, tier: 2 },
+  { xPercent: 38, yPercent: -4, z: -110, depth: 0.4, tier: 2 },
+  { xPercent: -44, yPercent: -36, z: -220, depth: 0.7, tier: 3 },
+  { xPercent: 44, yPercent: -36, z: -220, depth: 0.7, tier: 3 },
+  { xPercent: -44, yPercent: 36, z: -220, depth: 0.7, tier: 3 },
+  { xPercent: 44, yPercent: 36, z: -220, depth: 0.7, tier: 3 },
+  { xPercent: -46, yPercent: 2, z: -200, depth: 0.8, tier: 3 },
+  { xPercent: 46, yPercent: 2, z: -200, depth: 0.8, tier: 3 },
+  { xPercent: -48, yPercent: -18, z: -240, depth: 0.85, tier: 3 },
+  { xPercent: 48, yPercent: 18, z: -240, depth: 0.85, tier: 3 },
+  { xPercent: -10, yPercent: -48, z: -210, depth: 0.75, tier: 3 },
+  { xPercent: 10, yPercent: 48, z: -210, depth: 0.75, tier: 3 },
+];
+
 // Everything below is sourced from the `aboutPage` Sanity singleton
 // (aboutPageQuery). This object is what renders when that document (or
 // an individual field on it) is empty/unset/still loading, so the page
@@ -514,28 +555,37 @@ function AboutPage({ theme, onToggleTheme }) {
   const experienceBackgroundAlt =
     about?.experienceBackgroundImageAlt || "Professional Experience background";
 
+  // Sanity's `travelPhotoCollage` array is the single source of truth
+  // for this gallery. When it's empty (nothing entered in the Studio
+  // yet), fall back to the one shipped local photo — same "never show
+  // a blank gap" convention as every other field's FALLBACK_ABOUT
+  // value — rather than an empty section. Width + auto('format') let
+  // Sanity's CDN pick the smallest correctly-formatted (WebP/AVIF)
+  // response; hotspot is respected automatically by the builder since
+  // no explicit crop/rect is passed.
   const travelPhotos = useMemo(() => {
     return about?.travelPhotoCollage?.length > 0
       ? about.travelPhotoCollage.map((item) => ({
-        src: urlFor(item)?.width(1600).url(),
+        src: urlFor(item)?.width(1600).auto("format").url(),
         alt: item.alt || "Travel photo",
       }))
       : [{ src: travelCollageImg, alt: "Collage of travel photos across India" }];
   }, [about?.travelPhotoCollage]);
 
+  // Array order -> layout slot order, cycling past 29 photos. Always a
+  // real array (never `undefined`) so AntiGravityGallery never falls
+  // back to its own internal placeholder set — 1 photo renders as just
+  // that 1 card (the rest of the 29 slots simply don't render), and 0
+  // photos (i.e. the local single-photo fallback above never applies,
+  // which can't actually happen today, but is handled below anyway)
+  // renders an empty-but-not-crashing gallery.
   const galleryCards = useMemo(() => {
-    return travelPhotos && travelPhotos.length > 1
-      ? travelPhotos.map((photo, i) => ({
-        id: i + 1,
-        src: photo.src,
-        alt: photo.alt,
-        xPercent: [0, -20, 20, -20, 20, 0, 0, -12, 12, -34, 34, -34, 34, -18, 18, -28, 28, -38, 38, -44, 44, -44, 44, -46, 46, -48, 48, -10, 10][i % 29],
-        yPercent: [0, -24, -24, 24, 24, -36, 36, -12, 12, -12, -12, 20, 20, -42, -42, -32, 32, 4, -4, -36, -36, 36, 36, 2, 2, -18, 18, -48, 48][i % 29],
-        z: [0, -50, -50, -50, -50, -80, -80, -40, -40, -120, -120, -140, -140, -150, -150, -130, -130, -110, -110, -220, -220, -220, -220, -200, -200, -240, -240, -210, -210][i % 29],
-        depth: [0.1, 0.25, 0.25, 0.25, 0.25, 0.3, 0.3, 0.2, 0.2, 0.45, 0.45, 0.5, 0.5, 0.4, 0.4, 0.45, 0.45, 0.4, 0.4, 0.7, 0.7, 0.7, 0.7, 0.8, 0.8, 0.85, 0.85, 0.75, 0.75][i % 29],
-        tier: [0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3][i % 29]
-      }))
-      : undefined;
+    return travelPhotos.map((photo, i) => ({
+      id: i + 1,
+      src: photo.src,
+      alt: photo.alt,
+      ...EXPLORING_INDIA_LAYOUT_SLOTS[i % EXPLORING_INDIA_LAYOUT_SLOTS.length],
+    }));
   }, [travelPhotos]);
 
   const closingHeadlineLines = [about?.closingHeadlineOne, about?.closingHeadlineTwo].filter(

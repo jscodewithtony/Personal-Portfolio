@@ -295,6 +295,8 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
                   <img
                     src={card.src}
                     alt={card.alt || `Gallery Image ${card.id}`}
+                    width={600}
+                    height={800}
                     className="w-full h-full object-cover select-none pointer-events-none"
                     loading="lazy"
                   />
