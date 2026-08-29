@@ -253,7 +253,7 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
 
   return (
     <div ref={pinWrapperRef} className="w-full relative">
-      <section 
+      <div 
         ref={containerRef} 
         style={{ clipPath: 'inset(0%)' }}
         className="relative z-0 h-[100dvh] w-full overflow-hidden [perspective:1200px] flex items-center justify-center"
@@ -303,7 +303,7 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
             );
           })}
         </div>
-      </section>
+      </div>
 
       {/* Lightbox Overlay */}
       <AnimatePresence>

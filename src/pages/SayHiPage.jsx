@@ -47,7 +47,11 @@ function SayHiPage({ theme, onToggleTheme }) {
   const handleChange = (field) => (e) => {
     const val = e.target.value;
     if (field === "phone") {
-      const filtered = val.replace(/\D/g, "");
+      const hasPlus = val.startsWith('+');
+      let filtered = val.replace(/\D/g, "");
+      if (hasPlus) {
+        filtered = '+' + filtered;
+      }
       setForm((prev) => ({ ...prev, phone: filtered }));
       setErrors((prev) => ({ ...prev, phone: "" }));
     } else {

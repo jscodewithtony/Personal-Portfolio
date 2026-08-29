@@ -26,6 +26,7 @@ const ENABLE_CAPTCHA = true;
 function ProjectContactForm() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitStatus, setSubmitStatus] = useState("idle"); // idle, submitting, success, error
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (!ENABLE_CAPTCHA) return;
@@ -55,11 +56,36 @@ function ProjectContactForm() {
   }, []);
 
   const handleChange = (field) => (e) => {
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    let value = e.target.value;
+    if (field === "phone") {
+      const hasPlus = value.startsWith('+');
+      value = value.replace(/\D/g, "");
+      if (hasPlus) {
+        value = '+' + value;
+      }
+    }
+    setForm((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = "Name is required";
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
 
     let token = "";
     if (ENABLE_CAPTCHA) {
@@ -155,6 +181,11 @@ function ProjectContactForm() {
                     className={FIELD_CLASS}
                   />
                 </label>
+                {errors.name && (
+                  <span className="text-red-500 font-display text-sm font-semibold !normal-case tracking-wide mt-1">
+                    {errors.name}
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-col gap-2">
@@ -170,6 +201,11 @@ function ProjectContactForm() {
                     className={FIELD_CLASS}
                   />
                 </label>
+                {errors.email && (
+                  <span className="text-red-500 font-display text-sm font-semibold !normal-case tracking-wide mt-1">
+                    {errors.email}
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-col gap-2">

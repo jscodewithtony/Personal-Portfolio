@@ -22,7 +22,19 @@ export const ROUTE_TRANSITIONS = [
     match: (pathname) => pathname === "/",
     color: { light: "#F9F9F9", dark: "#0c0a14" },
     textColor: { light: "text-ink", dark: "text-white" },
-    label: "TONY",
+    label: "I'M TONY",
+  },
+  {
+    match: (pathname) => pathname === "/work",
+    color: { light: "#114AFC", dark: "#0c0a14" },
+    textColor: { light: "text-white", dark: "text-white" },
+    label: "MY WORK",
+  },
+  {
+    match: (pathname) => pathname === "/say-hi",
+    color: { light: "#114AFC", dark: "#0c0a14" },
+    textColor: { light: "text-white", dark: "text-white" },
+    label: "SAY HI",
   },
   {
     match: (pathname) => pathname.startsWith("/projects/"),
