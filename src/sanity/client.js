@@ -29,11 +29,14 @@ export function isGifAsset(source) {
   return typeof source?.asset?._ref === "string" && source.asset._ref.endsWith("-gif");
 }
 
-// urlFor(source)?.width(width).url(), except a GIF source skips the
-// resize transform entirely (see isGifAsset) so it keeps animating.
+// urlFor(source)?.width(width).auto("format").url(), except a GIF
+// source skips the resize transform entirely (see isGifAsset) so it
+// keeps animating. `.auto("format")` lets the CDN pick the smallest
+// correctly-formatted response (WebP/AVIF) for the requesting browser
+// — it never changes the requested pixel width.
 export function imageUrl(source, width) {
   const built = urlFor(source);
   if (!built) return null;
   if (isGifAsset(source)) return built.url();
-  return width ? built.width(width).url() : built.url();
+  return width ? built.width(width).auto("format").url() : built.auto("format").url();
 }

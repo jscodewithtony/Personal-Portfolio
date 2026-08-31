@@ -8,6 +8,7 @@ import projectStrategy from "../assets/project-strategy.webp";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectsQuery } from "../sanity/queries";
 import { urlFor, imageUrl } from "../sanity/client";
+import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -56,7 +57,7 @@ const FALLBACK_PROJECTS = [
 ];
 
 function mapSanityProject(doc) {
-  const mainImageUrl = urlFor(doc.mainImage)?.width(1200).url();
+  const mainImageUrl = urlFor(doc.mainImage)?.width(1200).auto("format").url();
   const thumbUrl = imageUrl(doc.thumbnail, 400);
   return {
     id: doc._id,
@@ -86,6 +87,8 @@ function FeaturedProjects() {
       ? docs.slice(0, 3).map(mapSanityProject)
       : FALLBACK_PROJECTS;
 
+  useSignalSectionMounted("featured-projects");
+
   const sectionRef = useRef(null);
   const bgWallRef = useRef(null);
   const bgRowsRef = useRef([]);
@@ -103,14 +106,29 @@ function FeaturedProjects() {
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     if (isTouch) return;
 
+    const section = sectionRef.current;
+    if (!section) return;
+
     const handleMouseMove = (e) => {
       mousePosRef.current = { x: e.clientX, y: e.clientY };
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
+    // Paused off-screen via the same IntersectionObserver pattern as
+    // Stats.jsx's WebGL render loop — this cursor follower can only
+    // ever be visible while a card in this section is hovered, so
+    // there's no reason for it to keep ticking once the user has
+    // scrolled past.
     let animId;
+    let isVisible = true;
+
     const tick = () => {
+      if (!isVisible) {
+        animId = null;
+        return;
+      }
+
       posRef.current.x += (mousePosRef.current.x - posRef.current.x) * 0.2;
       posRef.current.y += (mousePosRef.current.y - posRef.current.y) * 0.2;
 
@@ -125,10 +143,24 @@ function FeaturedProjects() {
       animId = requestAnimationFrame(tick);
     };
 
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !animId) {
+            tick();
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+    sectionObserver.observe(section);
+
     animId = requestAnimationFrame(tick);
 
     return () => {
       document.body.dataset.cursorProjectHover = "false";
+      sectionObserver.disconnect();
       window.removeEventListener("mousemove", handleMouseMove);
       if (animId) cancelAnimationFrame(animId);
     };
@@ -268,14 +300,14 @@ function FeaturedProjects() {
       {/* REVERSE PARALLAX BACKGROUND TEXT WALL */}
       <div
         ref={bgWallRef}
-        className="pointer-events-none absolute -top-[2400px] -bottom-[2400px] inset-x-0 flex flex-col justify-start items-center overflow-hidden z-0 py-2"
+        className="pointer-events-none absolute -top-[2400px] -bottom-[2400px] inset-x-0 flex flex-col justify-start items-center overflow-hidden z-0 py-2 will-change-transform"
       >
         <div className="w-full space-y-2 sm:space-y-4 text-center">
           {BG_ROWS.map((rowText, idx) => (
             <div
               key={idx}
               ref={(el) => (bgRowsRef.current[idx] = el)}
-              className="font-display font-black text-[9.5vw] leading-[0.88] uppercase tracking-normal text-ink/5 dark:text-white/5 whitespace-nowrap will-change-transform"
+              className="font-display font-black text-[9.5vw] leading-[0.88] uppercase tracking-normal text-ink/5 dark:text-white/5 whitespace-nowrap"
             >
               {rowText}
             </div>

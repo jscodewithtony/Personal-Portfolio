@@ -198,10 +198,7 @@ function Hero() {
         }, 0.4);
     });
 
-    document.fonts?.ready?.then(() => ScrollTrigger.refresh());
-    const settleTimer = setTimeout(() => ScrollTrigger.refresh(), 300);
     return () => {
-      clearTimeout(settleTimer);
       mm.revert();
     };
   }, []);

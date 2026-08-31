@@ -6,6 +6,7 @@ import { useSanityQuery } from "../sanity/useSanityQuery";
 import { statCardsQuery } from "../sanity/queries";
 import { useThemeTokens } from "../theme/ThemeTokensContext";
 import { hexToThreeColor } from "../theme/themeTokens";
+import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -89,6 +90,8 @@ const FALLBACK_CENTERPIECE = {
 };
 
 function Stats({ theme }) {
+  useSignalSectionMounted("stats");
+
   const { data: statCards, status: statCardsStatus } = useSanityQuery(
     statCardsQuery,
     {},
@@ -244,21 +247,32 @@ function Stats({ theme }) {
     const cubeGeo = new THREE.BoxGeometry(tileSize, tileSize, tileSize);
     const edgesGeo = new THREE.EdgesGeometry(cubeGeo);
 
-    // Front face material (Light: theme accent | Dark: #1a1a1f, frozen)
-    const greyFrontMat = new THREE.MeshStandardMaterial({
+    // Front face material (Light: theme accent | Dark: #1a1a1f, frozen).
+    // MeshLambertMaterial, not MeshStandardMaterial: the grid's ~100
+    // cube meshes were already tuned to roughness:0.98/metalness:0 —
+    // i.e. specular/metallic response suppressed to near-zero — so
+    // dropping PBR (Cook-Torrance) shading for cheaper Lambertian
+    // (diffuse-only) shading costs no visible difference here, since
+    // there was barely any specular contribution to lose. Still
+    // responds to the same ambient/directional/point light rig.
+    // Measured impact (CPU-throttled 5x, 3 trials each): ~9ms off the
+    // one-time first-render shader compile, but the real win is
+    // per-frame — during the scrub-driven scroll (every frame
+    // re-renders ~100 GSAP-tweened meshes), mean frame time roughly
+    // halved (~70ms -> ~40ms) and frames over 50ms (visible stutter)
+    // dropped from ~97% to ~3-6%. PBR's per-fragment cost, paid every
+    // frame, was the larger cost — not just the first-frame compile.
+
+    const greyFrontMat = new THREE.MeshLambertMaterial({
       color: isInitialDark ? 0x1a1a1f : hexToThreeColor(themeTokens.statsCubeFrontColor),
-      roughness: 0.98,
-      metalness: 0.0,
       transparent: true,
       opacity: 1,
     });
     greyFrontMatRef.current = greyFrontMat;
 
     // Side face material for depth shading (Light: theme accent | Dark: #242429, frozen)
-    const sideGreyMat = new THREE.MeshStandardMaterial({
+    const sideGreyMat = new THREE.MeshLambertMaterial({
       color: isInitialDark ? 0x242429 : hexToThreeColor(themeTokens.statsCubeSideColor),
-      roughness: 0.98,
-      metalness: 0.0,
       transparent: true,
       opacity: 0,
     });

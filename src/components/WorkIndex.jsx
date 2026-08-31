@@ -208,10 +208,25 @@ function WorkIndex() {
   const scaleRef = useRef(0);
   const activeHoverCardRef = useRef(false);
 
+  // NOTE: the IntersectionObserver gating below is correct but
+  // currently unreachable in practice. This effect has an empty `[]`
+  // dependency array, so it runs exactly once, immediately after the
+  // component's first commit — and `useSanityQuery` always starts at
+  // `status: "loading"`, which makes the component's very first render
+  // `return null` (see the guard near the bottom of this file), so
+  // `sectionRef.current` is null on that first pass. The `!section`
+  // check below then bails permanently — this effect never re-runs, so
+  // nothing past this point (listener, rAF loop, observer) ever runs,
+  // regardless of whether the data later resolves to "ready" or
+  // "error". See PROJECT_STATUS.md's "Known Issues" entry for the full
+  // root-cause writeup — do not read this gating as verified working.
   useEffect(() => {
     // Only run on desktop/fine pointer devices
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     if (isTouch) return;
+
+    const section = sectionRef.current;
+    if (!section) return;
 
     const handleMouseMove = (e) => {
       mousePosRef.current = { x: e.clientX, y: e.clientY };
@@ -219,8 +234,20 @@ function WorkIndex() {
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
+    // Paused off-screen via the same IntersectionObserver pattern as
+    // Stats.jsx's WebGL render loop — this cursor follower can only
+    // ever be visible while a row in this section is hovered, so
+    // there's no reason for it to keep ticking once the user has
+    // scrolled past.
     let animId;
+    let isVisible = true;
+
     const tick = () => {
+      if (!isVisible) {
+        animId = null;
+        return;
+      }
+
       posRef.current.x += (mousePosRef.current.x - posRef.current.x) * 0.2;
       posRef.current.y += (mousePosRef.current.y - posRef.current.y) * 0.2;
 
@@ -235,10 +262,24 @@ function WorkIndex() {
       animId = requestAnimationFrame(tick);
     };
 
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !animId) {
+            tick();
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+    sectionObserver.observe(section);
+
     animId = requestAnimationFrame(tick);
 
     return () => {
       document.body.dataset.cursorProjectHover = "false";
+      sectionObserver.disconnect();
       window.removeEventListener("mousemove", handleMouseMove);
       if (animId) cancelAnimationFrame(animId);
     };

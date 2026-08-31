@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import FitGroup from "./FitGroup";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { homepageContentQuery } from "../sanity/queries";
+import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -81,6 +82,8 @@ function Statement() {
   const c = status === "ready" ? { ...FALLBACK, ...content } : FALLBACK;
   const headlineWords = splitHeadlineIntoLines(c.statementHeadline);
   const fullSentence = `${c.statementHeadline} ${c.statementTrailingLine}`;
+
+  useSignalSectionMounted("statement");
 
   const sectionRef = useRef(null);
   const scaleWrapRef = useRef(null);
@@ -197,11 +200,9 @@ function Statement() {
       window.addEventListener("resize", handleResize);
 
       document.fonts?.ready?.then(() => {
-        ScrollTrigger.refresh();
         handleResize();
       });
       const settleTimer = setTimeout(() => {
-        ScrollTrigger.refresh();
         handleResize();
       }, 300);
       return () => {

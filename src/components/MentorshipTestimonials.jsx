@@ -6,6 +6,7 @@ import DirectionHover from "./DirectionHover";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { testimonialsQuery } from "../sanity/queries";
 import { urlFor } from "../sanity/client";
+import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -79,7 +80,7 @@ function mapSanityTestimonial(doc, index) {
     name: doc.name,
     quote: doc.quote,
     platform: (doc.sourcePlatform || "topmate").toLowerCase(),
-    platformLogo: urlFor(doc.sourceLogo)?.width(80).url(),
+    platformLogo: urlFor(doc.sourceLogo)?.width(80).auto("format").url(),
     role: doc.role,
     ...pos,
   };
@@ -91,6 +92,8 @@ function MentorshipTestimonials() {
     status === "ready" && docs?.length
       ? docs.slice(0, 5).map(mapSanityTestimonial)
       : FALLBACK_TESTIMONIALS;
+
+  useSignalSectionMounted("mentorship-testimonials");
 
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
@@ -238,12 +241,7 @@ function MentorshipTestimonials() {
       }
     }, section);
 
-    const timer = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 100);
-
     return () => {
-      clearTimeout(timer);
       ctx.revert();
     };
   }, [status]);

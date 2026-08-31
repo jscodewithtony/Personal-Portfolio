@@ -198,9 +198,6 @@ function About({ theme }) {
       tl.to(imageOuter, { clipPath: "inset(0 0 0% 0)", ease: "none", duration: 1 }, 0)
         .to(imageInner, { scale: 1, ease: "none", duration: 1 }, 0);
 
-      document.fonts?.ready?.then(() => ScrollTrigger.refresh());
-      const settleTimer = setTimeout(() => ScrollTrigger.refresh(), 300);
-      return () => clearTimeout(settleTimer);
     }, section);
 
     return () => ctx.revert();

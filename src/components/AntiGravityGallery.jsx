@@ -210,12 +210,16 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
   }, { scope: pinWrapperRef, dependencies: [cards] });
 
   useEffect(() => {
-    // Mouse Parallax Animation Loop
+    // Mouse Parallax Animation Loop — paused off-screen via the same
+    // IntersectionObserver pattern as Stats.jsx's WebGL render loop, so
+    // this doesn't keep writing 29 elements' style.transform every
+    // frame once the user has scrolled past this section.
     let mouseX = 0;
     let mouseY = 0;
     let smoothX = 0;
     let smoothY = 0;
     let animationFrameId;
+    let isVisible = true;
 
     const handleMouseMove = (e) => {
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -223,6 +227,11 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
     };
 
     const render = () => {
+      if (!isVisible) {
+        animationFrameId = null;
+        return;
+      }
+
       smoothX += (mouseX - smoothX) * 0.05;
       smoothY += (mouseY - smoothY) * 0.05;
 
@@ -242,12 +251,26 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
       animationFrameId = requestAnimationFrame(render);
     };
 
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !animationFrameId) {
+            render();
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+    if (pinWrapperRef.current) sectionObserver.observe(pinWrapperRef.current);
+
     window.addEventListener('mousemove', handleMouseMove);
     render();
 
     return () => {
+      sectionObserver.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, [cards]);
 
@@ -349,7 +372,7 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
             >
               <motion.img
                 key={activeIndex}
-                src={cards[activeIndex].src}
+                src={cards[activeIndex].fullSrc || cards[activeIndex].src}
                 alt={cards[activeIndex].alt || `Lightbox Image ${cards[activeIndex].id}`}
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}

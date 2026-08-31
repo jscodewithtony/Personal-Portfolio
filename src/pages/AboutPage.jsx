@@ -67,6 +67,20 @@ function getReadableTextColor(hex) {
 
 const MARQUEE_REPEATS = Array.from({ length: 10 });
 
+// Reserve layout space for the two full-bleed About images before they
+// decode, so there's no shift either way (real content or fallback).
+// The real source of truth is Sanity's own asset metadata
+// (`asset->metadata.dimensions.aspectRatio`, queried in
+// aboutPageQuery) — these two constants are ONLY the emergency
+// fallback for when the CMS field is still unset and the local
+// placeholder photo (`tonyBlueImg` / `resumeBgImg`) is what's actually
+// rendering. They were measured directly off those two placeholder
+// files' own pixel dimensions (1440x862 and 2560x1440) — they are not
+// a design spec, and have no reason to stay correct once those
+// placeholder assets are ever swapped for real photography.
+const NARRATIVE_IMAGE_FALLBACK_ASPECT_RATIO = 1440 / 862;
+const EXPERIENCE_BACKGROUND_FALLBACK_ASPECT_RATIO = 16 / 9;
+
 // "Exploring India" scatter-gallery layout — position, rotation (via
 // tier), scale, and z-order for each of AntiGravityGallery's 29 fixed
 // slots. This is presentation, not content: it stays in code exactly
@@ -545,15 +559,22 @@ function AboutPage({ theme, onToggleTheme }) {
     text: about?.annotationDots?.[i]?.tooltipText || fallback.text,
   }));
 
-  const portraitImageUrl = urlFor(about?.portraitImage)?.width(1200).url();
+  const portraitImageUrl = urlFor(about?.portraitImage)?.width(1200).auto("format").url();
   const portraitImageAlt = about?.portraitImageAlt || "Tony";
 
-  const narrativeImageOneUrl = urlFor(about?.narrativeImageOne)?.width(2400).url();
+  const narrativeImageOneUrl = urlFor(about?.narrativeImageOne)?.width(2400).auto("format").url();
   const narrativeImageOneAlt = about?.narrativeImageOneAlt || "Tony";
+  // Real Sanity asset metadata wins when the field is set; only fall
+  // back to the placeholder-derived constant when it isn't (see the
+  // constant's own comment above).
+  const narrativeImageAspectRatio =
+    about?.narrativeImageOne?.aspectRatio || NARRATIVE_IMAGE_FALLBACK_ASPECT_RATIO;
 
-  const experienceBackgroundUrl = urlFor(about?.experienceBackgroundImage)?.width(2400).url();
+  const experienceBackgroundUrl = urlFor(about?.experienceBackgroundImage)?.width(2400).auto("format").url();
   const experienceBackgroundAlt =
     about?.experienceBackgroundImageAlt || "Professional Experience background";
+  const experienceBackgroundAspectRatio =
+    about?.experienceBackgroundImage?.aspectRatio || EXPERIENCE_BACKGROUND_FALLBACK_ASPECT_RATIO;
 
   // Sanity's `travelPhotoCollage` array is the single source of truth
   // for this gallery. When it's empty (nothing entered in the Studio
@@ -563,13 +584,27 @@ function AboutPage({ theme, onToggleTheme }) {
   // Sanity's CDN pick the smallest correctly-formatted (WebP/AVIF)
   // response; hotspot is respected automatically by the builder since
   // no explicit crop/rect is passed.
+  //
+  // Two separate widths: the scatter layout only ever displays a card
+  // at up to 300px CSS width (the tier-0 hero slot's clamp() ceiling;
+  // every other tier is smaller), so `thumbSrc` requests 600px — ~2x
+  // retina headroom, not the full 1600px every one of the ~20 photos
+  // was requesting before just to render a shrunk thumbnail. `fullSrc`
+  // keeps the original 1600px, but is now only ever fetched for the
+  // ONE card that's actually open in the lightbox (up to 90vw), not
+  // all ~20 up front. The local fallback has no separate sizes to pull
+  // from (it's a single static asset, not run through Sanity's image
+  // pipeline), so both fields point at the same file there — that's
+  // fine, since the whole point is avoiding a 20x repeat of the
+  // oversized request, and there's only ever 1 fallback photo.
   const travelPhotos = useMemo(() => {
     return about?.travelPhotoCollage?.length > 0
       ? about.travelPhotoCollage.map((item) => ({
-        src: urlFor(item)?.width(1600).auto("format").url(),
+        thumbSrc: urlFor(item)?.width(600).auto("format").url(),
+        fullSrc: urlFor(item)?.width(1600).auto("format").url(),
         alt: item.alt || "Travel photo",
       }))
-      : [{ src: travelCollageImg, alt: "Collage of travel photos across India" }];
+      : [{ thumbSrc: travelCollageImg, fullSrc: travelCollageImg, alt: "Collage of travel photos across India" }];
   }, [about?.travelPhotoCollage]);
 
   // Array order -> layout slot order, cycling past 29 photos. Always a
@@ -582,7 +617,8 @@ function AboutPage({ theme, onToggleTheme }) {
   const galleryCards = useMemo(() => {
     return travelPhotos.map((photo, i) => ({
       id: i + 1,
-      src: photo.src,
+      src: photo.thumbSrc,
+      fullSrc: photo.fullSrc,
       alt: photo.alt,
       ...EXPLORING_INDIA_LAYOUT_SLOTS[i % EXPLORING_INDIA_LAYOUT_SLOTS.length],
     }));
@@ -756,8 +792,8 @@ function AboutPage({ theme, onToggleTheme }) {
               src={narrativeImageOneUrl || tonyBlueImg}
               alt={narrativeImageOneAlt}
               loading="lazy"
-              onLoad={() => ScrollTrigger.refresh()}
-              className="w-full h-auto"
+              style={{ aspectRatio: narrativeImageAspectRatio }}
+              className="w-full h-auto object-cover"
             />
           </motion.div>
         </div>
@@ -856,9 +892,8 @@ function AboutPage({ theme, onToggleTheme }) {
                 src={experienceBackgroundUrl || resumeBgImg}
                 alt={experienceBackgroundAlt}
                 loading="lazy"
-                onLoad={() => ScrollTrigger.refresh()}
-                style={{ y: yVal, scale: 1.15 }}
-                className="w-full h-auto origin-center"
+                style={{ y: yVal, scale: 1.15, aspectRatio: experienceBackgroundAspectRatio }}
+                className="w-full h-auto object-cover origin-center"
               />
             </div>
           </Reveal>

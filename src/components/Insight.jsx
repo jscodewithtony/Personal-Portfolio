@@ -6,6 +6,7 @@ import fallbackInsights from "../data/insights.json";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { articlesQuery } from "../sanity/queries";
 import { urlFor } from "../sanity/client";
+import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,7 +15,7 @@ function mapSanityArticle(doc) {
     title: doc.title,
     excerpt: doc.excerpt,
     date: doc.publishDate,
-    image: urlFor(doc.thumbnail)?.width(800).url(),
+    image: urlFor(doc.thumbnail)?.width(800).auto("format").url(),
     link: doc.externalLink,
     source: doc.sourcePlatform,
   };
@@ -43,6 +44,8 @@ function Insight() {
   const sectionRef = useRef(null);
   const headlineRef = useRef(null);
   const gridRef = useRef(null);
+
+  useSignalSectionMounted("insight");
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -91,18 +94,10 @@ function Insight() {
       // range (and therefore exactly where "scrolled back up past
       // start" fires) ends up stale, which reads as "reverse doesn't
       // work" even though the trigger itself is configured correctly.
-      // Refresh repeatedly, including on the window load event, to
-      // catch layout that finishes settling later than a single timer.
-      document.fonts?.ready?.then(() => ScrollTrigger.refresh());
-      const settleTimers = [300, 800, 1500].map((delay) =>
-        setTimeout(() => ScrollTrigger.refresh(), delay)
-      );
-      const handleLoad = () => ScrollTrigger.refresh();
-      window.addEventListener("load", handleLoad);
-      return () => {
-        settleTimers.forEach(clearTimeout);
-        window.removeEventListener("load", handleLoad);
-      };
+      // Previously handled here with up to 5 blindly-scheduled
+      // ScrollTrigger.refresh() calls; now handled once, coordinated
+      // across all of the homepage's lazy sections, by
+      // useSignalSectionMounted above — see useSectionMountRefresh.js.
     }, section);
 
     return () => ctx.revert();

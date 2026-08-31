@@ -38,7 +38,10 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   scrollingTicker,
   heroHeadline,
   introParagraph,
-  narrativeImageOne,
+  narrativeImageOne{
+    ...,
+    "aspectRatio": asset->metadata.dimensions.aspectRatio
+  },
   narrativeImageOneAlt,
   narrativeImageTwo,
   narrativeImageTwoAlt,
@@ -53,7 +56,10 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   philosophyHeadline,
   experienceHeading,
   experienceEntries[]{ year, description },
-  experienceBackgroundImage,
+  experienceBackgroundImage{
+    ...,
+    "aspectRatio": asset->metadata.dimensions.aspectRatio
+  },
   experienceBackgroundImageAlt,
   knowMoreHeadline,
   annotationDots[]{ label, tooltipText },

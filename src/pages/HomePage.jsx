@@ -96,7 +96,7 @@ function HomePage({ theme, onToggleTheme }) {
 
           <div>
             <Suspense fallback={<div className="h-[20vh] bg-bg/20 dark:bg-white/5 animate-pulse" />}>
-              <Footer />
+              <Footer signalMount />
             </Suspense>
           </div>
         </>

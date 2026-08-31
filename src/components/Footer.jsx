@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import PianoLidContact from "./PianoLidContact";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { footerContactQuery } from "../sanity/queries";
+import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
 
 // --- 3 OCTAVES PIANO NOTES (C3 to C6: 22 White Keys, 15 Black Keys) ---
 const PIANO_NOTES = [
@@ -78,8 +79,15 @@ function getMidiFrequency(midi) {
 
 // `variant="about"` and `contactContent` are opt-in — only AboutPage.jsx
 // passes them, so Home and CaseStudy keep rendering exactly as before.
-function Footer({ variant = "site", contactContent }) {
+function Footer({ variant = "site", contactContent, signalMount = false }) {
   const isAbout = variant === "about";
+
+  // Opt-in only — Footer is shared across every page, but this section
+  // only belongs to the homepage's coordinated `introFinished` batch
+  // (see useSectionMountRefresh.js). HomePage.jsx is the only caller
+  // that passes `signalMount`; every other page's Footer stays a no-op
+  // here, same as before this batch of work.
+  useSignalSectionMounted(signalMount ? "footer" : null);
 
   // Footer Contact singleton — the default "site" variant's content
   // source. AboutPage's own explicit `contactContent` override (sourced
@@ -108,6 +116,7 @@ function Footer({ variant = "site", contactContent }) {
   const keyContainerRef = useRef(null);
   const particlesRef = useRef([]);
   const animFrameRef = useRef(null);
+  const isVisibleRef = useRef(false);
 
   const audioCtxRef = useRef(null);
   const masterGainRef = useRef(null);
@@ -371,13 +380,12 @@ function Footer({ variant = "site", contactContent }) {
     [TOTAL_WHITE_KEYS, animateParticles]
   );
 
-  // --- FLOATING MUSICAL NOTES SPAWNER (FLOATS UP THROUGH PianoLidContact) ---
+  // --- VISIBILITY OBSERVER & FLOATING MUSICAL NOTES SPAWNER (FLOATS UP THROUGH PianoLidContact) ---
   useEffect(() => {
-    let isVisible = true;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          isVisible = entry.isIntersecting;
+          isVisibleRef.current = entry.isIntersecting;
         });
       },
       { threshold: 0.05 }
@@ -390,7 +398,7 @@ function Footer({ variant = "site", contactContent }) {
     const SPAWN_INTERVAL_MS = 1800;
 
     const interval = setInterval(() => {
-      if (!isVisible) return;
+      if (!isVisibleRef.current) return;
       if (particlesRef.current.length >= 10) return;
 
       const canvas = canvasRef.current;
@@ -543,6 +551,7 @@ function Footer({ variant = "site", contactContent }) {
   // QWERTY keyboard listener
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (!isVisibleRef.current) return;
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement ||
