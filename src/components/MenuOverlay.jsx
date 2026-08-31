@@ -147,7 +147,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
   }, []);
 
   const navLinkClassName =
-    "font-display text-[clamp(3.75rem,1.86rem+6.85vw,6.25rem)] font-bold uppercase tracking-tight text-white active:scale-[0.97] focus:outline-none focus-visible:outline-none";
+    "font-display text-[clamp(3.75rem,1.86rem+6.85vw,6.25rem)] font-bold uppercase tracking-tight text-ink dark:text-white active:scale-[0.97] focus:outline-none focus-visible:outline-none";
 
   return (
     <div
@@ -157,7 +157,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
       aria-modal="true"
       aria-label="Site navigation"
       aria-hidden={!open}
-      className="fixed inset-0 z-50 hidden flex-col overflow-y-auto bg-[#114AFC] dark:bg-[#0c0a14] px-[clamp(1.25rem,-0.07rem+4.79vw,3rem)] pb-10 pt-6 text-white"
+      className="fixed inset-0 z-50 hidden flex-col overflow-y-auto bg-bg dark:bg-[#0c0a14] px-[clamp(1.25rem,-0.07rem+4.79vw,3rem)] pb-10 pt-6 text-ink dark:text-white"
       style={{ clipPath: "circle(1% at 90% 8%)" }}
     >
       <div ref={contentRef} className="flex flex-1 flex-col">
@@ -167,7 +167,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
             to="/"
             aria-label="Home"
             onClick={onClose}
-            className="flex items-center text-white"
+            className="flex items-center text-ink dark:text-white"
           >
             <Logo className="h-[clamp(1.5rem,0.75rem+2.74vw,2.5rem)] w-auto" />
           </Link>
@@ -175,14 +175,14 @@ function MenuOverlay({ open, onClose, anchorRef }) {
             type="button"
             onClick={onClose}
             aria-label="Close menu"
-            className="flex items-center justify-center text-white transition-transform active:scale-90"
+            className="flex items-center justify-center text-ink dark:text-white transition-transform active:scale-90"
           >
             <X className="h-[clamp(1.5rem,0.75rem+2.74vw,2.5rem)] w-[clamp(1.5rem,0.75rem+2.74vw,2.5rem)]" />
           </button>
         </div>
 
         {/* Nav links — left-aligned, stacked (adjusted margin-top to clear Header) */}
-        <nav className="mt-24 flex flex-col items-start gap-[clamp(0.5rem,-0.62rem+4.1vw,2rem)] sm:mt-40">
+        <nav className="mt-24 flex flex-col items-start gap-[clamp(0.375rem,_-0.465rem_+_3.075vw,_1.5rem)] sm:mt-40">
           {links.map((item, i) => {
             const isRoute = item.link?.startsWith("/");
 
@@ -218,19 +218,19 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         {/* Contact + Social footer */}
         <div className="mt-8 flex flex-col gap-[clamp(1.5rem,0.37rem+4.11vw,3rem)] pt-4 sm:mt-12">
           <div className="flex flex-col items-start gap-1.5 sm:gap-3">
-            <p className="font-display text-[clamp(0.875rem,0.59rem+1.03vw,1.25rem)] font-normal uppercase tracking-wide text-white/80">
+            <p className="font-display text-[clamp(0.875rem,0.59rem+1.03vw,1.25rem)] font-normal uppercase tracking-wide text-ink/80 dark:text-white/80">
               Contact
             </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               tabIndex={open ? 0 : -1}
-              className="font-display text-[clamp(1.125rem,0.47rem+2.4vw,2rem)] font-normal normal-case text-white focus:outline-none focus-visible:outline-none"
+              className="font-display text-[clamp(1.125rem,0.47rem+2.4vw,2rem)] font-normal normal-case text-ink dark:text-white focus:outline-none focus-visible:outline-none"
             >
               <DirectionHover>{CONTACT_EMAIL}</DirectionHover>
             </a>
           </div>
           <div className="flex flex-col items-start gap-3 sm:gap-4">
-            <p className="font-display text-[clamp(0.875rem,0.59rem+1.03vw,1.25rem)] font-normal uppercase tracking-wide text-white/80">
+            <p className="font-display text-[clamp(0.875rem,0.59rem+1.03vw,1.25rem)] font-normal uppercase tracking-wide text-ink/80 dark:text-white/80">
               Social
             </p>
             <div className="flex flex-col items-start gap-2 sm:gap-3">
@@ -239,7 +239,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
                   key={label}
                   href={href}
                   tabIndex={open ? 0 : -1}
-                  className="font-display text-[clamp(1.125rem,0.47rem+2.4vw,2rem)] font-normal normal-case text-white focus:outline-none focus-visible:outline-none"
+                  className="font-display text-[clamp(1.125rem,0.47rem+2.4vw,2rem)] font-normal normal-case text-ink dark:text-white focus:outline-none focus-visible:outline-none"
                 >
                   <DirectionHover>{label}</DirectionHover>
                 </a>

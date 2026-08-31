@@ -85,14 +85,12 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
         <Link
           to="/"
           aria-label="Home"
-          className={`transition-colors duration-300 flex items-center ${menuOpen ? "text-white" : "text-ink dark:text-white"
-            }`}
+          className="transition-colors duration-300 flex items-center text-ink dark:text-white"
         >
           <Logo className="h-6 w-auto sm:h-7 md:h-8 lg:h-[38px]" />
         </Link>
         <span
-          className={`hidden whitespace-nowrap font-display text-base font-medium normal-case leading-[42px] transition-colors duration-300 lg:inline ${menuOpen ? "text-white" : "text-ink dark:text-white"
-            }`}
+          className="hidden whitespace-nowrap font-display text-base font-medium normal-case leading-[42px] transition-colors duration-300 lg:inline text-ink dark:text-white"
         >
           {indiaTime}
         </span>
@@ -149,8 +147,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           variant="rectangle"
           duration={500}
           aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-          className={`flex items-center justify-center rounded-full p-2 transition-[color,transform,background-color] duration-200 active:scale-90 hover:bg-black/5 lg:hidden dark:hover:bg-white/10 ${menuOpen ? "text-white" : "text-ink dark:text-white"
-            }`}
+          className="flex items-center justify-center rounded-full p-2 transition-[color,transform,background-color] duration-200 active:scale-90 hover:bg-black/5 lg:hidden dark:hover:bg-white/10 text-ink dark:text-white"
         />
 
         {/* Mobile MENU button — same MenuOverlay this already drives, hidden at lg: since the links render inline there instead. */}
@@ -161,8 +158,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           aria-expanded={menuOpen}
           aria-controls="site-menu"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className={`flex items-center gap-2 font-display font-black text-lg sm:text-xl md:text-2xl uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden ${menuOpen ? "text-white" : "text-ink dark:text-white"
-            }`}
+          className="flex items-center gap-2 font-display font-black text-lg sm:text-xl md:text-2xl uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden text-ink dark:text-white"
         >
           <DirectionHover duration={220}>MENU</DirectionHover>
           <span
