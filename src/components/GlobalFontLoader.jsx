@@ -54,7 +54,12 @@ export function GlobalFontLoader() {
       const formattedFamily = activeFamily.includes(" ") && !activeFamily.startsWith("'") && !activeFamily.startsWith('"')
         ? `'${activeFamily}'`
         : activeFamily;
-      document.documentElement.style.setProperty("--font-display", `${formattedFamily}, ui-sans-serif, system-ui, sans-serif`);
+      // "Bricolage Grotesque" (the site's own default) sits ahead of the
+      // generic system fonts here — if the CMS-configured font fails to
+      // load (e.g. a bad customFontUrl), text falls back to the site's
+      // real, weight-matched typeface instead of jumping straight to an
+      // unrelated OS default.
+      document.documentElement.style.setProperty("--font-display", `${formattedFamily}, "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif`);
     } else {
       document.documentElement.style.removeProperty("--font-display");
     }
