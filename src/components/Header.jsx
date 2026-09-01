@@ -158,7 +158,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
           aria-expanded={menuOpen}
           aria-controls="site-menu"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="flex items-center gap-2 font-display font-black text-lg sm:text-xl md:text-2xl uppercase tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden text-ink dark:text-white"
+          className="flex items-center gap-2 font-display font-black text-lg sm:text-xl md:text-2xl normal-case tracking-wider transition-[color,transform] duration-200 active:scale-[0.96] focus:outline-none focus-visible:outline-none lg:hidden text-ink dark:text-white"
         >
           <DirectionHover duration={220}>MENU</DirectionHover>
           <span

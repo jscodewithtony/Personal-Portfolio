@@ -346,7 +346,7 @@ function FeaturedProjects() {
                   let progress = 0.15;
                   if (index === 1) progress = 0.5;
                   if (index === 2) progress = 0.77;
-                  window.scrollTo({ top: startScroll + (pinDistance * progress), behavior: "auto" });
+                  window.scrollTo({ top: startScroll + (pinDistance * progress), behavior: "smooth" });
                 }}
                 className="relative w-full max-w-5xl lg:max-w-6xl overflow-hidden rounded-none border-none bg-white shadow-2xl transition-colors duration-300 dark:bg-[#141418] group cursor-pointer md:cursor-none"
               >

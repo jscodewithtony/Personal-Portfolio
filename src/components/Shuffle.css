@@ -2,7 +2,6 @@
   display: inline-block;
   white-space: normal;
   word-wrap: break-word;
-  will-change: transform;
   line-height: 0.8;
   text-transform: uppercase;
   visibility: hidden;

@@ -207,14 +207,29 @@ function About({ theme }) {
     // theme is actually selected, instead of staying stuck on defaults.
   }, [themeTokens]);
 
-  // GSAP Smooth Slow Slide-In (Play) & Slow Slide-Out Off-Screen (Pause)
+  // GSAP Smooth Slow Slide-In (Play) & Slow Slide-Out Off-Screen (Pause).
+  // `will-change` is applied imperatively for just the tween's own
+  // duration (onStart -> onComplete) rather than sitting in the JSX as
+  // a permanent class — these two full-width (240vw) elements are only
+  // ever actually moving during this ~0.9-1s transition; the rest of
+  // the time (ribbonsActive sitting true/false at rest) there's no
+  // animation running, so no reason to keep either promoted as its own
+  // compositor layer. `onComplete` still fires if the tween is
+  // overwritten by a fresh toggle before finishing (GSAP calls the
+  // outgoing tween's onInterrupt, not onComplete, in that case — added
+  // explicitly below so a rapid double-toggle can't leave will-change
+  // stuck on).
   useEffect(() => {
     const r1 = ribbon1Ref.current;
     const r2 = ribbon2Ref.current;
     if (!r1 || !r2) return;
 
+    const promote = (el) => { el.style.willChange = "transform"; };
+    const settle = (el) => { el.style.willChange = "auto"; };
+
     if (ribbonsActive) {
       // Toggle ON (Play): Smooth slow slide-in from off-screen opposite edges
+      promote(r1);
       gsap.fromTo(
         r1,
         {
@@ -228,9 +243,12 @@ function About({ theme }) {
           opacity: 1,
           duration: 0.95,
           ease: "power3.out",
+          onComplete: () => settle(r1),
+          onInterrupt: () => settle(r1),
         }
       );
 
+      promote(r2);
       gsap.fromTo(
         r2,
         {
@@ -245,21 +263,29 @@ function About({ theme }) {
           duration: 0.95,
           delay: 0.08,
           ease: "power3.out",
+          onComplete: () => settle(r2),
+          onInterrupt: () => settle(r2),
         }
       );
     } else {
       // Toggle OFF (Pause): Smooth slow slide out all the way off-screen
+      promote(r1);
       gsap.to(r1, {
         xPercent: 180,
         opacity: 0,
         duration: 0.9,
         ease: "power3.inOut",
+        onComplete: () => settle(r1),
+        onInterrupt: () => settle(r1),
       });
+      promote(r2);
       gsap.to(r2, {
         xPercent: -220,
         opacity: 0,
         duration: 0.9,
         ease: "power3.inOut",
+        onComplete: () => settle(r2),
+        onInterrupt: () => settle(r2),
       });
     }
   }, [ribbonsActive]);
@@ -381,7 +407,7 @@ function About({ theme }) {
           {/* Ribbon 1: Purple (#114AFC) - Slanted UPWARDS (+9deg) in background */}
           <div
             ref={ribbon1Ref}
-            className={`absolute left-1/2 top-[60%] w-[240vw] ${RIBBON_1_COLOR} py-4 sm:py-6 md:py-7 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] will-change-transform z-10`}
+            className={`absolute left-1/2 top-[60%] w-[240vw] ${RIBBON_1_COLOR} py-4 sm:py-6 md:py-7 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] z-10`}
           >
             <div className="flex whitespace-nowrap overflow-hidden font-display text-2xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight">
               <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6">
@@ -406,7 +432,7 @@ function About({ theme }) {
           {/* Ribbon 2: Dark (#121212) - Slanted DOWNWARDS (-14deg) in foreground crossing over Ribbon 1 */}
           <div
             ref={ribbon2Ref}
-            className={`absolute left-1/2 top-[52%] w-[240vw] ${RIBBON_2_COLOR} py-4 sm:py-6 md:py-7 text-white shadow-[0_25px_60px_rgba(0,0,0,0.8)] will-change-transform z-20`}
+            className={`absolute left-1/2 top-[52%] w-[240vw] ${RIBBON_2_COLOR} py-4 sm:py-6 md:py-7 text-white shadow-[0_25px_60px_rgba(0,0,0,0.8)] z-20`}
           >
             <div className="flex whitespace-nowrap overflow-hidden font-display text-2xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight">
               <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6">

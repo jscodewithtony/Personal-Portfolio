@@ -214,7 +214,7 @@ function Hero() {
           {/* Mobile View: Centered Badge + Stacked 2-line Headline */}
           <div ref={mobileHeadlineWrapRef} className="md:hidden flex flex-col items-center pt-2 pb-1 px-4">
             <div className="inline-block px-3 py-1 border border-ink/40 dark:border-white/40 font-display text-[10px] sm:text-xs font-bold uppercase tracking-wider text-ink dark:text-white mb-3">
-              WAITING FOR FIRST DESIGN AWARD 🏆
+              Waiting for first Design Award 🏆
             </div>
             <h1 className="select-none font-display font-black leading-[0.84] tracking-tighter text-center text-ink dark:text-white uppercase text-[90px]">
               {c.heroHeadline.split(" ")[0] || "HELLO"}
@@ -250,10 +250,10 @@ function Hero() {
             </FitText>
 
             <div className="relative z-10 flex items-center justify-between mt-2 px-1 sm:px-2">
-              <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold uppercase tracking-[0.70em] text-ink/90 dark:text-white/90">
+              <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold normal-case tracking-[0.70em] text-ink/90 dark:text-white/90">
                 BASED IN {c.heroBasedInLocation}
               </p>
-              <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold uppercase tracking-[0.70em] text-ink/90 dark:text-white/90">
+              <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold normal-case tracking-[0.70em] text-ink/90 dark:text-white/90">
                 {c.heroTagline}
               </p>
             </div>

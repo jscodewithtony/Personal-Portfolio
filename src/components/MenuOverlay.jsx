@@ -20,7 +20,6 @@ const FALLBACK_LINKS = [
   { label: "Work", link: "/work" },
   { label: "About", link: "/about" },
   { label: "Say Hi", link: "/say-hi" },
-  { label: "Resume", link: "#" },
 ];
 
 const SOCIAL_LINKS = [
@@ -108,7 +107,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         ease: "power3.in",
         onComplete: () => {
           gsap.set(overlay, { display: "none" });
-          
+
           if (document.body.style.position === 'fixed') {
             const topStr = document.body.style.top;
             document.body.style.position = '';
@@ -147,7 +146,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
   }, []);
 
   const navLinkClassName =
-    "font-display text-[clamp(3.75rem,1.86rem+6.85vw,6.25rem)] font-bold uppercase tracking-tight text-ink dark:text-white active:scale-[0.97] focus:outline-none focus-visible:outline-none";
+    "font-display text-[clamp(3.75rem,1.86rem+6.85vw,6.25rem)] leading-none font-normal normal-case tracking-tight text-ink dark:text-white active:scale-[0.97] focus:outline-none focus-visible:outline-none";
 
   return (
     <div
@@ -182,7 +181,7 @@ function MenuOverlay({ open, onClose, anchorRef }) {
         </div>
 
         {/* Nav links — left-aligned, stacked (adjusted margin-top to clear Header) */}
-        <nav className="mt-24 flex flex-col items-start gap-[clamp(0.375rem,_-0.465rem_+_3.075vw,_1.5rem)] sm:mt-40">
+        <nav className="mt-24 flex flex-col items-start gap-0 sm:gap-[clamp(0.375rem,_-0.465rem_+_3.075vw,_1.5rem)] sm:mt-40">
           {links.map((item, i) => {
             const isRoute = item.link?.startsWith("/");
 
