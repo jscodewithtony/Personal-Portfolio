@@ -456,10 +456,8 @@ function WorkIndex() {
           display title, rather than the raw 224px/56.8px Figma values
           (each tuned for one fixed frame width). */}
       <section className="bg-bg pl-6 pt-20 pb-12 sm:pb-16 text-ink transition-colors duration-300 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white">
-        <h2 className="font-display text-5xl font-extrabold uppercase leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
-          Every move
-          <br />
-          so far
+        <h2 className="font-display text-5xl font-extrabold normal-case leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
+          My Work
         </h2>
       </section>
       <section
