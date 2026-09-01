@@ -250,10 +250,10 @@ function Hero() {
             </FitText>
 
             <div className="relative z-10 flex items-center justify-between mt-2 px-1 sm:px-2">
-              <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold normal-case tracking-[0.70em] text-ink/90 dark:text-white/90">
+              <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold normal-case tracking-[0.30em] text-ink/90 dark:text-white/90">
                 BASED IN {c.heroBasedInLocation}
               </p>
-              <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold normal-case tracking-[0.70em] text-ink/90 dark:text-white/90">
+              <p className="font-display text-xs sm:text-sm md:text-base lg:text-[1.5em] font-bold normal-case tracking-[0.30em] text-ink/90 dark:text-white/90">
                 {c.heroTagline}
               </p>
             </div>
@@ -295,7 +295,7 @@ function Hero() {
             {heroSpecs.map((spec) => (
               <p
                 key={spec}
-                className="font-display text-[clamp(0.75rem,0.49rem+0.95vw,1.25rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap"
+                className="font-display text-[clamp(0.75rem,0.53rem+0.81vw,1.5rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap"
               >
                 {spec}
               </p>
@@ -324,10 +324,10 @@ function Hero() {
             ref={desktopRightLabelRef}
             className="flex flex-col items-start justify-center gap-2 sm:gap-3 text-left"
           >
-            <p className="font-display text-[clamp(0.75rem,0.49rem+0.95vw,1.25rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
+            <p className="font-display text-[clamp(0.75rem,0.53rem+0.81vw,1.5rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
               {c.heroBadgeLine1}
             </p>
-            <p className="font-display text-[clamp(0.75rem,0.49rem+0.95vw,1.25rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase flex items-center gap-2 whitespace-nowrap">
+            <p className="font-display text-[clamp(0.75rem,0.53rem+0.81vw,1.5rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase flex items-center gap-2 whitespace-nowrap">
               {c.heroBadgeLine2}
             </p>
           </div>
