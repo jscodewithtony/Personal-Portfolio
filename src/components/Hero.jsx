@@ -295,25 +295,39 @@ function Hero() {
             {heroSpecs.map((spec) => (
               <p
                 key={spec}
-                className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap"
+                className="font-display text-[clamp(0.75rem,0.49rem+0.95vw,1.25rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap"
               >
                 {spec}
               </p>
             ))}
           </div>
 
-          <div ref={desktopMascotWrapRef} className="relative z-30 shrink-0">
-            <Mascot faceRef={desktopMascotFaceRef} />
+          <div
+            ref={desktopMascotWrapRef}
+            className="relative z-30 shrink-0 w-[clamp(6.875rem,-7.86rem+53.57vw,35rem)] h-[clamp(6.875rem,-7.86rem+53.57vw,35rem)]"
+          >
+            {/* Mascot renders at its own native (breakpoint-stepped) size;
+                this inner layer scales the whole rendered block down to
+                match the wrapper's fluid clamp above, so eyes/eyebrows/
+                mouth (sized independently in Eye.jsx/Eyebrow.jsx) shrink
+                together instead of the outline overrunning a resized box.
+                Per-breakpoint scale = wrapper's clamp value ÷ Mascot's
+                native size in that breakpoint (448px/544px/640px), so the
+                visible size stays exactly the smooth clamp curve despite
+                native size stepping. */}
+            <div className="absolute left-1/2 top-1/2 md:[transform:translate(-50%,-50%)_scale(calc((-7.86rem_+_53.57vw)/28rem))] lg:[transform:translate(-50%,-50%)_scale(calc((-7.86rem_+_53.57vw)/34rem))] xl:[transform:translate(-50%,-50%)_scale(0.875)]">
+              <Mascot faceRef={desktopMascotFaceRef} />
+            </div>
           </div>
 
           <div
             ref={desktopRightLabelRef}
             className="flex flex-col items-start justify-center gap-2 sm:gap-3 text-left"
           >
-            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
+            <p className="font-display text-[clamp(0.75rem,0.49rem+0.95vw,1.25rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase whitespace-nowrap">
               {c.heroBadgeLine1}
             </p>
-            <p className="font-display text-xs sm:text-sm md:text-lg lg:text-2xl xl:text-3xl font-bold leading-tight tracking-tight text-ink dark:text-white uppercase flex items-center gap-2 whitespace-nowrap">
+            <p className="font-display text-[clamp(0.75rem,0.49rem+0.95vw,1.25rem)] font-bold leading-tight tracking-tight text-ink dark:text-white uppercase flex items-center gap-2 whitespace-nowrap">
               {c.heroBadgeLine2}
             </p>
           </div>

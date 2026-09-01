@@ -283,7 +283,7 @@ function WorkIndex() {
       window.removeEventListener("mousemove", handleMouseMove);
       if (animId) cancelAnimationFrame(animId);
     };
-  }, []);
+  }, [status]);
 
   // Seed slot 0 with the initially-active project once data arrives.
   useEffect(() => {

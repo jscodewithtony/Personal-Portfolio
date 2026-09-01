@@ -707,7 +707,7 @@ function AboutPage({ theme, onToggleTheme }) {
         > */}
         <WordHeadline
           text={heroHeadline}
-          className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-8xl lg:text-[16rem]"
+          className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-[clamp(6rem,-14rem+31.25vw,16rem)]"
           animated={false}
         />
         {/* </CursorImageTrail> */}
@@ -835,7 +835,7 @@ function AboutPage({ theme, onToggleTheme }) {
           {/* 547:716 — second headline */}
           <WordHeadline
             text={philosophyHeadline}
-            className="mt-32 text-4xl sm:mt-20 sm:text-6xl md:text-8xl lg:text-[10rem]"
+            className="mt-32 text-4xl sm:mt-20 sm:text-6xl md:text-[clamp(6rem,-2rem+12.5vw,10rem)]"
           />
         </div>
 
