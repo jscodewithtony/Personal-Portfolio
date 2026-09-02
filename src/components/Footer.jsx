@@ -130,7 +130,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
     if (!audioCtxRef.current || audioCtxRef.current.state === "closed") {
       const ctx = new AudioCtx();
       const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0.85, ctx.currentTime);
+      masterGain.gain.setValueAtTime(0.15, ctx.currentTime);
 
       const compressor = ctx.createDynamicsCompressor();
       compressor.threshold.setValueAtTime(-10, ctx.currentTime);
@@ -200,7 +200,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
 
     const noteGain = ctx.createGain();
     noteGain.gain.setValueAtTime(0.0001, now);
-    noteGain.gain.linearRampToValueAtTime(0.75, now + 0.005);
+    noteGain.gain.linearRampToValueAtTime(0.5, now + 0.005);
     noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
 
     osc1.connect(filter);
@@ -249,7 +249,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
           const now = ctx.currentTime;
 
           noteGain.gain.setValueAtTime(0.0001, now);
-          noteGain.gain.linearRampToValueAtTime(0.85, now + 0.004);
+          noteGain.gain.linearRampToValueAtTime(0.6, now + 0.004);
           noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
 
           source.connect(noteGain);
@@ -589,12 +589,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
   return (
     <footer
       ref={footerRef}
-      className={
-        "relative z-30 w-full overflow-hidden transition-colors duration-300 select-none py-6 " +
-        (isAbout
-          ? "bg-primary text-white dark:bg-[#161616] dark:text-[#fafafa]"
-          : "bg-bg text-ink dark:bg-[#0c0a14] dark:text-white")
-      }
+      className="relative z-30 w-full overflow-hidden transition-colors duration-300 select-none py-6 bg-bg text-ink dark:bg-[#0c0a14] dark:text-white"
     >
       {/* REAL-TIME CANVAS PARTICLE LAYER (FLOATS UP ACROSS FULL FOOTER & PianoLidContact) */}
       <canvas

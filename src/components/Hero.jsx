@@ -216,7 +216,7 @@ function Hero() {
             <div className="inline-block px-3 py-1 border border-ink/40 dark:border-white/40 font-display text-[10px] sm:text-xs font-bold uppercase tracking-wider text-ink dark:text-white mb-3">
               Waiting for first Design Award 🏆
             </div>
-            <h1 className="select-none font-display font-black leading-[0.84] tracking-tighter text-center text-ink dark:text-white uppercase text-[90px]">
+            <h1 className="select-none font-display font-black leading-[0.84] tracking-tighter text-center text-ink dark:text-white uppercase text-[17vw] sm:text-[90px] whitespace-nowrap">
               {c.heroHeadline.split(" ")[0] || "HELLO"}
               <br />
               {c.heroHeadline.split(" ").slice(1).join(" ") || "I'M TONY"}

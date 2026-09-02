@@ -312,7 +312,7 @@ function About({ theme }) {
         }}
       />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 gap-y-14 md:grid-cols-12 md:gap-x-8 md:gap-y-24">
+      <div className="relative z-10 mx-auto grid w-full max-w-8xl grid-cols-1 gap-y-14 md:grid-cols-12 md:gap-x-8 md:gap-y-24">
         {/* Headline with Interactive Play Button & Single-Word Marquee Box */}
         <h2
           ref={headlineRef}

@@ -78,11 +78,7 @@ function PianoLidContact({
   return (
     <section
       id="contact"
-      className={
-        isAbout
-          ? "relative w-full overflow-hidden bg-primary text-white transition-colors duration-300 dark:bg-[#161616] dark:text-[#fafafa]"
-          : "relative w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white"
-      }
+      className="relative w-full overflow-hidden bg-bg text-ink transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white"
     >
       <div className="relative z-10 w-full px-6 pt-14 pb-10 sm:px-10 sm:pt-16 sm:pb-12 md:px-14 md:pt-20 md:pb-14 lg:px-16">
         {eyebrow && (
@@ -91,10 +87,7 @@ function PianoLidContact({
           </p>
         )}
         <h2
-          className={
-            "select-none font-display text-4xl font-black uppercase leading-[1 ] tracking-tight sm:text-3xl md:text-8xl lg:text-[10rem] mb-10 sm:mb-12 md:mb-14 text-left md:text-center " +
-            (isAbout ? "text-white dark:text-[#fafafa]" : "text-ink dark:text-white")
-          }
+          className="select-none font-display text-4xl font-black uppercase leading-[1 ] tracking-tight sm:text-3xl md:text-8xl lg:text-[10rem] mb-10 sm:mb-12 md:mb-14 text-left md:text-center text-ink dark:text-white"
         >
           {headlineLines.filter(Boolean).map((line, i) => (
             <span key={i} className="block">
@@ -156,15 +149,8 @@ function PianoLidContact({
             placeholder ("--:--" / no offset) until the client-only
             effect above computes the real value, avoiding any
             server/client mismatch if this ever renders server-side. */}
-        <div
-          className={
-            "mt-12 flex flex-col gap-3 pt-6 font-display text-xs uppercase tracking-wide sm:mt-14 sm:flex-row sm:items-center sm:justify-between sm:text-sm md:mt-16 " +
-            (isAbout
-              ? "border-t border-white/20 text-white/70 dark:border-white/10 dark:text-[#fafafa]/70"
-              : "border-t border-black/10 text-ink/70 dark:border-white/10 dark:text-white/70")
-          }
-        >
-          <p className={`select-none text-base sm:text-lg font-semibold ${isAbout ? "text-white" : "text-ink dark:text-white"}`}>
+        <div className="mt-12 flex flex-col gap-3 pt-6 font-display text-xs uppercase tracking-wide sm:mt-14 sm:flex-row sm:items-center sm:justify-between sm:text-sm md:mt-16 border-t border-black/10 text-ink/70 dark:border-white/10 dark:text-white/70">
+          <p className="select-none text-base sm:text-lg font-semibold text-ink dark:text-white">
             {location}: (GMT {clock?.offset ?? ""}) {clock?.time ?? "--:--"}
           </p>
           <p className="select-none">© {new Date().getFullYear()} {copyrightSuffix}</p>
