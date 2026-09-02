@@ -370,7 +370,7 @@ function FeaturedProjects() {
                         {project.client}
                       </div>
 
-                      <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-ink dark:text-white leading-[1.08] font-display tracking-tight whitespace-pre-line">
+                      <h3 className="normal-case text-4xl sm:text-5xl lg:text-6xl font-bold text-ink dark:text-white leading-[1.08] font-display tracking-tight whitespace-pre-line">
                         {project.title}
                       </h3>
 

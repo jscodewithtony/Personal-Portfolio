@@ -316,13 +316,12 @@ function About({ theme }) {
         {/* Headline with Interactive Play Button & Single-Word Marquee Box */}
         <h2
           ref={headlineRef}
-          className="col-span-1 select-none font-display text-3xl font-extrabold uppercase leading-[1.12] tracking-tight md:col-span-12 sm:text-4xl md:text-5xl lg:text-6xl xl:text-[5.25rem]"
+          className="col-span-1 select-none font-display text-3xl font-normal normal-case leading-[1.12] tracking-tight md:col-span-12 sm:text-4xl md:text-5xl lg:text-6xl xl:text-[5.25rem]"
         >
           {/* Line 1 */}
           <span className="word inline-block">A</span>{" "}
           <span className="word inline-block">product</span>{" "}
-          <span className="word inline-block">designer</span>
-          <br className="hidden sm:block" />{" "}
+          <span className="word inline-block">designer</span>{" "}
 
           {/* Line 2 with Interactive Play Button */}
           <span className="word inline-block">focused</span>{" "}
@@ -347,8 +346,7 @@ function About({ theme }) {
             </span>
           </button>{" "}
           <span className="word inline-block">what</span>{" "}
-          <span className="word inline-block">actually</span>
-          <br className="hidden sm:block" />{" "}
+          <span className="word inline-block">actually</span>{" "}
 
           {/* Line 3 with Single-Word Marquee Box (Active ONLY when play button is ON) */}
           <span className="word inline-block">works</span>{" "}
@@ -363,8 +361,7 @@ function About({ theme }) {
               {SINGLE_MARQUEE_WORDS[wordIndex]}
             </span>
           </span>{" "}
-          <span className="word inline-block">impact,</span>
-          <br className="hidden sm:block" />{" "}
+          <span className="word inline-block">impact,</span>{" "}
 
           {/* Line 4 */}
           <span className="word inline-block">not</span>{" "}

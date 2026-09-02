@@ -136,7 +136,7 @@ function MobileWork({ projects, activeIndex, onSelect }) {
               <button
                 type="button"
                 onClick={() => onSelect(i)}
-                className="block w-full text-left font-display text-[46px] font-bold normal-case leading-[52.81px] tracking-[-0.271px] text-ink transition-opacity duration-300 focus:outline-none focus-visible:underline dark:text-white"
+                className="block w-full text-left font-display text-[46px] font-bold !normal-case leading-[52.81px] tracking-[-0.271px] text-ink transition-opacity duration-300 focus:outline-none focus-visible:underline dark:text-white"
                 style={{ opacity: isActive ? 1 : 0.3 }}
               >
                 {project.title}
@@ -456,7 +456,7 @@ function WorkIndex() {
           display title, rather than the raw 224px/56.8px Figma values
           (each tuned for one fixed frame width). */}
       <section className="bg-bg pl-6 pt-20 pb-12 sm:pb-16 text-ink transition-colors duration-300 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white">
-        <h2 className="font-display text-5xl font-extrabold normal-case leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
+        <h2 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
           My Work
         </h2>
       </section>
@@ -503,7 +503,7 @@ function WorkIndex() {
                     ref={(el) => (rowRefs.current[i] = el)}
                     onFocus={() => handleRowClick(i)}
                     onClick={() => handleRowClick(i)}
-                    className="block w-full text-left font-display text-5xl font-bold normal-case leading-tight tracking-tight text-ink xl:text-6xl dark:text-white focus:outline-none focus-visible:underline"
+                    className="block w-full text-left font-display text-5xl font-bold !normal-case leading-tight tracking-tight text-ink xl:text-6xl dark:text-white focus:outline-none focus-visible:underline"
                     style={{ opacity: activeIndex === i ? 1 : 0.3 }}
                   >
                     {project.title}
