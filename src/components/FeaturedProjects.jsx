@@ -176,7 +176,10 @@ function FeaturedProjects() {
 
     if (reduceMotion) return;
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia(section);
+
+    // Desktop Layout: Scroll animation
+    mm.add("(min-width: 768px)", () => {
       // Touch swipes cover roughly the same physical distance as a
       // desktop wheel-scroll tick, but this pin's distance is computed
       // from window.innerHeight — smaller on mobile — so the same
@@ -268,9 +271,25 @@ function FeaturedProjects() {
           0.90
         );
       }
-    }, section);
+    });
 
-    return () => ctx.revert();
+    // Mobile Layout: Disable scroll animation, instantly show final state
+    mm.add("(max-width: 767px)", () => {
+      bgRowsRef.current.forEach((row) => {
+        if (!row) return;
+        gsap.set(row, { opacity: 1, y: 0, scale: 1, force3D: true });
+      });
+
+      // Background wall rests normally
+      gsap.set(bgWallRef.current, { y: 0, force3D: true });
+
+      // Clean card zero offsets
+      if (cardRefs.current[0]) gsap.set(cardRefs.current[0], { opacity: 1, y: 0, rotate: 0, force3D: true });
+      if (cardRefs.current[1]) gsap.set(cardRefs.current[1], { opacity: 1, y: 0, rotate: 0, force3D: true });
+      if (cardRefs.current[2]) gsap.set(cardRefs.current[2], { opacity: 1, y: 0, rotate: 0, force3D: true });
+    });
+
+    return () => mm.revert();
   }, []);
 
   return (
@@ -281,7 +300,7 @@ function FeaturedProjects() {
         activeHoverCardRef.current = false;
         document.body.dataset.cursorProjectHover = "false";
       }}
-      className="relative z-10 h-screen w-full overflow-hidden bg-bg text-ink transition-colors duration-300 select-none dark:bg-[#0c0a14] dark:text-white"
+      className="relative z-10 min-h-[100dvh] h-auto md:h-screen w-full overflow-hidden bg-bg text-ink transition-colors duration-300 select-none dark:bg-[#0c0a14] dark:text-white"
     >
       {/* SCOPED CUSTOM CIRCULAR CURSOR FOLLOWER */}
       <div
@@ -316,7 +335,7 @@ function FeaturedProjects() {
       </div>
 
       {/* INDIVIDUAL CLEAN CARD STAGE */}
-      <div className="relative z-10 flex h-full w-full items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-none">
+      <div className="relative z-10 flex flex-col md:flex-row h-full w-full items-center justify-center py-10 md:py-4 px-4 sm:px-6 lg:px-10 gap-12 md:gap-0 pointer-events-none">
         {projects.map((project, index) => {
           const CardTag = project.slug ? Link : "div";
           const cardTagProps = project.slug ? { to: `/projects/${project.slug}` } : {};
@@ -324,7 +343,7 @@ function FeaturedProjects() {
             <div
               key={index}
               ref={(el) => (cardRefs.current[index] = el)}
-              className="absolute inset-0 flex items-center justify-center py-4 px-0 sm:p-6 lg:p-10 pointer-events-auto will-change-transform"
+              className="relative md:absolute md:inset-0 flex items-center justify-center pointer-events-auto will-change-transform w-full"
             >
               <CardTag
                 {...cardTagProps}
@@ -341,7 +360,8 @@ function FeaturedProjects() {
                   const section = document.getElementById("featured-projects");
                   if (!section) return;
                   const isMobile = window.innerWidth < 768;
-                  const pinDistance = window.innerHeight * (isMobile ? 5.4 : 3.4);
+                  if (isMobile) return; // scroll-to is handled by default focus behavior if unpinned
+                  const pinDistance = window.innerHeight * 3.4;
                   const startScroll = section.offsetTop;
                   let progress = 0.15;
                   if (index === 1) progress = 0.5;
