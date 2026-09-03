@@ -240,7 +240,7 @@ header a,
 }
 
 .animate-marquee {
-  animation: marquee 20s linear infinite;
+  animation: marquee 80s linear infinite;
 }
 
 /* Slow single-word horizontal marquee slide (enters right, long readable pause center, exits left) */

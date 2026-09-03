@@ -19,6 +19,7 @@ export default {
               name: "label",
               title: "Label",
               type: "string",
+              placeholder: "Work",
               validation: (Rule) => Rule.required(),
             },
             {
@@ -26,6 +27,7 @@ export default {
               title: "Link",
               type: "string",
               description: "A path (e.g. /work) or an anchor (e.g. #contact).",
+              placeholder: "/work",
               validation: (Rule) => Rule.required(),
             },
           ],

@@ -23,6 +23,7 @@ export default {
       title: "Project Title",
       type: "string",
       group: "overview",
+      placeholder: "Tekxera Technology",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -68,6 +69,8 @@ export default {
       type: "text",
       rows: 3,
       group: "overview",
+      placeholder:
+        "NudgeFile renames and sorts your files with a local AI — but it asks first, and it always has an undo button, because trusting an AI with your file system sight-unseen is how horror movies start.",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -76,6 +79,7 @@ export default {
       type: "string",
       description: 'e.g. "TECHNOLOGY | IT SUPPORT"',
       group: "overview",
+      placeholder: "TECHNOLOGY | IT SUPPORT",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -84,6 +88,7 @@ export default {
       type: "string",
       description: 'e.g. "UIUX DESIGNER | DESIGN SYSTEM"',
       group: "overview",
+      placeholder: "UIUX DESIGNER | DESIGN SYSTEM",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -145,6 +150,7 @@ export default {
               title: "Label",
               description: 'e.g. "Type", "Industry", "Timeline", "Category", "Year".',
               type: "string",
+              placeholder: "Year",
               validation: (Rule) => Rule.required(),
             },
             {
@@ -167,6 +173,7 @@ export default {
               name: "textValue",
               title: "Text Value",
               type: "string",
+              placeholder: "Accessibility Companion App",
               hidden: ({ parent }) => parent?.fieldType !== "text",
             },
             {
@@ -189,6 +196,7 @@ export default {
               name: "numberValue",
               title: "Number Value",
               type: "number",
+              placeholder: "2024",
               hidden: ({ parent }) => parent?.fieldType !== "number",
             },
           ],

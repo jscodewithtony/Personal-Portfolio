@@ -8,6 +8,7 @@ export default {
       title: "Label",
       description: 'The small eyebrow tag, e.g. "Experience".',
       type: "string",
+      placeholder: "Experience",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -15,6 +16,7 @@ export default {
       title: "Value",
       description: 'The large headline figure, e.g. "5+ Years".',
       type: "string",
+      placeholder: "5+ Years",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -22,12 +24,14 @@ export default {
       title: "Title",
       description: 'Short bold sub-line, e.g. "Crafting UX & Systems".',
       type: "string",
+      placeholder: "Crafting UX & Systems",
     },
     {
       name: "description",
       title: "Description",
       type: "text",
       rows: 3,
+      placeholder: "Building design engines & scalable UI components for high-growth tech products.",
     },
     {
       name: "displayOrder",

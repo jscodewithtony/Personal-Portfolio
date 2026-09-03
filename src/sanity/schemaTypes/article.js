@@ -9,6 +9,7 @@ export default {
       name: "title",
       title: "Title",
       type: "string",
+      placeholder: "How I Design Systems That Scale",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -16,6 +17,7 @@ export default {
       title: "Excerpt",
       type: "text",
       rows: 3,
+      placeholder: "A look at how governed, pattern-first design systems hold up under real product growth.",
       validation: (Rule) => Rule.required(),
     },
     {

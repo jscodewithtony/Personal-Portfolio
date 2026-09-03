@@ -17,6 +17,7 @@ export default {
       title: "Custom Font URL",
       description: "Paste a link to a web font stylesheet (e.g. Google Fonts stylesheet URL starting with https://fonts.googleapis.com/...)",
       type: "string",
+      placeholder: "https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;700&display=swap",
     },
     {
       name: "customFontFile",
@@ -29,6 +30,7 @@ export default {
       title: "Custom Font Family Name",
       description: "The CSS font-family name matching your link or file (e.g. 'Playwrite GB S' or 'MyFont'). If uploading a file, this name will be used to register the font.",
       type: "string",
+      placeholder: "Albert Sans",
     },
   ],
   preview: {

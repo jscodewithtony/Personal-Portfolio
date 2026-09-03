@@ -14,6 +14,7 @@ export default {
       title: "Name",
       type: "string",
       description: 'e.g. "Light" or "Red Diamond".',
+      placeholder: "Light",
       validation: (Rule) => Rule.required(),
     },
     {

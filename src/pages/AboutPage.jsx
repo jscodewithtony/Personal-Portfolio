@@ -130,10 +130,10 @@ const EXPLORING_INDIA_LAYOUT_SLOTS = [
 // the one exception: it still comes from the existing `homepageContent`
 // document (FALLBACK_BODY above), shared with the homepage About ribbon.
 const FALLBACK_ABOUT = {
-  scrollingTicker: "Most of my ideas comes in the morning",
+  scrollingTicker: "BEST IDEAS SHOW UP MID-SHOWER • NEVER IN MEETINGS • I DESIGN AT 2AM AND REGRET IT AT 9AM • STILL SKETCHING ON PAPER BEFORE FIGMA",
   heroHeadline: "SO WHO IS ACTUALLY BEHIND THIS",
   introParagraph:
-    "I'm a product designer who builds the systems other people design inside of — governed, not improvised.",
+    "My design journey found me somewhere between wanting things to work better and being too impatient to wait for someone else to fix them.",
   leftText: "Me at somewhere  ",
   rightText: "Giving a Unique pose @2022",
   philosophyLabel: "",
@@ -734,10 +734,10 @@ function AboutPage({ theme, onToggleTheme }) {
 
         <div className="mx-auto w-full max-w-8xl px-6 sm:px-10 md:px-14">
           {/* 547:717 — intro line */}
-          <p className="mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-20 sm:text-4xl md:text-[5rem]"
+          <p className="tracking-[-0.3rem] mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-20 sm:text-4xl md:text-[5rem]"
           >
-  {introParagraph}
-</p>
+            {introParagraph}
+          </p>
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
@@ -757,26 +757,26 @@ function AboutPage({ theme, onToggleTheme }) {
               {(about?.portraitCaption || about?.portraitSubCaption) && (
                 <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-4 py-3">
                   {about?.portraitCaption && (
-                    <p className="font-display text-sm font-semibold normal-case text-white" 
+                    <p className="font-display text-sm font-semibold normal-case text-white"
                     >
-  {about.portraitCaption}
-</p>
+                      {about.portraitCaption}
+                    </p>
                   )}
                   {about?.portraitSubCaption && (
                     <p className="font-display text-xs normal-case text-white/70">
-  {about.portraitSubCaption}
-</p>
+                      {about.portraitSubCaption}
+                    </p>
                   )}
                 </div>
               )}
             </Reveal>
             <div className="flex flex-col gap-8 self-center md:col-span-6 md:col-start-7">
               <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
-  {body.aboutBodyParagraph1}
-</p>
+                {body.aboutBodyParagraph1}
+              </p>
               <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
-  {body.aboutBodyParagraph1}
-</p>
+                {body.aboutBodyParagraph1}
+              </p>
             </div>
           </div>
 
@@ -809,12 +809,12 @@ function AboutPage({ theme, onToggleTheme }) {
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10">
             <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-xl md:text-2xl text-left sm:max-w-[75%]"
             >
-  {leftText}
-</p>
+              {leftText}
+            </p>
             <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-xl md:text-2xl text-left sm:text-right sm:max-w-[75%] sm:ml-auto"
             >
-  {rightText}
-</p>
+              {rightText}
+            </p>
           </div>
         </div>
 
@@ -823,13 +823,13 @@ function AboutPage({ theme, onToggleTheme }) {
           <div className="mt-8 sm:mt-40">
             {philosophyLabel && (
               <p className="mx-auto max-w-3xl text-center font-display text-xs font-semibold uppercase tracking-[0.25em] text-[#0d0c14]/60 dark:text-white/60 sm:text-sm">
-  {philosophyLabel}
-</p>
+                {philosophyLabel}
+              </p>
             )}
             <p className="mx-auto max-w-3xl text-center font-display text-xl normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-2xl md:text-3xl mt-12"
             >
-  {philosophyText}
-</p>
+              {philosophyText}
+            </p>
           </div>
 
           {/* 547:716 — second headline */}
@@ -937,13 +937,13 @@ function AboutPage({ theme, onToggleTheme }) {
         <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-40">
           <div className="mt-10 w-full">
             <p className="max-w-xl font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
-  {personalParagraphOne}
-</p>
+              {personalParagraphOne}
+            </p>
           </div>
           <div className="mt-10 w-full sm:mt-16 md:mt-20">
             <p className="ml-auto max-w-2xl font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl sm:ml-auto sm:text-right">
-  {personalParagraphTwo}
-</p>
+              {personalParagraphTwo}
+            </p>
           </div>
         </div>
 

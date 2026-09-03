@@ -32,9 +32,9 @@ function splitHeadlineIntoLines(headline) {
 }
 
 const SMALL =
-  "font-display text-base font-semibold leading-snug text-ink/80 dark:text-white/90 sm:text-2xl md:text-4xl lg:text-5xl";
+  "font-display text-base font-medium capitalize leading-snug text-ink/80 dark:text-white/90 sm:text-2xl md:text-4xl lg:text-5xl";
 const BIG =
-  "select-none font-display font-black uppercase leading-[1.0] tracking-tight text-ink dark:text-white";
+  "select-none font-display font-black leading-[1.0] tracking-tight text-ink dark:text-white";
 
 // How much extra scroll distance (relative to the viewport) the section
 // stays pinned for while the heading settles and the aside arrives.

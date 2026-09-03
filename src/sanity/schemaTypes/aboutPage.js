@@ -46,6 +46,8 @@ export default {
       description: "The marquee/ticker line that loops across the yellow band near the top of the page.",
       type: "string",
       group: "intro",
+      placeholder:
+        "BEST IDEAS SHOW UP MID-SHOWER • NEVER IN MEETINGS • I DESIGN AT 2AM AND REGRET IT AT 9AM • STILL SKETCHING ON PAPER BEFORE FIGMA",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -55,6 +57,7 @@ export default {
       type: "text",
       rows: 2,
       group: "intro",
+      placeholder: "SO WHO IS ACTUALLY BEHIND THIS",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -64,6 +67,8 @@ export default {
       type: "text",
       rows: 3,
       group: "intro",
+      placeholder:
+        "My design journey found me somewhere between wanting things to work better and being too impatient to wait for someone else to fix them.",
       validation: (Rule) => Rule.required(),
     },
 
@@ -81,6 +86,7 @@ export default {
       title: "Narrative image 1 — alt text",
       type: "string",
       group: "experienceNarrative",
+      placeholder: "Tony sketching a layout on paper at a desk, mid-afternoon light",
       validation: (Rule) => Rule.required(),
       hidden: ({ document }) => !document?.narrativeImageOne,
     },
@@ -97,6 +103,7 @@ export default {
       title: "Narrative image 2 — alt text",
       type: "string",
       group: "experienceNarrative",
+      placeholder: "Tony presenting a design system to a small team around a laptop",
       validation: (Rule) => Rule.required(),
       hidden: ({ document }) => !document?.narrativeImageTwo,
     },
@@ -107,6 +114,7 @@ export default {
       type: "text",
       rows: 3,
       group: "experienceNarrative",
+      placeholder: "Me at somewhere",
     },
     {
       name: "rightText",
@@ -115,6 +123,7 @@ export default {
       type: "text",
       rows: 3,
       group: "experienceNarrative",
+      placeholder: "Giving a Unique pose @2022",
     },
     {
       name: "portraitImage",
@@ -129,6 +138,7 @@ export default {
       title: "Portrait image — alt text",
       type: "string",
       group: "experienceNarrative",
+      placeholder: "Tony, seated outdoors in dark clothing beside a black horse",
       validation: (Rule) => Rule.required(),
       hidden: ({ document }) => !document?.portraitImage,
     },
@@ -138,6 +148,7 @@ export default {
       description: "Small caption line under the portrait, e.g. a name or title. Optional — leave blank to show nothing.",
       type: "string",
       group: "experienceNarrative",
+      placeholder: "Tony Sharma",
     },
     {
       name: "portraitSubCaption",
@@ -145,6 +156,7 @@ export default {
       description: "Smaller secondary caption line under the portrait caption. Optional — leave blank to show nothing.",
       type: "string",
       group: "experienceNarrative",
+      placeholder: "Product Designer",
     },
 
     // --- Group 3: Philosophy ---
@@ -154,6 +166,7 @@ export default {
       description: 'Small eyebrow label above the philosophy paragraph, e.g. "My Philosophy". Optional.',
       type: "string",
       group: "philosophy",
+      placeholder: "My Philosophy",
     },
     {
       name: "philosophyText",
@@ -162,6 +175,8 @@ export default {
       type: "text",
       rows: 4,
       group: "philosophy",
+      placeholder:
+        "The best products don't just work well, they feel like someone cared enough to get the details right. That's what I aim for in every screen I design.",
     },
     {
       name: "philosophyHeadline",
@@ -170,6 +185,7 @@ export default {
       type: "text",
       rows: 2,
       group: "philosophy",
+      placeholder: "I design Applications and Websites that build credibility.",
       validation: (Rule) => Rule.required(),
     },
 
@@ -180,6 +196,7 @@ export default {
       description: 'Heading shown at the top of the floating card, e.g. "Professional Experience".',
       type: "string",
       group: "professionalExperience",
+      placeholder: "Professional Experience",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -197,6 +214,7 @@ export default {
               name: "year",
               title: "Year",
               type: "string",
+              placeholder: "2024",
               validation: (Rule) => Rule.required(),
             },
             {
@@ -205,6 +223,7 @@ export default {
               description: "Keep to 1–2 short lines — this sits in a fixed-width card next to the year.",
               type: "text",
               rows: 2,
+              placeholder: "Launched NudgeFile — first solo shipped product, design to code",
               validation: (Rule) => Rule.required(),
             },
           ],
@@ -227,6 +246,7 @@ export default {
       title: "Experience background image — alt text",
       type: "string",
       group: "professionalExperience",
+      placeholder: "Close-up of an elderly woman smiling softly, warm natural light",
       validation: (Rule) => Rule.required(),
       hidden: ({ document }) => !document?.experienceBackgroundImage,
     },
@@ -239,6 +259,7 @@ export default {
       type: "text",
       rows: 2,
       group: "knowMore",
+      placeholder: "Know more about Myself Beyond as a designer",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -257,6 +278,7 @@ export default {
               title: "Label (internal reference only)",
               description: 'Not shown on the site — just for finding the right dot in this list, e.g. "Dot 1".',
               type: "string",
+              placeholder: "Dot 1",
             },
             {
               name: "tooltipText",
@@ -264,6 +286,7 @@ export default {
               description: "Keep to 1–2 short lines — this renders inside a fixed-width tooltip box.",
               type: "text",
               rows: 3,
+              placeholder: "Beans and potatoes? Not my thing. But I like mashed Potatoes 😅",
               validation: (Rule) => Rule.required(),
             },
           ],
@@ -282,6 +305,8 @@ export default {
       type: "text",
       rows: 4,
       group: "personalTravel",
+      placeholder:
+        "I love traveling around India, exploring greenery and snow. But my wallet always seems to cry at the thought! It's like every time I plan a trip, one of my friends decides it's a great time to bail at the last minute. Perfect timing, right?",
     },
     {
       name: "personalParagraphTwo",
@@ -290,12 +315,15 @@ export default {
       type: "text",
       rows: 4,
       group: "personalTravel",
+      placeholder:
+        "I've always loved how design affects the way people feel and interact. I work to create easy-to-use designs and visuals that people remember, making every experience enjoyable and valuable.",
     },
     {
       name: "exploringIndiaHeadline",
       title: "Exploring India headline",
       type: "string",
       group: "personalTravel",
+      placeholder: "Exploring India",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -305,6 +333,8 @@ export default {
       type: "text",
       rows: 4,
       group: "personalTravel",
+      placeholder:
+        "As I mentioned, I love traveling! So far, I've explored 10 states and over 30 cities across India, each place adding something unique to my journey.",
     },
     {
       name: "travelPhotoCollage",
@@ -321,6 +351,7 @@ export default {
               name: "alt",
               title: "Alt text",
               type: "string",
+              placeholder: "Sunset over the Himalayan foothills",
               validation: (Rule) => Rule.required(),
             },
           ],
@@ -339,6 +370,7 @@ export default {
       type: "text",
       rows: 2,
       group: "closingCta",
+      placeholder: "Let's Create a",
     },
     {
       name: "closingHeadlineTwo",
@@ -347,6 +379,7 @@ export default {
       type: "text",
       rows: 2,
       group: "closingCta",
+      placeholder: "Remarkable Journey",
     },
     {
       name: "ctaEyebrow",
@@ -354,12 +387,14 @@ export default {
       description: 'Small label above the contact email, e.g. "Always up for good design talk".',
       type: "string",
       group: "closingCta",
+      placeholder: "Always up for good design talk",
     },
     {
       name: "contactEmail",
       title: "Contact email",
       type: "string",
       group: "closingCta",
+      placeholder: "Tony2742000@gmail.com",
       validation: (Rule) => Rule.required().email(),
     },
     {
@@ -368,6 +403,7 @@ export default {
       description: 'e.g. "Book a call with me".',
       type: "string",
       group: "closingCta",
+      placeholder: "Book a call with me",
     },
     {
       name: "ctaButtonLink",
@@ -375,6 +411,7 @@ export default {
       description: "Where the CTA button goes — a mailto:, tel:, or booking-page URL.",
       type: "url",
       group: "closingCta",
+      placeholder: "mailto:Tony2742000@gmail.com",
       validation: (Rule) =>
         Rule.uri({ scheme: ["http", "https", "mailto", "tel"] }),
     },

@@ -14,6 +14,7 @@ export default {
       type: "string",
       group: "hero",
       initialValue: "HELLO I'M TONY",
+      placeholder: "HELLO I'M TONY",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -23,6 +24,7 @@ export default {
       type: "string",
       group: "hero",
       initialValue: "INDIA",
+      placeholder: "INDIA",
     },
     {
       name: "heroTagline",
@@ -31,13 +33,14 @@ export default {
       type: "string",
       group: "hero",
       initialValue: "DESIGN WITH AI",
+      placeholder: "DESIGN WITH AI",
     },
     {
       name: "heroSpecs",
       title: "Spec labels",
       description: "Short role/skill labels stacked beside the mascot.",
       type: "array",
-      of: [{ type: "string" }],
+      of: [{ type: "string", placeholder: "UIUX DESIGNER" }],
       group: "hero",
       initialValue: ["UIUX DESIGNER", "ACCESSIBILITY(A11Y)", "DESIGN SYSTEM"],
     },
@@ -47,6 +50,7 @@ export default {
       type: "string",
       group: "hero",
       initialValue: "STILL WAITING FOR",
+      placeholder: "STILL WAITING FOR",
     },
     {
       name: "heroBadgeLine2",
@@ -54,6 +58,7 @@ export default {
       type: "string",
       group: "hero",
       initialValue: "FIRST DESIGN AWARD 🏆",
+      placeholder: "FIRST DESIGN AWARD 🏆",
     },
     {
       name: "aboutBodyParagraph1",
@@ -61,6 +66,8 @@ export default {
       type: "text",
       rows: 3,
       group: "about",
+      placeholder:
+        "I value clarity, structure, and intent — both in design and in how I build. I am drawn to systems that hold up under scale: patterns, not one-offs. I believe good design is governed, not just made — every decision should trace back to a reason.",
     },
     {
       name: "aboutBodyParagraph2",
@@ -68,6 +75,8 @@ export default {
       type: "text",
       rows: 3,
       group: "about",
+      placeholder:
+        "I like building things end to end, from the first sketch to the shipped product. And I trust frameworks over instinct — but only the ones I've tested myself.",
     },
     {
       name: "statementHeadline",
@@ -77,6 +86,7 @@ export default {
       type: "string",
       group: "statement",
       initialValue: "Design is a series of decisions so you",
+      placeholder: "Design is a series of decisions so you",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -85,6 +95,7 @@ export default {
       type: "string",
       group: "statement",
       initialValue: "Don't have to make one.",
+      placeholder: "Don't have to make one.",
       validation: (Rule) => Rule.required(),
     },
   ],

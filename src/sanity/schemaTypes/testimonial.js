@@ -10,18 +10,22 @@ export default {
       title: "Quote",
       type: "text",
       rows: 4,
+      placeholder:
+        "I booked a portfolio review session with Tony and it was really insightful. He gave me a lot of tips and things to improve upon.",
       validation: (Rule) => Rule.required(),
     },
     {
       name: "name",
       title: "Name",
       type: "string",
+      placeholder: "RADHIKA MALHOTRA",
       validation: (Rule) => Rule.required(),
     },
     {
       name: "role",
       title: "Role / Title",
       type: "string",
+      placeholder: "Product Designer",
     },
     {
       name: "sourcePlatform",
