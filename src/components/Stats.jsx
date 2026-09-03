@@ -391,9 +391,10 @@ function Stats({ theme }) {
     render();
 
     // --- GSAP SCROLLTRIGGER TIMELINE ---
-    let ctx;
+    let mm;
     if (!reduceMotion) {
-      ctx = gsap.context(() => {
+      mm = gsap.matchMedia(section);
+      mm.add("(min-width: 0px)", () => {
         // Touch swipes cover roughly the same physical distance as a
         // desktop wheel-scroll tick, but this pin's distance is
         // computed from window.innerHeight — smaller on mobile — so
@@ -589,7 +590,7 @@ function Stats({ theme }) {
             0.6
           );
         }
-      }, section);
+      });
     } else {
       // Reduced motion fallback: hide all 3D meshes and keep stat cards visible on clean background
       statMeshes.forEach((mesh) => {
@@ -644,7 +645,7 @@ function Stats({ theme }) {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
-      ctx?.revert();
+      mm?.revert();
 
       // Dispose WebGL Geometries, Materials & Renderer
       cubeGeo.dispose();

@@ -186,14 +186,11 @@ function FeaturedProjects() {
       // gesture consumed a bigger share of it there, making the scrub
       // feel like it's rushing by faster on phones. A larger mobile
       // multiplier restores a native-feeling pace, animation unchanged.
-      const isMobile = window.innerWidth < 768;
-      const pinDistance = window.innerHeight * (isMobile ? 5.4 : 3.4);
-
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${pinDistance}`,
+          end: () => `+=${window.innerHeight * (window.innerWidth < 768 ? 5.4 : 3.4)}`,
           pin: true,
           scrub: 1.2,
           anticipatePin: 1,
@@ -316,6 +313,12 @@ function FeaturedProjects() {
         </div>
       </div>
 
+      <div className="absolute top-12 sm:top-16 left-6 sm:left-10 md:left-14 lg:left-16 z-20 pointer-events-none">
+        <span className="block font-display text-sm sm:text-base font-normal tracking-wide text-ink/70 dark:text-white/70 uppercase mb-4 sm:mb-6">
+          [ Featured Projects ]
+        </span>
+      </div>
+
       {/* REVERSE PARALLAX BACKGROUND TEXT WALL */}
       <div
         ref={bgWallRef}
@@ -335,7 +338,7 @@ function FeaturedProjects() {
       </div>
 
       {/* INDIVIDUAL CLEAN CARD STAGE */}
-      <div className="relative z-10 flex flex-col md:flex-row h-full w-full items-center justify-center py-10 md:py-4 px-4 sm:px-6 lg:px-10 gap-12 md:gap-0 pointer-events-none">
+      <div className="relative z-10 flex flex-col md:flex-row h-full w-full items-center justify-center pt-28 pb-10 md:py-4 px-4 sm:px-6 lg:px-10 gap-12 md:gap-0 pointer-events-none">
         {projects.map((project, index) => {
           const CardTag = project.slug ? Link : "div";
           const cardTagProps = project.slug ? { to: `/projects/${project.slug}` } : {};

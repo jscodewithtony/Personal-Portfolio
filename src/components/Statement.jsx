@@ -159,7 +159,8 @@ function Statement() {
     ).matches;
     if (reduceMotion) return;
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia(section);
+    mm.add("(min-width: 0px)", () => {
       const setRestingPositions = () => {
         gsap.set(right, { x: window.innerWidth, opacity: 0 });
         rows.forEach((row, i) => {
@@ -209,9 +210,9 @@ function Statement() {
         clearTimeout(settleTimer);
         window.removeEventListener("resize", handleResize);
       };
-    }, section);
+    });
 
-    return () => ctx.revert();
+    return () => mm.revert();
     // Re-runs when the CMS content resolves from fallback text to the
     // real headline/trailing line, so the word-width measurements this
     // effect takes (setRestingPositions) reflect the final content

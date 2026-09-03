@@ -83,3 +83,59 @@ export function useSignalSectionMounted(name) {
     };
   }, [name]);
 }
+
+export function useResizeRefresh() {
+  useEffect(() => {
+    let resizeTimer = null;
+    let savedState = null;
+    const RESIZE_DEBOUNCE_MS = 150;
+
+    const handleResize = () => {
+      // 1. Capture State exactly once per continuous resize gesture.
+      if (!savedState) {
+        const triggers = ScrollTrigger.getAll();
+        // Look for the last active trigger (often the most nested/specific one currently pinned)
+        const activeST = triggers.filter((t) => t.isActive).pop();
+        
+        if (activeST && activeST.trigger) {
+          savedState = {
+            element: activeST.trigger,
+            progress: activeST.progress,
+          };
+        }
+      }
+
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        // 2. Refresh destroys old triggers via matchMedia and recalculates layout
+        ScrollTrigger.refresh();
+
+        // 3. Restore State against the newly built layout
+        if (savedState && savedState.element) {
+          const refreshedTriggers = ScrollTrigger.getAll();
+          const newST = refreshedTriggers.find((t) => t.trigger === savedState.element);
+
+          if (newST && typeof newST.start === "number" && typeof newST.end === "number") {
+            // Case A: Section is still pinned, jump to mathematically equivalent progress
+            const newScrollY = newST.start + (newST.end - newST.start) * savedState.progress;
+            window.scrollTo(0, newScrollY);
+          } else {
+            // Case B: Section is no longer pinned (e.g. mobile fallback), jump to its top
+            const rect = savedState.element.getBoundingClientRect();
+            // getBoundingClientRect().top is relative to the viewport, so add current scrollY
+            window.scrollTo(0, window.scrollY + rect.top);
+          }
+        }
+        
+        // Reset state for the next discrete resize interaction
+        savedState = null;
+      }, RESIZE_DEBOUNCE_MS);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, []);
+}

@@ -142,7 +142,9 @@ function About({ theme }) {
       return;
     }
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia(section);
+
+    mm.add("(min-width: 768px)", () => {
       gsap.set(imageOuter, { clipPath: "inset(0 0 100% 0)" });
       gsap.set(imageInner, { scale: 1.15 });
 
@@ -155,7 +157,7 @@ function About({ theme }) {
           trigger: section,
           start: "top top",
           end: () =>
-            `+=${window.innerHeight * (window.innerWidth < 768 ? MOBILE_PIN_DISTANCE_VH : PIN_DISTANCE_VH)}`,
+            `+=${window.innerHeight * PIN_DISTANCE_VH}`,
           pin: true,
           scrub: 0.6,
           anticipatePin: 1,
@@ -165,9 +167,6 @@ function About({ theme }) {
       tlRef.current = tl;
 
       // Smooth background color morphing from mascot color to target theme background.
-      // The start color mirrors whatever the Hero mascot is currently
-      // rendering: frozen purple in dark mode (matches Mascot.jsx's own
-      // dark: freeze), theme-accent-driven in light mode.
       const isDark = theme
         ? theme === "dark"
         : document.documentElement.classList.contains("dark");
@@ -197,10 +196,24 @@ function About({ theme }) {
       // Image wipe & scale settle
       tl.to(imageOuter, { clipPath: "inset(0 0 0% 0)", ease: "none", duration: 1 }, 0)
         .to(imageInner, { scale: 1, ease: "none", duration: 1 }, 0);
+    });
 
-    }, section);
+    mm.add("(max-width: 767px)", () => {
+      // Mobile fallback: reveal text/images immediately, no pin
+      gsap.set(wordElements, { opacity: 1 });
+      gsap.set(imageOuter, { clipPath: "inset(0 0 0% 0)" });
+      gsap.set(imageInner, { scale: 1 });
+      
+      const isDark = theme
+        ? theme === "dark"
+        : document.documentElement.classList.contains("dark");
+      const targetBgColor = isDark ? "#0c0a14" : themeTokens.backgroundColor;
+      if (bgLayerRef.current) {
+        gsap.set(bgLayerRef.current, { backgroundColor: targetBgColor });
+      }
+    });
 
-    return () => ctx.revert();
+    return () => mm.revert();
     // themeTokens starts at the light defaults and updates once the
     // Sanity fetch resolves — rebuilding here (like the other pinned
     // sections do) picks up the real morph-start color for whichever
@@ -318,6 +331,9 @@ function About({ theme }) {
           ref={headlineRef}
           className="col-span-1 select-none font-display text-3xl font-normal normal-case leading-[1.12] tracking-tight md:col-span-12 sm:text-4xl md:text-5xl lg:text-6xl xl:text-[5.25rem]"
         >
+          <span className="block font-display text-sm sm:text-base font-normal tracking-wide text-ink/70 dark:text-white/70 uppercase mb-4 sm:mb-6">
+            [ About Me ]
+          </span>
           {/* Line 1 */}
           <span className="word inline-block">A</span>{" "}
           <span className="word inline-block">product</span>{" "}

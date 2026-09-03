@@ -12,6 +12,23 @@ import { isPreviewMode } from "./sanity/preview";
 import { useVisualEditing } from "./sanity/useVisualEditing";
 import PageTransitionOverlay from "./transitions/PageTransitionOverlay";
 import { GlobalFontLoader } from "./components/GlobalFontLoader";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+function useGlobalRefresh() {
+  useEffect(() => {
+    let timer;
+    const handleResize = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        ScrollTrigger.sort();
+        ScrollTrigger.refresh();
+      }, 500);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+}
+
 
 // Lazy — AdminStudio pulls in the entire Sanity Studio package
 // (structureTool, visionTool, styled-components, its own ~170KB CSS
@@ -49,6 +66,7 @@ function App() {
   // so it never runs on a normal, non-preview page load — including
   // /admin itself, since that route never carries the flag.
   useVisualEditing(isPreviewMode());
+  useGlobalRefresh();
 
   const toggleTheme = () =>
     setTheme((t) => (t === "light" ? "dark" : "light"));

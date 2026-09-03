@@ -134,21 +134,25 @@ function MentorshipTestimonials() {
       return;
     }
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia(section);
+
+    mm.add(
+      {
+        isMobile: "(max-width: 767px)",
+        isDesktop: "(min-width: 768px)",
+      },
+      (context) => {
       // Touch swipes cover roughly the same physical distance as a
       // desktop wheel-scroll tick, but this pin's distance is computed
       // from window.innerHeight — smaller on mobile — so the same
       // gesture consumed a bigger share of it there, making the scrub
       // feel like it's rushing by faster on phones. A larger mobile
       // multiplier restores a native-feeling pace, animation unchanged.
-      const isMobile = window.innerWidth < 768;
-      const pinDistance = window.innerHeight * (isMobile ? 5.6 : 3.5);
-
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${pinDistance}`,
+          end: () => `+=${window.innerHeight * (window.innerWidth < 768 ? 5.6 : 3.5)}`,
           pin: true,
           scrub: 1.2,
           anticipatePin: 1,
@@ -239,10 +243,11 @@ function MentorshipTestimonials() {
           lastCardStart + 0.38
         );
       }
-    }, section);
+      }
+    );
 
     return () => {
-      ctx.revert();
+      mm.revert();
     };
   }, [status]);
 
