@@ -142,10 +142,10 @@ const FALLBACK_ABOUT = {
   philosophyHeadline: "I design Applications and Websites that build credibility.",
   experienceHeading: "Professional Experience",
   experienceEntries: [
-    { year: "2026", description: "Freelancing alongside Tekxera, including brand and content work for takara.ai" },
-    { year: "2025", description: "Launched NudgeFile — first solo shipped product, design to code" },
-    { year: "2024", description: "DLS reaches 20+ governed product features across the platform" },
-    { year: "2021", description: "Started at Gemraj Technologies as a product designer" },
+    { companyName: "Tekxera", year: "Jan 2026 - Present", description: "Freelancing alongside Tekxera, including brand and content work for takara.ai" },
+    { companyName: "Independent", year: "Jan 2025 - Dec 2025", description: "Launched NudgeFile — first solo shipped product, design to code" },
+    { companyName: "Gemraj Technologies", year: "Jan 2024 - Dec 2024", description: "DLS reaches 20+ governed product features across the platform" },
+    { companyName: "Gemraj Technologies", year: "Jan 2021 - Dec 2023", description: "Started at Gemraj Technologies as a product designer" },
   ],
   knowMoreHeadline: "Know more about Myself Beyond as a designer",
   personalParagraphOne:
@@ -624,17 +624,6 @@ function AboutPage({ theme, onToggleTheme }) {
     }));
   }, [travelPhotos]);
 
-  const closingHeadlineLines = [about?.closingHeadlineOne, about?.closingHeadlineTwo].filter(
-    Boolean
-  );
-  const contactContent = {
-    headlineLines: closingHeadlineLines.length > 0 ? closingHeadlineLines : undefined,
-    eyebrow: about?.ctaEyebrow || undefined,
-    email: about?.contactEmail || undefined,
-    ctaLabel: about?.ctaButtonLabel || undefined,
-    ctaHref: about?.ctaButtonLink || undefined,
-  };
-
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
   const mainRef = useRef(null);
@@ -861,22 +850,27 @@ function AboutPage({ theme, onToggleTheme }) {
             >
               <div className="flex flex-col gap-6">
                 <img src={iconMark} alt="" loading="lazy" className="h-8 w-8 xs:h-10 xs:w-10" />
-                <h3 className="font-display text-lg xs:text-xl font-extrabold uppercase tracking-tight text-ink sm:text-2xl">
+                <h3 className="w-min font-display text-xl xs:text-xl font-extrabold uppercase tracking-tight text-ink sm:text-2xl leading-tight">
                   {experienceHeading}
                 </h3>
               </div>
               <div className="flex flex-col">
-                {experienceEntries.map((item) => (
+                {experienceEntries.map((item, i) => (
                   <div
-                    key={item.year}
+                    key={`${item.companyName}-${item.year}-${i}`}
                     className="flex gap-4 border-b border-ink/10 py-4 xs:py-5 last:border-b-0"
                   >
-                    <span className="w-12 shrink-0 font-display text-lg xs:text-xl font-extrabold tracking-tight text-ink sm:text-2xl">
+                    <span className="w-20 shrink-0 font-display text-xs xs:text-sm font-normal normal-case leading-snug tracking-tight text-ink/70">
                       {item.year}
                     </span>
-                    <span className="font-display text-xs font-light normal-case leading-relaxed text-ink/70 xs:text-sm">
-                      {item.description}
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-display text-lg xs:text-xl font-extrabold normal-case tracking-tight text-ink sm:text-2xl">
+                        {item.companyName}
+                      </span>
+                      <span className="font-display text-xs font-light normal-case leading-relaxed text-ink/70 xs:text-sm">
+                        {item.description}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -900,24 +894,29 @@ function AboutPage({ theme, onToggleTheme }) {
 
           <Reveal
             delay={150}
-            className="relative mx-6 mt-6 flex flex-col gap-6 bg-white p-8 text-ink sm:mx-10 md:absolute md:inset-x-auto md:left-1/2 md:top-1/2 md:mx-0 md:mt-0 md:w-[34rem] md:-translate-x-1/2 md:-translate-y-1/2 md:p-9"
+            className="relative mx-6 mt-6 flex flex-col gap-8 bg-white p-8 text-ink sm:mx-10 md:absolute md:inset-x-auto md:left-1/2 md:top-1/2 md:mx-0 md:mt-0 md:w-[40rem] md:-translate-x-1/2 md:-translate-y-1/2 md:p-9"
           >
             <img src={iconMark} alt="" loading="lazy" className="h-12 w-12" />
-            <h3 className="font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-4xl">
+            <h3 className="w-min font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-4xl leading-tight">
               {experienceHeading}
             </h3>
             <div className="flex flex-col">
-              {experienceEntries.map((item) => (
+              {experienceEntries.map((item, i) => (
                 <div
-                  key={item.year}
+                  key={`${item.companyName}-${item.year}-${i}`}
                   className="flex gap-6 border-b border-ink/10 py-4 last:border-b-0"
                 >
-                  <span className="w-14 shrink-0 font-display text-2xl font-extrabold tracking-tight text-ink md:w-16 md:text-3xl">
+                  <span className="w-28 shrink-0 font-display text-sm font-normal normal-case leading-snug tracking-tight text-ink/70 md:w-32 md:text-base">
                     {item.year}
                   </span>
-                  <span className="font-display text-sm font-light normal-case leading-relaxed text-ink/70 md:text-base">
-                    {item.description}
-                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-display text-2xl font-semibold normal-case tracking-tight text-ink md:text-2xl">
+                      {item.companyName}
+                    </span>
+                    <span className="font-display text-sm font-light normal-case leading-relaxed text-ink/70 md:text-base">
+                      {item.description}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -934,14 +933,14 @@ function AboutPage({ theme, onToggleTheme }) {
 
         {/* 564:1271 (left) and 564:1272 (right) — sits before the
             "Exploring India" headline, exactly as ordered in Figma. */}
-        <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-40">
+        <div className="mx-auto w-full max-w-8xl px-6 md:px-12 lg:px-16">
           <div className="mt-10 w-full">
-            <p className="max-w-xl font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
+            <p className="max-w-lg font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
               {personalParagraphOne}
             </p>
           </div>
           <div className="mt-10 w-full sm:mt-16 md:mt-20">
-            <p className="ml-auto max-w-2xl font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl sm:ml-auto sm:text-right">
+            <p className="ml-auto max-w-lg font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl sm:ml-auto sm:text-right">
               {personalParagraphTwo}
             </p>
           </div>
@@ -958,7 +957,7 @@ function AboutPage({ theme, onToggleTheme }) {
       </main>
 
       <Suspense fallback={null}>
-        <Footer variant="about" contactContent={contactContent} />
+        <Footer />
         <MenuOverlay
           open={menuOpen}
           onClose={() => setMenuOpen(false)}

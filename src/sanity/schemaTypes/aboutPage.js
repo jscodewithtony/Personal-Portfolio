@@ -15,7 +15,6 @@ export default {
     { name: "professionalExperience", title: "Professional Experience" },
     { name: "knowMore", title: "Know More / Annotation Dots" },
     { name: "personalTravel", title: "Personal / Travel" },
-    { name: "closingCta", title: "Closing / CTA" },
   ],
   fields: [
     {
@@ -202,7 +201,7 @@ export default {
     {
       name: "experienceEntries",
       title: "Experience entries",
-      description: "The year-by-year timeline rows inside the floating card. Drag to reorder — they render top to bottom in this order.",
+      description: "The timeline rows inside the floating card. Drag to reorder — they render top to bottom in this order.",
       type: "array",
       group: "professionalExperience",
       of: [
@@ -211,16 +210,24 @@ export default {
           name: "experienceEntry",
           fields: [
             {
-              name: "year",
-              title: "Year",
+              name: "companyName",
+              title: "Company / Client name",
               type: "string",
-              placeholder: "2024",
+              placeholder: "Tekxera",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "year",
+              title: "Date Range",
+              description: 'Free-text date range, not a structured date — e.g. "Jan 2022 - Present". A bare year like "2024" also still works.',
+              type: "string",
+              placeholder: "Jan 2022 - Present",
               validation: (Rule) => Rule.required(),
             },
             {
               name: "description",
               title: "Description",
-              description: "Keep to 1–2 short lines — this sits in a fixed-width card next to the year.",
+              description: "Keep to 1–2 short lines — this sits in a fixed-width card next to the date range.",
               type: "text",
               rows: 2,
               placeholder: "Launched NudgeFile — first solo shipped product, design to code",
@@ -228,7 +235,7 @@ export default {
             },
           ],
           preview: {
-            select: { title: "year", subtitle: "description" },
+            select: { title: "companyName", subtitle: "year" },
           },
         },
       ],
@@ -360,60 +367,6 @@ export default {
           },
         },
       ],
-    },
-
-    // --- Group 7: Closing / CTA ---
-    {
-      name: "closingHeadlineOne",
-      title: "Closing headline — line 1",
-      description: "First line of the closing headline above the footer/contact panel.",
-      type: "text",
-      rows: 2,
-      group: "closingCta",
-      placeholder: "Let's Create a",
-    },
-    {
-      name: "closingHeadlineTwo",
-      title: "Closing headline — line 2",
-      description: "Second line of the closing headline above the footer/contact panel.",
-      type: "text",
-      rows: 2,
-      group: "closingCta",
-      placeholder: "Remarkable Journey",
-    },
-    {
-      name: "ctaEyebrow",
-      title: "CTA eyebrow",
-      description: 'Small label above the contact email, e.g. "Always up for good design talk".',
-      type: "string",
-      group: "closingCta",
-      placeholder: "Always up for good design talk",
-    },
-    {
-      name: "contactEmail",
-      title: "Contact email",
-      type: "string",
-      group: "closingCta",
-      placeholder: "Tony2742000@gmail.com",
-      validation: (Rule) => Rule.required().email(),
-    },
-    {
-      name: "ctaButtonLabel",
-      title: "CTA button label",
-      description: 'e.g. "Book a call with me".',
-      type: "string",
-      group: "closingCta",
-      placeholder: "Book a call with me",
-    },
-    {
-      name: "ctaButtonLink",
-      title: "CTA button link",
-      description: "Where the CTA button goes — a mailto:, tel:, or booking-page URL.",
-      type: "url",
-      group: "closingCta",
-      placeholder: "mailto:Tony2742000@gmail.com",
-      validation: (Rule) =>
-        Rule.uri({ scheme: ["http", "https", "mailto", "tel"] }),
     },
   ],
   preview: {

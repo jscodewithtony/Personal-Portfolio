@@ -55,7 +55,7 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   philosophyText,
   philosophyHeadline,
   experienceHeading,
-  experienceEntries[]{ year, description },
+  experienceEntries[]{ companyName, year, description },
   experienceBackgroundImage{
     ...,
     "aspectRatio": asset->metadata.dimensions.aspectRatio
@@ -67,13 +67,7 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   personalParagraphTwo,
   exploringIndiaHeadline,
   exploringIndiaText,
-  travelPhotoCollage[]{ ... },
-  closingHeadlineOne,
-  closingHeadlineTwo,
-  ctaEyebrow,
-  contactEmail,
-  ctaButtonLabel,
-  ctaButtonLink
+  travelPhotoCollage[]{ ... }
 }`;
 
 export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOrder asc){
