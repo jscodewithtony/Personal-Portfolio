@@ -8,7 +8,8 @@ import portraitImg from "../assets/about-page/portrait.webp";
 import travelCollageImg from "../assets/about-page/travel-collage.webp";
 import iconMark from "../assets/about-page/icon-mark.svg";
 import tonyBlueImg from "../assets/about-page/tony-blue-strong-full.jpg";
-import resumeBgImg from "../assets/about-page/Resume-background.png";
+import resumeBgLightImg from "../assets/about-page/Resume-background.webp";
+import resumeBgDarkImg from "../assets/about-page/Resume-background-darkv1.webp";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CursorImageTrail from "../components/CursorImageTrail";
@@ -73,7 +74,7 @@ const MARQUEE_REPEATS = Array.from({ length: 10 });
 // (`asset->metadata.dimensions.aspectRatio`, queried in
 // aboutPageQuery) — these two constants are ONLY the emergency
 // fallback for when the CMS field is still unset and the local
-// placeholder photo (`tonyBlueImg` / `resumeBgImg`) is what's actually
+// placeholder photo (`tonyBlueImg` / `resumeBgLightImg`) is what's actually
 // rendering. They were measured directly off those two placeholder
 // files' own pixel dimensions (1440x862 and 2560x1440) — they are not
 // a design spec, and have no reason to stay correct once those
@@ -576,6 +577,8 @@ function AboutPage({ theme, onToggleTheme }) {
   const experienceBackgroundAspectRatio =
     about?.experienceBackgroundImage?.aspectRatio || EXPERIENCE_BACKGROUND_FALLBACK_ASPECT_RATIO;
 
+  const currentResumeBg = theme === 'dark' ? resumeBgDarkImg : resumeBgLightImg;
+
   // Sanity's `travelPhotoCollage` array is the single source of truth
   // for this gallery. When it's empty (nothing entered in the Studio
   // yet), fall back to the one shipped local photo — same "never show
@@ -667,6 +670,11 @@ function AboutPage({ theme, onToggleTheme }) {
       className={`site-shell relative min-h-[100dvh] font-display uppercase transition-colors duration-300 ${pageBackgroundColor ? "about-page-locked-colors" : "bg-[#fbfbf9] text-[#0d0c14] dark:bg-[#0c0a14] dark:text-white"}`}
       style={pageBackgroundColor ? { backgroundColor: pageBackgroundColor, color: pageTextColor } : undefined}
     >
+      {/* Preload both backgrounds so the theme swap is instant without flashing empty */}
+      <div className="absolute w-0 h-0 opacity-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <img src={resumeBgLightImg} alt="" />
+        <img src={resumeBgDarkImg} alt="" />
+      </div>
       <CanvasCursor />
       <Header
         menuButtonRef={menuButtonRef}
@@ -723,7 +731,7 @@ function AboutPage({ theme, onToggleTheme }) {
 
         <div className="mx-auto w-full max-w-8xl px-6 sm:px-10 md:px-14">
           {/* 547:717 — intro line */}
-          <p className="tracking-[-0.3rem] mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-20 sm:text-4xl md:text-[5rem]"
+          <p className="tracking-[-0.1rem] mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-20 sm:text-4xl md:text-[5rem]"
           >
             {introParagraph}
           </p>
@@ -837,7 +845,7 @@ function AboutPage({ theme, onToggleTheme }) {
         <div className="relative mt-16 w-full h-[100dvh] block md:hidden">
           <div className="absolute inset-0 w-full h-full overflow-hidden">
             <img
-              src={experienceBackgroundUrl || resumeBgImg}
+              src={experienceBackgroundUrl || currentResumeBg}
               alt={experienceBackgroundAlt}
               loading="lazy"
               className="w-full h-full object-cover origin-center"
@@ -846,11 +854,11 @@ function AboutPage({ theme, onToggleTheme }) {
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2.5rem)] z-10">
             <Reveal
               delay={150}
-              className="flex flex-col gap-8 bg-white p-5 text-ink xs:p-6 sm:p-8"
+              className="flex flex-col gap-8 bg-[#fbfbf9] dark:bg-[#0c0a14] p-5 text-[#0d0c14] dark:text-white xs:p-6 sm:p-8"
             >
               <div className="flex flex-col gap-6">
                 <img src={iconMark} alt="" loading="lazy" className="h-8 w-8 xs:h-10 xs:w-10" />
-                <h3 className="w-min font-display text-xl xs:text-xl font-extrabold uppercase tracking-tight text-ink sm:text-2xl leading-tight">
+                <h3 className="w-min font-display text-xl xs:text-xl font-extrabold uppercase tracking-tight text-[#0d0c14] dark:text-white sm:text-2xl leading-tight">
                   {experienceHeading}
                 </h3>
               </div>
@@ -858,16 +866,16 @@ function AboutPage({ theme, onToggleTheme }) {
                 {experienceEntries.map((item, i) => (
                   <div
                     key={`${item.companyName}-${item.year}-${i}`}
-                    className="flex gap-4 border-b border-ink/10 py-4 xs:py-5 last:border-b-0"
+                    className="flex gap-4 border-b border-[#0d0c14]/10 dark:border-white/10 py-4 xs:py-5 last:border-b-0"
                   >
-                    <span className="w-20 shrink-0 font-display text-xs xs:text-sm font-normal normal-case leading-snug tracking-tight text-ink/70">
+                    <span className="w-20 shrink-0 font-display text-xs xs:text-sm font-normal normal-case leading-snug tracking-tight text-[#0d0c14]/70 dark:text-white/70">
                       {item.year}
                     </span>
                     <div className="flex flex-col gap-1">
-                      <span className="font-display text-lg xs:text-xl font-extrabold normal-case tracking-tight text-ink sm:text-2xl">
+                      <span className="font-display text-lg xs:text-xl font-extrabold normal-case tracking-tight text-[#0d0c14] dark:text-white sm:text-2xl">
                         {item.companyName}
                       </span>
-                      <span className="font-display text-xs font-light normal-case leading-relaxed text-ink/70 xs:text-sm">
+                      <span className="font-display text-xs font-light normal-case leading-relaxed text-[#0d0c14]/70 dark:text-white/70 xs:text-sm">
                         {item.description}
                       </span>
                     </div>
@@ -883,7 +891,7 @@ function AboutPage({ theme, onToggleTheme }) {
           <Reveal delay={0}>
             <div ref={parallaxContainerRef} className="relative w-full overflow-hidden">
               <motion.img
-                src={experienceBackgroundUrl || resumeBgImg}
+                src={experienceBackgroundUrl || currentResumeBg}
                 alt={experienceBackgroundAlt}
                 loading="lazy"
                 style={{ y: yVal, scale: 1.15, aspectRatio: experienceBackgroundAspectRatio }}
@@ -894,26 +902,26 @@ function AboutPage({ theme, onToggleTheme }) {
 
           <Reveal
             delay={150}
-            className="relative mx-6 mt-6 flex flex-col gap-8 bg-white p-8 text-ink sm:mx-10 md:absolute md:inset-x-auto md:left-1/2 md:top-1/2 md:mx-0 md:mt-0 md:w-[40rem] md:-translate-x-1/2 md:-translate-y-1/2 md:p-9"
+            className="relative mx-6 mt-6 flex flex-col gap-8 bg-[#fbfbf9] dark:bg-[#0c0a14] p-8 text-[#0d0c14] dark:text-white sm:mx-10 md:absolute md:inset-x-auto md:left-1/2 md:top-1/2 md:mx-0 md:mt-0 md:w-[40rem] md:-translate-x-1/2 md:-translate-y-1/2 md:p-9"
           >
             <img src={iconMark} alt="" loading="lazy" className="h-12 w-12" />
-            <h3 className="w-min font-display text-2xl font-extrabold uppercase tracking-tight text-ink md:text-4xl leading-tight">
+            <h3 className="w-min font-display text-2xl font-extrabold uppercase tracking-tight text-[#0d0c14] dark:text-white md:text-4xl leading-tight">
               {experienceHeading}
             </h3>
             <div className="flex flex-col">
               {experienceEntries.map((item, i) => (
                 <div
                   key={`${item.companyName}-${item.year}-${i}`}
-                  className="flex gap-6 border-b border-ink/10 py-4 last:border-b-0"
+                  className="flex gap-6 border-b border-[#0d0c14]/10 dark:border-white/10 py-4 last:border-b-0"
                 >
-                  <span className="w-28 shrink-0 font-display text-sm font-normal normal-case leading-snug tracking-tight text-ink/70 md:w-32 md:text-base">
+                  <span className="w-28 shrink-0 font-display text-sm font-normal normal-case leading-snug tracking-tight text-[#0d0c14]/70 dark:text-white/70 md:w-32 md:text-base">
                     {item.year}
                   </span>
                   <div className="flex flex-col gap-1">
-                    <span className="font-display text-2xl font-semibold normal-case tracking-tight text-ink md:text-2xl">
+                    <span className="font-display text-2xl font-semibold normal-case tracking-tight text-[#0d0c14] dark:text-white md:text-2xl">
                       {item.companyName}
                     </span>
-                    <span className="font-display text-sm font-light normal-case leading-relaxed text-ink/70 md:text-base">
+                    <span className="font-display text-sm font-light normal-case leading-relaxed text-[#0d0c14]/70 dark:text-white/70 md:text-base">
                       {item.description}
                     </span>
                   </div>
