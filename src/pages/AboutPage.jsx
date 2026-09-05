@@ -778,10 +778,7 @@ function AboutPage({ theme, onToggleTheme }) {
               )}
             </Reveal>
             <div className="flex flex-col gap-8 self-center md:col-span-6 md:col-start-7">
-              <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
-                {aboutBodyParagraph}
-              </p>
-              <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
+              <p className="whitespace-pre-wrap font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
                 {aboutBodyParagraph}
               </p>
             </div>
@@ -885,7 +882,7 @@ function AboutPage({ theme, onToggleTheme }) {
                       <span className="font-display text-lg xs:text-xl font-extrabold normal-case tracking-tight text-[#0d0c14] dark:text-white sm:text-2xl">
                         {item.companyName}
                       </span>
-                      <span className="font-display text-xs font-light normal-case leading-relaxed text-[#0d0c14]/70 dark:text-white/70 xs:text-sm">
+                      <span className="whitespace-pre-wrap font-display text-xs font-light normal-case leading-relaxed text-[#0d0c14]/70 dark:text-white/70 xs:text-sm">
                         {item.description}
                       </span>
                     </div>
