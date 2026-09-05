@@ -3,9 +3,8 @@
 // fields WITHIN each group are also ordered to match the page's real
 // render order (verified against AboutPage.jsx directly, not assumed)
 // — so the form reads as a mirror of the page, not an arbitrary list.
-// The bio paragraph beside the portrait continues to come from the
-// existing `homepageContent` document (shared with the homepage About
-// ribbon) — everything else on /about is owned by this document.
+// ribbon).
+// Everything on /about is owned by this document.
 export default {
   name: "aboutPage",
   title: "About Page",
@@ -67,6 +66,15 @@ export default {
       type: "image",
       options: { hotspot: true },
       group: "experienceNarrative",
+    },
+    {
+      name: "aboutBodyParagraph",
+      title: "About body paragraph",
+      description: "The bio paragraph beside the portrait.",
+      type: "text",
+      rows: 5,
+      group: "experienceNarrative",
+      placeholder: "A Product Designer for Human Impact, Not Just Aesthetics...",
     },
     {
       name: "portraitImageAlt",

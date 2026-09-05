@@ -533,6 +533,7 @@ function AboutPage({ theme, onToggleTheme }) {
   const scrollingTicker = about?.scrollingTicker || FALLBACK_ABOUT.scrollingTicker;
   const heroHeadline = about?.heroHeadline || FALLBACK_ABOUT.heroHeadline;
   const introParagraph = about?.introParagraph || FALLBACK_ABOUT.introParagraph;
+  const aboutBodyParagraph = about?.aboutBodyParagraph || body.aboutBodyParagraph1;
   const leftText = about?.leftText || FALLBACK_ABOUT.leftText;
   const rightText = about?.rightText || FALLBACK_ABOUT.rightText;
   const philosophyLabel = about?.philosophyLabel || FALLBACK_ABOUT.philosophyLabel;
@@ -778,10 +779,10 @@ function AboutPage({ theme, onToggleTheme }) {
             </Reveal>
             <div className="flex flex-col gap-8 self-center md:col-span-6 md:col-start-7">
               <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
-                {body.aboutBodyParagraph1}
+                {aboutBodyParagraph}
               </p>
               <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
-                {body.aboutBodyParagraph1}
+                {aboutBodyParagraph}
               </p>
             </div>
           </div>
