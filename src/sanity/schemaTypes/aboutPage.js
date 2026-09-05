@@ -1,7 +1,9 @@
-// Singleton document backing the /about page. Grouped into Studio tabs
-// that mirror the page's actual sections top to bottom, so an editor
-// can find a field without guessing which document it lives in. The
-// bio paragraph beside the portrait continues to come from the
+// Singleton document backing the /about page. Groups are Studio tabs,
+// ordered top to bottom to match the page's actual visual flow, and
+// fields WITHIN each group are also ordered to match the page's real
+// render order (verified against AboutPage.jsx directly, not assumed)
+// — so the form reads as a mirror of the page, not an arbitrary list.
+// The bio paragraph beside the portrait continues to come from the
 // existing `homepageContent` document (shared with the homepage About
 // ribbon) — everything else on /about is owned by this document.
 export default {
@@ -15,40 +17,12 @@ export default {
     { name: "professionalExperience", title: "Professional Experience" },
     { name: "knowMore", title: "Know More / Annotation Dots" },
     { name: "personalTravel", title: "Personal / Travel" },
+    { name: "advanced", title: "Advanced / Page Style" },
   ],
   fields: [
-    {
-      name: "customColorTheme",
-      title: "Custom Color Theme Override",
-      type: "object",
-      group: "intro",
-      fields: [
-        {
-          name: "isEnabled",
-          title: "Enable custom color theme",
-          type: "boolean",
-          description: "When ON, the custom color below replaces the default Light theme background on this page. Dark theme is never affected by this setting. When OFF, the page uses the standard Light/Dark toggle behavior with default colors.",
-          initialValue: false,
-        },
-        {
-          name: "customColor",
-          title: "Custom background color",
-          type: "color",
-          hidden: ({ parent }) => !parent?.isEnabled,
-        },
-      ],
-    },
     // --- Group 1: Intro ---
-    {
-      name: "scrollingTicker",
-      title: "Scrolling ticker",
-      description: "The marquee/ticker line that loops across the yellow band near the top of the page.",
-      type: "string",
-      group: "intro",
-      placeholder:
-        "BEST IDEAS SHOW UP MID-SHOWER • NEVER IN MEETINGS • I DESIGN AT 2AM AND REGRET IT AT 9AM • STILL SKETCHING ON PAPER BEFORE FIGMA",
-      validation: (Rule) => Rule.required(),
-    },
+    // Render order on the page: heroHeadline, then the marquee
+    // (scrollingTicker), then introParagraph.
     {
       name: "heroHeadline",
       title: "Hero headline",
@@ -57,6 +31,16 @@ export default {
       rows: 2,
       group: "intro",
       placeholder: "SO WHO IS ACTUALLY BEHIND THIS",
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "scrollingTicker",
+      title: "Scrolling ticker",
+      description: "The marquee/ticker line that loops across the yellow band near the top of the page.",
+      type: "string",
+      group: "intro",
+      placeholder:
+        "BEST IDEAS SHOW UP MID-SHOWER • NEVER IN MEETINGS • I DESIGN AT 2AM AND REGRET IT AT 9AM • STILL SKETCHING ON PAPER BEFORE FIGMA",
       validation: (Rule) => Rule.required(),
     },
     {
@@ -72,58 +56,10 @@ export default {
     },
 
     // --- Group 2: Experience Narrative ---
-    {
-      name: "narrativeImageOne",
-      title: "Narrative image 1",
-      description: "First full-width narrative photo, shown after the intro.",
-      type: "image",
-      options: { hotspot: true },
-      group: "experienceNarrative",
-    },
-    {
-      name: "narrativeImageOneAlt",
-      title: "Narrative image 1 — alt text",
-      type: "string",
-      group: "experienceNarrative",
-      placeholder: "Tony sketching a layout on paper at a desk, mid-afternoon light",
-      validation: (Rule) => Rule.required(),
-      hidden: ({ document }) => !document?.narrativeImageOne,
-    },
-    {
-      name: "narrativeImageTwo",
-      title: "Narrative image 2",
-      description: "Second full-width narrative photo. Not yet wired to a second image slot on the live page — reserved for a future narrative photo.",
-      type: "image",
-      options: { hotspot: true },
-      group: "experienceNarrative",
-    },
-    {
-      name: "narrativeImageTwoAlt",
-      title: "Narrative image 2 — alt text",
-      type: "string",
-      group: "experienceNarrative",
-      placeholder: "Tony presenting a design system to a small team around a laptop",
-      validation: (Rule) => Rule.required(),
-      hidden: ({ document }) => !document?.narrativeImageTwo,
-    },
-    {
-      name: "leftText",
-      title: "Left text block",
-      description: "Sits in the left column of the two-column row beneath narrative image 1. Keep to 1–2 short lines.",
-      type: "text",
-      rows: 3,
-      group: "experienceNarrative",
-      placeholder: "Me at somewhere",
-    },
-    {
-      name: "rightText",
-      title: "Right text block",
-      description: "Sits in the right column of the two-column row beneath narrative image 1. Keep to 1–2 short lines.",
-      type: "text",
-      rows: 3,
-      group: "experienceNarrative",
-      placeholder: "Giving a Unique pose @2022",
-    },
+    // Render order on the page: portraitImage (+ caption/sub-caption),
+    // then narrativeImageOne, then leftText/rightText. narrativeImageTwo
+    // is not currently wired to any component — kept at the end of this
+    // group with an explicit warning rather than removed.
     {
       name: "portraitImage",
       title: "Portrait image",
@@ -157,8 +93,61 @@ export default {
       group: "experienceNarrative",
       placeholder: "Product Designer",
     },
+    {
+      name: "narrativeImageOne",
+      title: "Narrative image 1",
+      description: "First full-width narrative photo, shown after the intro.",
+      type: "image",
+      options: { hotspot: true },
+      group: "experienceNarrative",
+    },
+    {
+      name: "narrativeImageOneAlt",
+      title: "Narrative image 1 — alt text",
+      type: "string",
+      group: "experienceNarrative",
+      placeholder: "Tony sketching a layout on paper at a desk, mid-afternoon light",
+      validation: (Rule) => Rule.required(),
+      hidden: ({ document }) => !document?.narrativeImageOne,
+    },
+    {
+      name: "leftText",
+      title: "Left text block",
+      description: "Sits in the left column of the two-column row beneath narrative image 1. Keep to 1–2 short lines.",
+      type: "text",
+      rows: 3,
+      group: "experienceNarrative",
+      placeholder: "Me at somewhere",
+    },
+    {
+      name: "rightText",
+      title: "Right text block",
+      description: "Sits in the right column of the two-column row beneath narrative image 1. Keep to 1–2 short lines.",
+      type: "text",
+      rows: 3,
+      group: "experienceNarrative",
+      placeholder: "Giving a Unique pose @2022",
+    },
+    {
+      name: "narrativeImageTwo",
+      title: "Narrative image 2 (currently unused)",
+      description: "Not currently wired to any component — content entered here will not appear on the site. Reserved for a future second narrative-photo slot.",
+      type: "image",
+      options: { hotspot: true },
+      group: "experienceNarrative",
+    },
+    {
+      name: "narrativeImageTwoAlt",
+      title: "Narrative image 2 — alt text (currently unused)",
+      description: "Not currently wired to any component — content entered here will not appear on the site.",
+      type: "string",
+      group: "experienceNarrative",
+      placeholder: "Tony presenting a design system to a small team around a laptop",
+      validation: (Rule) => Rule.required(),
+      hidden: ({ document }) => !document?.narrativeImageTwo,
+    },
 
-    // --- Group 3: Philosophy ---
+    // --- Group 3: Philosophy --- (already matched render order)
     {
       name: "philosophyLabel",
       title: "Philosophy label",
@@ -189,6 +178,7 @@ export default {
     },
 
     // --- Group 4: Professional Experience ---
+    // Content fields first, then the supporting background images.
     {
       name: "experienceHeading",
       title: "Experience card heading",
@@ -241,24 +231,41 @@ export default {
       ],
     },
     {
-      name: "experienceBackgroundImage",
-      title: "Experience background image",
-      description: "Full-width parallax background photo behind the Professional Experience card.",
+      name: "experienceBackgroundImageLight",
+      title: "Background — Light Theme",
+      description: "Full-width parallax background photo behind the Professional Experience card, shown in light mode. Falls back to a built-in default photo if left blank.",
       type: "image",
       options: { hotspot: true },
       group: "professionalExperience",
     },
     {
-      name: "experienceBackgroundImageAlt",
-      title: "Experience background image — alt text",
+      name: "experienceBackgroundImageLightAlt",
+      title: "Background — Light Theme — alt text",
       type: "string",
       group: "professionalExperience",
       placeholder: "Close-up of an elderly woman smiling softly, warm natural light",
       validation: (Rule) => Rule.required(),
-      hidden: ({ document }) => !document?.experienceBackgroundImage,
+      hidden: ({ document }) => !document?.experienceBackgroundImageLight,
+    },
+    {
+      name: "experienceBackgroundImageDark",
+      title: "Background — Dark Theme",
+      description: "Full-width parallax background photo behind the Professional Experience card, shown in dark mode. Falls back to a built-in default photo if left blank.",
+      type: "image",
+      options: { hotspot: true },
+      group: "professionalExperience",
+    },
+    {
+      name: "experienceBackgroundImageDarkAlt",
+      title: "Background — Dark Theme — alt text",
+      type: "string",
+      group: "professionalExperience",
+      placeholder: "Close-up of an elderly woman smiling softly under warm evening light",
+      validation: (Rule) => Rule.required(),
+      hidden: ({ document }) => !document?.experienceBackgroundImageDark,
     },
 
-    // --- Group 5: Know More / Annotation Dots ---
+    // --- Group 5: Know More / Annotation Dots --- (already matched render order)
     {
       name: "knowMoreHeadline",
       title: "Know More headline",
@@ -305,6 +312,10 @@ export default {
     },
 
     // --- Group 6: Personal / Travel ---
+    // Render order on the page: personalParagraphOne, personalParagraphTwo,
+    // exploringIndiaHeadline, travelPhotoCollage (both passed into the
+    // Exploring India gallery). exploringIndiaText is computed but never
+    // rendered anywhere — moved to the end with an explicit warning.
     {
       name: "personalParagraphOne",
       title: "Personal paragraph 1",
@@ -334,16 +345,6 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
-      name: "exploringIndiaText",
-      title: "Exploring India paragraph",
-      description: "Supporting paragraph shown under the Exploring India headline.",
-      type: "text",
-      rows: 4,
-      group: "personalTravel",
-      placeholder:
-        "As I mentioned, I love traveling! So far, I've explored 10 states and over 30 cities across India, each place adding something unique to my journey.",
-    },
-    {
       name: "travelPhotoCollage",
       title: "Travel photo collage",
       description: "Photos for the travel collage strip. Add, remove, or reorder freely — no developer needed.",
@@ -365,6 +366,41 @@ export default {
           preview: {
             select: { imageUrl: "asset.url", title: "alt" },
           },
+        },
+      ],
+    },
+    {
+      name: "exploringIndiaText",
+      title: "Exploring India paragraph (currently unused)",
+      description: "Not currently wired to any component — content entered here will not appear on the site.",
+      type: "text",
+      rows: 4,
+      group: "personalTravel",
+      placeholder:
+        "As I mentioned, I love traveling! So far, I've explored 10 states and over 30 cities across India, each place adding something unique to my journey.",
+    },
+
+    // --- Group 7: Advanced / Page Style ---
+    // Page-wide style override, not intro content — separated out so it
+    // doesn't clutter the first tab an editor sees.
+    {
+      name: "customColorTheme",
+      title: "Custom Color Theme Override",
+      type: "object",
+      group: "advanced",
+      fields: [
+        {
+          name: "isEnabled",
+          title: "Enable custom color theme",
+          type: "boolean",
+          description: "When ON, the custom color below replaces the default Light theme background on this page. Dark theme is never affected by this setting. When OFF, the page uses the standard Light/Dark toggle behavior with default colors.",
+          initialValue: false,
+        },
+        {
+          name: "customColor",
+          title: "Custom background color",
+          type: "color",
+          hidden: ({ parent }) => !parent?.isEnabled,
         },
       ],
     },

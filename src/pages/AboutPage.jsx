@@ -571,11 +571,18 @@ function AboutPage({ theme, onToggleTheme }) {
   const narrativeImageAspectRatio =
     about?.narrativeImageOne?.aspectRatio || NARRATIVE_IMAGE_FALLBACK_ASPECT_RATIO;
 
-  const experienceBackgroundUrl = urlFor(about?.experienceBackgroundImage)?.width(2400).auto("format").url();
+  // Same per-theme selection as currentResumeBg below, just sourced
+  // from the CMS first — each theme reads its own Sanity image (and
+  // falls back to that same theme's static asset independently) rather
+  // than one CMS image being forced across both themes.
+  const experienceBackgroundImageForTheme =
+    theme === "dark" ? about?.experienceBackgroundImageDark : about?.experienceBackgroundImageLight;
+  const experienceBackgroundUrl = urlFor(experienceBackgroundImageForTheme)?.width(2400).auto("format").url();
   const experienceBackgroundAlt =
-    about?.experienceBackgroundImageAlt || "Professional Experience background";
+    (theme === "dark" ? about?.experienceBackgroundImageDarkAlt : about?.experienceBackgroundImageLightAlt) ||
+    "Professional Experience background";
   const experienceBackgroundAspectRatio =
-    about?.experienceBackgroundImage?.aspectRatio || EXPERIENCE_BACKGROUND_FALLBACK_ASPECT_RATIO;
+    experienceBackgroundImageForTheme?.aspectRatio || EXPERIENCE_BACKGROUND_FALLBACK_ASPECT_RATIO;
 
   const currentResumeBg = theme === 'dark' ? resumeBgDarkImg : resumeBgLightImg;
 
@@ -731,7 +738,7 @@ function AboutPage({ theme, onToggleTheme }) {
 
         <div className="mx-auto w-full max-w-8xl px-6 sm:px-10 md:px-14">
           {/* 547:717 — intro line */}
-          <p className="tracking-[-0.1rem] mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-20 sm:text-4xl md:text-[5rem]"
+          <p className="tracking-[-0.1rem] mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-20 sm:text-5xl md:text-[5rem]"
           >
             {introParagraph}
           </p>

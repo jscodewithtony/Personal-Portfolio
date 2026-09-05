@@ -56,11 +56,16 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   philosophyHeadline,
   experienceHeading,
   experienceEntries[]{ companyName, year, description },
-  experienceBackgroundImage{
+  experienceBackgroundImageLight{
     ...,
     "aspectRatio": asset->metadata.dimensions.aspectRatio
   },
-  experienceBackgroundImageAlt,
+  experienceBackgroundImageLightAlt,
+  experienceBackgroundImageDark{
+    ...,
+    "aspectRatio": asset->metadata.dimensions.aspectRatio
+  },
+  experienceBackgroundImageDarkAlt,
   knowMoreHeadline,
   annotationDots[]{ label, tooltipText },
   personalParagraphOne,
