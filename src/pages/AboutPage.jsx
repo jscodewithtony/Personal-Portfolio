@@ -928,7 +928,7 @@ function AboutPage({ theme, onToggleTheme }) {
                     <span className="font-display text-2xl font-semibold normal-case tracking-tight text-[#0d0c14] dark:text-white md:text-2xl">
                       {item.companyName}
                     </span>
-                    <span className="font-display text-sm font-light normal-case leading-relaxed text-[#0d0c14]/70 dark:text-white/70 md:text-base">
+                    <span className="whitespace-pre-wrap font-display text-sm font-light normal-case leading-relaxed text-[#0d0c14]/70 dark:text-white/70 md:text-base">
                       {item.description}
                     </span>
                   </div>
