@@ -137,7 +137,7 @@ const FALLBACK_ABOUT = {
     "My design journey found me somewhere between wanting things to work better and being too impatient to wait for someone else to fix them.",
   leftText: "Me at somewhere  ",
   rightText: "Giving a Unique pose @2022",
-  philosophyLabel: "",
+  philosophyLabel: "[ My Philosophy ]",
   philosophyText:
     "The best products don't just work well, they feel like someone cared enough to get the details right. That's what I aim for in every screen I design.",
   philosophyHeadline: "I design Applications and Websites that build credibility.",
@@ -146,7 +146,6 @@ const FALLBACK_ABOUT = {
     { companyName: "Tekxera", year: "Jan 2026 - Present", description: "Freelancing alongside Tekxera, including brand and content work for takara.ai" },
     { companyName: "Independent", year: "Jan 2025 - Dec 2025", description: "Launched NudgeFile — first solo shipped product, design to code" },
     { companyName: "Gemraj Technologies", year: "Jan 2024 - Dec 2024", description: "DLS reaches 20+ governed product features across the platform" },
-    { companyName: "Gemraj Technologies", year: "Jan 2021 - Dec 2023", description: "Started at Gemraj Technologies as a product designer" },
   ],
   knowMoreHeadline: "Know more about Myself Beyond as a designer",
   personalParagraphOne:
@@ -736,9 +735,12 @@ function AboutPage({ theme, onToggleTheme }) {
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-8xl px-6 sm:px-10 md:px-14">
+        <div className="mx-auto w-full max-w-8xl px-6 sm:px-10 md:px-14 mt-16">
+          <span className="block font-display text-sm sm:text-base font-normal tracking-wide text-ink/70 dark:text-white/70 uppercase mb-4 sm:mb-6">
+            [ My Experience ]
+          </span>
           {/* 547:717 — intro line */}
-          <p className="tracking-[-0.1rem] mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-20 sm:text-5xl md:text-[5rem]"
+          <p className="tracking-[-0.1rem] mt-14 max-w-none font-display text-2xl font-light normal-case leading-[1.15] text-[#0d0c14] dark:text-white sm:mt-8 sm:text-5xl md:text-[5rem]"
           >
             {introParagraph}
           </p>
@@ -826,7 +828,7 @@ function AboutPage({ theme, onToggleTheme }) {
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
           <div className="mt-8 sm:mt-40">
             {philosophyLabel && (
-              <p className="mx-auto max-w-3xl text-center font-display text-xs font-semibold uppercase tracking-[0.25em] text-[#0d0c14]/60 dark:text-white/60 sm:text-sm">
+              <p className="mx-auto max-w-3xl text-left font-display text-xs font-semibold uppercase tracking-[0.25em] text-[#0d0c14]/60 dark:text-white/60 sm:text-sm">
                 {philosophyLabel}
               </p>
             )}
