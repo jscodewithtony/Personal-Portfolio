@@ -810,12 +810,12 @@ function AboutPage({ theme, onToggleTheme }) {
             rightText from the Experience Narrative group; the center
             paragraph and the headline below it are Philosophy fields. */}
         <div className="mx-auto w-full max-w-8xl px-4 sm:px-4 md:px-4 mt-2">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10">
-            <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-xl md:text-2xl text-left sm:max-w-[75%]"
+          <div className="flex flex-row justify-between items-start gap-4 sm:grid sm:grid-cols-2 sm:gap-10">
+            <p className="font-display text-sm normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-xl md:text-2xl text-left sm:max-w-[75%]"
             >
               {leftText}
             </p>
-            <p className="font-display text-lg normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-xl md:text-2xl text-left sm:text-right sm:max-w-[75%] sm:ml-auto"
+            <p className="font-display text-sm normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-xl md:text-2xl text-right sm:max-w-[75%] sm:ml-auto"
             >
               {rightText}
             </p>
