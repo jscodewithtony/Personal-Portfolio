@@ -22,6 +22,8 @@ import { homepageContentQuery, aboutPageQuery } from "../sanity/queries";
 import { urlFor } from "../sanity/client";
 import { isPreviewMode } from "../sanity/preview";
 import { previewClient } from "../sanity/previewClient";
+import CloudSky from "../components/CloudSky";
+import NightSky from "../components/NightSky";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
@@ -700,6 +702,13 @@ function AboutPage({ theme, onToggleTheme }) {
             }
           `}</style>
         )}
+        <div className="absolute top-0 left-0 w-full h-[60vh] sm:h-[80vh] pointer-events-none" style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)' }}>
+          {theme === 'dark' ? (
+            <NightSky style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+          ) : (
+            <CloudSky style={{ position: "absolute", inset: 0, width: "100%", height: "100%", minWidth: 0, minHeight: 0 }} />
+          )}
+        </div>
         {/* <CursorImageTrail
           onMouseEnter={() => {
             document.body.dataset.cursorTrailHover = "true";
@@ -711,7 +720,7 @@ function AboutPage({ theme, onToggleTheme }) {
         > */}
         <WordHeadline
           text={heroHeadline}
-          className="mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-[clamp(6rem,-14rem+31.25vw,16rem)]"
+          className="relative z-10 mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-[clamp(6rem,-14rem+31.25vw,16rem)]"
           animated={false}
         />
         {/* </CursorImageTrail> */}
