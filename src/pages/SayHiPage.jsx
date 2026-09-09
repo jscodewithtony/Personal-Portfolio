@@ -164,10 +164,9 @@ function SayHiPage({ theme, onToggleTheme }) {
       />
 
       <section className="w-full px-6 pb-24 pt-14 sm:px-10 sm:pt-16 md:px-14 md:pb-32 md:pt-20 lg:px-16">
-        <Reveal as="h1" className="max-w-5xl font-display text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl md:text-8xl lg:text-[7rem]">
+        <Reveal as="h1" className="max-w-7xl font-display text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl md:text-8xl lg:text-[7rem]">
           Let&rsquo;s see what we can dream up together.
         </Reveal>
-
         <div className="mt-16 grid grid-cols-1 gap-14 md:mt-24 lg:grid-cols-10 lg:gap-[auto]">
           {/* Left: eyebrow, email, socials */}
           <Reveal delay={80} className="flex flex-col gap-10 lg:col-span-4 lg:justify-between lg:h-full lg:gap-0">
@@ -247,11 +246,10 @@ function SayHiPage({ theme, onToggleTheme }) {
                           onChange={handleChange(field.name)}
                           placeholder={field.label}
                           rows={2}
-                          className={`w-full resize-none border-b bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 sm:text-2xl ${
-                            errors[field.name]
-                              ? "border-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-500"
-                              : "border-ink/20 focus:border-ink dark:border-white/20 dark:focus:border-white"
-                          }`}
+                          className={`w-full resize-none border-b bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 sm:text-2xl ${errors[field.name]
+                            ? "border-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-500"
+                            : "border-ink/20 focus:border-ink dark:border-white/20 dark:focus:border-white"
+                            }`}
                         />
                       ) : (
                         <input
@@ -261,11 +259,10 @@ function SayHiPage({ theme, onToggleTheme }) {
                           value={form[field.name]}
                           onChange={handleChange(field.name)}
                           placeholder={field.label}
-                          className={`w-full border-b bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 sm:text-2xl ${
-                            errors[field.name]
-                              ? "border-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-500"
-                              : "border-ink/20 focus:border-ink dark:border-white/20 dark:focus:border-white"
-                          }`}
+                          className={`w-full border-b bg-transparent pb-3 font-display text-2xl font-normal !normal-case placeholder:!normal-case leading-snug text-ink placeholder:text-ink/40 outline-none focus-visible:!outline-none transition-colors dark:text-white dark:placeholder:!normal-case dark:placeholder:text-white/40 sm:text-2xl ${errors[field.name]
+                            ? "border-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-500"
+                            : "border-ink/20 focus:border-ink dark:border-white/20 dark:focus:border-white"
+                            }`}
                         />
                       )}
                     </label>
