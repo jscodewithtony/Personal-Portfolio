@@ -5,6 +5,7 @@ import aboutPortrait from "../assets/about-portrait.webp";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { homepageContentQuery } from "../sanity/queries";
 import { useThemeTokens } from "../theme/ThemeTokensContext";
+import CircularTextButton from "./CircularTextButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -203,7 +204,7 @@ function About({ theme }) {
       gsap.set(wordElements, { opacity: 1 });
       gsap.set(imageOuter, { clipPath: "inset(0 0 0% 0)" });
       gsap.set(imageInner, { scale: 1 });
-      
+
       const isDark = theme
         ? theme === "dark"
         : document.documentElement.classList.contains("dark");
@@ -395,18 +396,41 @@ function About({ theme }) {
           </p>
         </div>
 
-        {/* Portrait */}
-        <div
-          ref={imageOuterRef}
-          className="relative col-span-1 h-[60vh] w-full overflow-hidden md:col-span-4 md:col-start-9 md:h-[34rem]"
-        >
-          <img
-            ref={imageInnerRef}
-            src={aboutPortrait}
-            alt="Tony, seated outdoors in dark clothing beside a black horse"
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
+        {/* Portrait — grid placement + `relative` now live on this
+            wrapper, not on imageOuterRef itself. The scroll effect below
+            applies an animated `clip-path: inset()` directly to
+            imageOuterRef for its reveal wipe, so anything nested inside
+            it (the badge included) would be invisible until that wipe
+            finishes and re-clipped on scroll-back. Keeping the badge as
+            a sibling of imageOuterRef instead avoids that entirely,
+            without changing imageOuterRef's own box (same height/width
+            classes moved up, imageOuterRef just fills this wrapper). */}
+        <div className="relative col-span-1 h-[60vh] w-full md:col-span-4 lg:max-w-[26rem]  md:col-start-9 md:h-[34rem]">
+          <div ref={imageOuterRef} className="h-full w-full overflow-hidden">
+            <img
+              ref={imageInnerRef}
+              src={aboutPortrait}
+              alt="Tony, seated outdoors in dark clothing beside a black horse"
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          {/* Badge overlapping the body-copy/portrait column boundary.
+              Small offset on mobile (columns are stacked there, so a
+              large negative offset would push it past the section's own
+              edge padding) and a larger straddling offset from md: up,
+              where the two columns actually sit side by side. Wrapped in
+              its own positioning div rather than passing `absolute`
+              into CircularTextButton's className — the component
+              already sets `relative` on itself internally (so its own
+              rotating ring/fill span can anchor to it), and stacking an
+              `absolute` utility on top of that on the same element would
+              be two conflicting `position` utilities with no reliable
+              winner. */}
+          <div className="absolute -left-4 -top-4 z-20 md:-left-12 md:-top-10">
+            <CircularTextButton />
+          </div>
         </div>
       </div>
 

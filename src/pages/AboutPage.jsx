@@ -139,6 +139,11 @@ const FALLBACK_ABOUT = {
     "My design journey found me somewhere between wanting things to work better and being too impatient to wait for someone else to fix them.",
   leftText: "Me at somewhere  ",
   rightText: "Giving a Unique pose @2022",
+  aboutStats: [
+    { value: "20+", label: "Brands elevated through strategy, identity, and visual storytelling." },
+    { value: "5+", label: "Brands elevated through strategy, identity, and visual storytelling." },
+    { value: "15+", label: "Brands elevated through strategy, identity, and visual storytelling." },
+  ],
   philosophyLabel: "[ My Philosophy ]",
   philosophyText:
     "The best products don't just work well, they feel like someone cared enough to get the details right. That's what I aim for in every screen I design.",
@@ -536,6 +541,8 @@ function AboutPage({ theme, onToggleTheme }) {
   const heroHeadline = about?.heroHeadline || FALLBACK_ABOUT.heroHeadline;
   const introParagraph = about?.introParagraph || FALLBACK_ABOUT.introParagraph;
   const aboutBodyParagraph = about?.aboutBodyParagraph || body.aboutBodyParagraph1;
+  const aboutStats =
+    about?.aboutStats?.length > 0 ? about.aboutStats : FALLBACK_ABOUT.aboutStats;
   const leftText = about?.leftText || FALLBACK_ABOUT.leftText;
   const rightText = about?.rightText || FALLBACK_ABOUT.rightText;
   const philosophyLabel = about?.philosophyLabel || FALLBACK_ABOUT.philosophyLabel;
@@ -756,40 +763,53 @@ function AboutPage({ theme, onToggleTheme }) {
           </p>
         </div>
 
-        <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 md:px-14">
+        <div className="mx-auto w-full px-6 sm:px-10 md:px-14">
           {/* 568:1348 portrait + 547:718 and 547:722 — two literal
               stacked instances of the same bio paragraph, as Figma has
               them, rather than one paragraph. The bio paragraph itself
               still comes from the existing homepageContent document
               (shared with the homepage About ribbon), per scope. */}
-          <div className="mt-16 grid grid-cols-1 gap-10 md:mt-20 md:grid-cols-12 md:gap-12">
-            <Reveal className="relative h-[40vh] w-full overflow-hidden md:col-span-4 md:h-[30rem] md:self-end">
+          <div className="mt-16 flex flex-col md:flex-row items-start justify-between gap-16 md:mt-20">
+            <Reveal className="flex flex-col gap-4 w-full md:w-auto shrink-0">
               <img
                 src={portraitImageUrl || portraitImg}
                 alt={portraitImageAlt}
                 loading="lazy"
-                className="h-full w-full object-cover object-bottom"
+                className="w-full md:w-auto md:max-w-lg lg:max-w-[26rem] h-auto object-contain"
               />
               {(about?.portraitCaption || about?.portraitSubCaption) && (
-                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-4 py-3">
+                <div className="flex flex-col">
                   {about?.portraitCaption && (
-                    <p className="font-display text-sm font-semibold normal-case text-white"
-                    >
+                    <p className="font-display text-sm normal-case text-[#0d0c14] dark:text-white">
                       {about.portraitCaption}
                     </p>
                   )}
                   {about?.portraitSubCaption && (
-                    <p className="font-display text-xs normal-case text-white/70">
+                    <p className="font-display text-sm normal-case text-[#0d0c14]/70 dark:text-white/70">
                       {about.portraitSubCaption}
                     </p>
                   )}
                 </div>
               )}
             </Reveal>
-            <div className="flex flex-col gap-8 self-center md:col-span-6 md:col-start-7">
-              <p className="whitespace-pre-wrap font-display text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-xl md:text-2xl">
+            <div className="flex flex-col gap-8 self-start w-full md:max-w-2xl shrink-0">
+              <p className="whitespace-pre-wrap font-display text-base normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-lg md:text-xl">
                 {aboutBodyParagraph}
               </p>
+
+              {/* Stats List */}
+              <div className="mt-8 flex flex-col">
+                {aboutStats.map((stat, i) => (
+                  <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#0d0c14]/10 dark:border-white/20 py-4 sm:py-4 first:border-t-0">
+                    <span className="w-full sm:w-1/2 shrink-0 font-display text-[4rem] sm:text-[5.5rem] font-bold tracking-[-0.04em] text-[#0d0c14] dark:text-white">
+                      {stat.value}
+                    </span>
+                    <p className="w-full sm:w-1/3 font-display text-sm sm:text-[0.95rem] normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white mt-2 sm:mt-0 sm:pr-8">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

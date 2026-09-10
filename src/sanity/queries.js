@@ -52,6 +52,7 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   portraitCaption,
   portraitSubCaption,
   aboutBodyParagraph,
+  aboutStats[]{ value, label },
   philosophyLabel,
   philosophyText,
   philosophyHeadline,

@@ -228,6 +228,20 @@ header a,
   transform-origin: 50% 85%;
 }
 
+/* Continuous slow rotation for CircularTextButton's SVG text ring —
+   the arrow sits in a separate sibling SVG so it never spins with it.
+   Reduced-motion is already handled globally below (animation-duration
+   clamped to ~0), same as every other animation on this site. */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 18s linear infinite;
+}
+
 /* True seamless 100% infinite marquee text animation (Slowed down to 20s for legibility) */
 @keyframes marquee {
   0% {

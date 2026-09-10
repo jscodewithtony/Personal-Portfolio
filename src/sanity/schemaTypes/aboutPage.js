@@ -77,6 +77,41 @@ export default {
       placeholder: "A Product Designer for Human Impact, Not Just Aesthetics...",
     },
     {
+      name: "aboutStats",
+      title: "Impact stats",
+      description: "The row of big-number stats (e.g. \"20+\") listed beneath the bio paragraph. Drag to reorder — they render top to bottom in this order.",
+      type: "array",
+      group: "experienceNarrative",
+      of: [
+        {
+          type: "object",
+          name: "aboutStat",
+          fields: [
+            {
+              name: "value",
+              title: "Value",
+              description: 'The big number/figure, e.g. "20+".',
+              type: "string",
+              placeholder: "20+",
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: "label",
+              title: "Label",
+              description: "Short supporting line next to the number.",
+              type: "text",
+              rows: 2,
+              placeholder: "Brands elevated through strategy, identity, and visual storytelling.",
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+          preview: {
+            select: { title: "value", subtitle: "label" },
+          },
+        },
+      ],
+    },
+    {
       name: "portraitImageAlt",
       title: "Portrait image — alt text",
       type: "string",
