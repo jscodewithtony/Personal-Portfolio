@@ -169,5 +169,6 @@ export const activeThemeQuery = /* groq */ `*[_type == "siteSettings"][0]{
 export const siteSettingsQuery = /* groq */ `*[_type == "siteSettings"][0]{
   customFontUrl,
   "customFontFileUrl": customFontFile.asset->url,
-  customFontFamily
+  customFontFamily,
+  showBackgroundGrid
 }`;

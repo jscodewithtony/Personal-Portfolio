@@ -8,7 +8,7 @@ export function GlobalFontLoader() {
   useEffect(() => {
     if (status !== "ready" || !data) return;
 
-    const { customFontUrl, customFontFileUrl, customFontFamily } = data;
+    const { customFontUrl, customFontFileUrl, customFontFamily, showBackgroundGrid } = data;
 
     // 1. Manage stylesheet link element for customFontUrl
     let linkEl = document.getElementById("sanity-custom-font-link");
@@ -62,6 +62,20 @@ export function GlobalFontLoader() {
       document.documentElement.style.setProperty("--font-display", `${formattedFamily}, "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif`);
     } else {
       document.documentElement.style.removeProperty("--font-display");
+    }
+
+    // 4. Sitewide background grid toggle — only `false` hides it, so an
+    // unset field (undefined) or an explicit `true` both leave the
+    // existing :root/.dark --grid-line-color values (and therefore the
+    // grid) untouched. Overriding the custom property itself, the same
+    // technique used for --font-display above, means every section's
+    // existing `.site-shell ... { background-image: ... var(--grid-line-color) ... }`
+    // rule (index.css) needs no changes at all — it just resolves to a
+    // transparent line color when hidden.
+    if (showBackgroundGrid === false) {
+      document.documentElement.style.setProperty("--grid-line-color", "transparent");
+    } else {
+      document.documentElement.style.removeProperty("--grid-line-color");
     }
   }, [data, status]);
 
