@@ -910,7 +910,14 @@ function AboutPage({ theme, onToggleTheme }) {
                 src={experienceBackgroundUrl || currentResumeBg}
                 alt={experienceBackgroundAlt}
                 loading="lazy"
-                style={{ y: yVal, scale: 1.15, aspectRatio: experienceBackgroundAspectRatio }}
+                // scale must stay >= 1.24 to feed the parallax: the image
+                // overflows its container by (scale - 1) / 2 of the height on
+                // each side, and parallaxY pans +/-12% of that same height, so
+                // anything under 1.24 runs out of image and exposes a bare
+                // strip at the scroll extremes (1.15 exposed ~36px each end).
+                // Both sides are fractions of the same height, so this holds at
+                // every viewport width. 1.28 keeps ~2% of headroom in reserve.
+                style={{ y: yVal, scale: 1.28, aspectRatio: experienceBackgroundAspectRatio }}
                 className="w-full h-auto object-cover origin-center"
               />
             </div>
