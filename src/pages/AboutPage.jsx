@@ -13,6 +13,7 @@ import resumeBgDarkImg from "../assets/about-page/Resume-background-darkv1.webp"
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CursorImageTrail from "../components/CursorImageTrail";
+import NumberCounter from "../components/NumberCounter";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -802,7 +803,7 @@ function AboutPage({ theme, onToggleTheme }) {
                 {aboutStats.map((stat, i) => (
                   <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#0d0c14]/10 dark:border-white/20 py-4 sm:py-4 first:border-t-0">
                     <span className="w-full sm:w-1/2 shrink-0 font-display text-[4rem] sm:text-[5.5rem] font-bold tracking-[-0.04em] text-[#0d0c14] dark:text-white">
-                      {stat.value}
+                      <NumberCounter value={stat.value} />
                     </span>
                     <p className="w-full sm:w-1/3 font-display text-sm sm:text-[0.95rem] normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white mt-2 sm:mt-0 sm:pr-8">
                       {stat.label}

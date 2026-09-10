@@ -7,6 +7,7 @@ import { statCardsQuery } from "../sanity/queries";
 import { useThemeTokens } from "../theme/ThemeTokensContext";
 import { hexToThreeColor } from "../theme/themeTokens";
 import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
+import NumberCounter from "./NumberCounter";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -710,7 +711,7 @@ function Stats({ theme }) {
               {item.eyebrow}
             </div>
             <div className="mt-2 font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-none tracking-tight text-stat-value dark:text-white">
-              {item.value}
+              <NumberCounter value={item.value} />
             </div>
             <div className="mt-2 font-display text-[10px] sm:text-xs md:text-sm font-bold text-ink dark:text-white">
               {item.title}
@@ -737,7 +738,7 @@ function Stats({ theme }) {
 
           {/* Big Stat Text Color #0D0C14 for 20+ */}
           <h2 className="mt-3 font-display text-5xl font-black leading-none tracking-tight text-stat-value sm:text-7xl md:text-8xl dark:text-white">
-            {centerpiece.value}
+            <NumberCounter value={centerpiece.value} />
           </h2>
 
           {/* High contrast body text */}
