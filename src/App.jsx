@@ -12,6 +12,7 @@ import { isPreviewMode } from "./sanity/preview";
 import { useVisualEditing } from "./sanity/useVisualEditing";
 import PageTransitionOverlay from "./transitions/PageTransitionOverlay";
 import { GlobalFontLoader } from "./components/GlobalFontLoader";
+import Preloader from "./components/Preloader";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 function useGlobalRefresh() {
@@ -52,6 +53,11 @@ function getInitialTheme() {
 
 function App() {
   const [theme, setTheme] = useState(getInitialTheme);
+  // Plain useState, not a route/storage flag — App() itself only mounts
+  // once per real browser page load (React Router swaps child <Route>
+  // elements without remounting App), so this naturally never re-fires
+  // on client-side navigation between pages.
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -73,6 +79,14 @@ function App() {
 
   return (
     <BrowserRouter>
+      {/* Initial-load only — shown on true first page load, never on
+          client-side route navigation (see isInitialLoading comment
+          above). Sits above PageTransitionOverlay (z-[1000] vs its
+          z-[999]) purely so it's never accidentally covered during the
+          brief window both could theoretically be mounted. */}
+      {isInitialLoading && (
+        <Preloader onComplete={() => setIsInitialLoading(false)} />
+      )}
       {/* Intercepts internal <Link> clicks sitewide (Header, MenuOverlay,
           project cards, etc.) to play the color-sweep + page-name intro
           before the actual route swap — see PageTransitionOverlay.jsx.

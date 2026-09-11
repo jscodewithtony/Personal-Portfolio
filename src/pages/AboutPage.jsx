@@ -735,7 +735,7 @@ function AboutPage({ theme, onToggleTheme }) {
 
         {/* 547:763/764 — yellow ambient marquee band. Always dark text
             on the bright highlight, unchanged across both themes. */}
-        <div className="relative z-10 mt-10 overflow-hidden bg-[#e3f900] py-4 text-[#161616] sm:mt-14 sm:py-6">
+        <div className="relative z-10 mt-10 overflow-hidden bg-[#f8ffb4] py-4 text-[#161616] sm:mt-14 sm:py-6">
           <div className="flex whitespace-nowrap font-display text-xl font-semibold uppercase tracking-tight sm:text-3xl md:text-4xl">
             <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6">
               {MARQUEE_REPEATS.map((_, i) => (

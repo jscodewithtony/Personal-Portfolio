@@ -30,7 +30,7 @@ const BROW_LIFT_BASE_PX = -1;
 const BROW_LIFT_RANGE_PX = 8;
 const BROW_EDGE_LIFT_BONUS_PX = 4;
 
-function Mascot({ faceRef }) {
+function Mascot({ faceRef, hideBody = false }) {
   const containerRef = useRef(null);
   const leftEyeRef = useRef(null);
   const rightEyeRef = useRef(null);
@@ -237,7 +237,11 @@ function Mascot({ faceRef }) {
       ref={containerRef}
       role="img"
       aria-label="Tony's mascot, a friendly purple character whose eyes and eyebrows follow your cursor"
-      className="animate-mascot-breathe relative flex h-[80vw] w-[80vw] max-h-[28rem] max-w-[28rem] flex-col items-center justify-center rounded-[2.25rem] bg-primary shadow-[0_25px_60px_-18px_color-mix(in_srgb,var(--color-primary)_60%,transparent)] dark:bg-[#114AFC] dark:shadow-[0_25px_60px_-18px_rgba(1, 39, 223,0.6)] sm:h-[26rem] sm:w-[26rem] sm:max-h-none sm:max-w-none sm:rounded-[2.5rem] md:h-[28rem] md:w-[28rem] md:rounded-[2.75rem] lg:h-[34rem] lg:w-[34rem] xl:h-[40rem] xl:w-[40rem]"
+      className={`animate-mascot-breathe relative flex h-[80vw] w-[80vw] max-h-[28rem] max-w-[28rem] flex-col items-center justify-center ${
+        hideBody
+          ? "bg-transparent shadow-none"
+          : "rounded-[2.25rem] bg-primary shadow-[0_25px_60px_-18px_color-mix(in_srgb,var(--color-primary)_60%,transparent)] dark:bg-[#114AFC] dark:shadow-[0_25px_60px_-18px_rgba(1,39,223,0.6)] sm:rounded-[2.5rem] md:rounded-[2.75rem]"
+      } sm:h-[26rem] sm:w-[26rem] sm:max-h-none sm:max-w-none md:h-[28rem] md:w-[28rem] lg:h-[34rem] lg:w-[34rem] xl:h-[40rem] xl:w-[40rem]`}
     >
       <div ref={faceRef} className="flex flex-col items-center">
         <div className="mb-7 flex gap-7 sm:gap-10 md:gap-12 lg:gap-14 xl:gap-16">
