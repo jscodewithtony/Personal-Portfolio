@@ -310,10 +310,13 @@ function WordHeadline({
     };
   }, [isAnimated, startClip]);
 
+  const hasJustify = className.includes("justify-");
+  const hasLeading = className.includes("leading-");
+
   return (
     <h2
       ref={elRef}
-      className={`select-none flex flex-wrap justify-center gap-x-[0.28em] font-display font-extrabold uppercase leading-[0.95] tracking-tight text-[#0d0c14] dark:text-white ${className}`}
+      className={`select-none flex flex-wrap ${hasJustify ? "" : "justify-center"} gap-x-[0.28em] font-display font-extrabold uppercase ${hasLeading ? "" : "leading-[0.95]"} tracking-tight text-[#0d0c14] dark:text-white ${className}`}
       style={isAnimated ? { clipPath: startClip, willChange: "clip-path" } : undefined}
     >
       {text.split(" ").map((word, i) => (
@@ -355,7 +358,7 @@ function AnnotationDot({ x, y, text, isOpen, onOpen, onClose, onToggle, supports
     <div
       ref={wrapperRef}
       data-annotation-dot=""
-      className="absolute z-20"
+      className="hidden md:block absolute z-20"
       style={{ left: x, top: y, transform: "translate(-10%, 60%)" }}
       onMouseEnter={supportsHover ? onOpen : undefined}
       onMouseLeave={supportsHover ? onClose : undefined}
@@ -365,7 +368,7 @@ function AnnotationDot({ x, y, text, isOpen, onOpen, onClose, onToggle, supports
         onClick={supportsHover ? undefined : onToggle}
         aria-label="Show note"
         aria-expanded={isOpen}
-        className="block h-6 w-6 rounded-full border-[3px] border-white bg-[#D9F51C] normal-case shadow-[0_0_0_2px_rgba(0,0,0,0.18)] transition-transform hover:scale-110 sm:h-7 sm:w-7 md:h-8 md:w-8"
+        className="block h-6 w-6 rounded-full border-[3px] border-white bg-[#F8FFB4] normal-case shadow-[0_0_0_2px_rgba(0,0,0,0.18)] transition-transform hover:scale-110 sm:h-7 sm:w-7 md:h-8 md:w-8"
       />
       <AnimatePresence>
         {isOpen && (
@@ -374,7 +377,7 @@ function AnnotationDot({ x, y, text, isOpen, onOpen, onClose, onToggle, supports
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.85 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`absolute z-30 w-72 rounded-none bg-[#D9F51C] p-6 text-left font-sans text-base font-normal normal-case leading-snug text-black shadow-xl sm:w-80 sm:p-3 sm:text-lg md:w-90 ${align.v === "top" ? "bottom-full mb-2" : "top-full mt-2"
+            className={`absolute z-30 w-72 rounded-none bg-[#F8FFB4] p-6 text-left font-sans text-base font-normal normal-case leading-snug text-black shadow-xl sm:w-80 sm:p-3 sm:text-lg md:w-90 ${align.v === "top" ? "bottom-full mb-2" : "top-full mt-2"
               } ${align.h === "left"
                 ? "left-0 ml-3 origin-bottom-left"
                 : "right-0 mr-3 origin-bottom-right"
@@ -442,6 +445,7 @@ function KnowMoreHeadlineWithAnnotations({ headlineText, annotations }) {
   // dots stay idle until hovered/tapped.
   useEffect(() => {
     if (autoOpenedRef.current) return;
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) return;
     const container = containerRef.current;
@@ -487,7 +491,7 @@ function KnowMoreHeadlineWithAnnotations({ headlineText, annotations }) {
     <div ref={containerRef} className="relative">
       <WordHeadline
         text={headlineText}
-        className="mt-32 text-4xl sm:mt-40 sm:text-6xl md:text-8xl lg:text-[10rem]"
+        className="mt-16 text-5xl leading-[0.80] gap-y-2 sm:mt-40 sm:text-6xl md:text-8xl lg:text-[10rem] md:leading-[0.95] justify-start sm:justify-center text-left sm:text-center"
         wordRef={handleWordRef}
       />
       {annotations.map((annotation) => {
@@ -895,7 +899,7 @@ function AboutPage({ theme, onToggleTheme }) {
                 {philosophyLabel}
               </p>
             )}
-            <p className="mx-auto max-w-3xl text-center font-display text-xl normal-case leading-relaxed text-[#0d0c14] dark:text-white sm:text-2xl md:text-3xl mt-12"
+            <p className="mx-auto max-w-3xl text-left sm:text-center font-display text-xl sm:text-2xl md:text-3xl normal-case leading-relaxed  text-[#0d0c14] dark:text-white mt-8 sm:mt-12"
             >
               {philosophyText}
             </p>
@@ -904,7 +908,7 @@ function AboutPage({ theme, onToggleTheme }) {
           {/* 547:716 — second headline */}
           <WordHeadline
             text={philosophyHeadline}
-            className="mt-32 text-4xl sm:mt-20 sm:text-6xl md:text-[clamp(6rem,-2rem+12.5vw,10rem)]"
+            className="mt-16 text-5xl leading-[0.80] gap-y-2 sm:mt-20 sm:text-6xl md:text-[clamp(6rem,-2rem+12.5vw,10rem)] md:leading-[0.95] justify-start sm:justify-center text-left sm:text-center"
           />
         </div>
 
