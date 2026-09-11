@@ -603,6 +603,34 @@ function AboutPage({ theme, onToggleTheme }) {
   const resumeFileUrl = about?.resumeFile?.asset?.url;
   const resumeFileName = about?.resumeFile?.asset?.originalFilename || "Resume.pdf";
 
+  // The `download` attribute is ignored by browsers on cross-origin URLs
+  // (the Sanity CDN is a different origin from the site), so a plain
+  // <a download> just navigates/opens the PDF instead of saving it.
+  // Fetching it as a blob and downloading from that same-origin blob URL
+  // forces a real save regardless of origin. Falls back to a normal
+  // navigation if the fetch fails for any reason.
+  const handleResumeDownload = useCallback(
+    async (e) => {
+      if (!resumeFileUrl) return;
+      e.preventDefault();
+      try {
+        const res = await fetch(resumeFileUrl);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = resumeFileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(blobUrl);
+      } catch {
+        window.open(resumeFileUrl, "_blank", "noopener,noreferrer");
+      }
+    },
+    [resumeFileUrl, resumeFileName]
+  );
+
   // Sanity's `travelPhotoCollage` array is the single source of truth
   // for this gallery. When it's empty (nothing entered in the Studio
   // yet), fall back to the one shipped local photo — same "never show
@@ -904,6 +932,7 @@ function AboutPage({ theme, onToggleTheme }) {
                 <a
                   href={resumeFileUrl}
                   download={resumeFileName}
+                  onClick={handleResumeDownload}
                   className="absolute right-5 top-5 z-10 inline-flex select-none items-center gap-1.5 bg-primary px-3 py-2 font-display text-[0.65rem] font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98] xs:right-6 xs:top-6 sm:right-8 sm:top-8"
                 >
                   <DirectionHover>Download Resume</DirectionHover>
@@ -969,6 +998,7 @@ function AboutPage({ theme, onToggleTheme }) {
               <a
                 href={resumeFileUrl}
                 download={resumeFileName}
+                onClick={handleResumeDownload}
                 className="absolute right-8 top-8 z-10 inline-flex select-none items-center gap-2 bg-primary px-4 py-2.5 font-display text-xs font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98] md:right-9 md:top-9"
               >
                 <DirectionHover>Download Resume</DirectionHover>
