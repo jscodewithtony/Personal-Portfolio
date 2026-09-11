@@ -161,6 +161,24 @@ body {
   html:has(.site-shell) ::-webkit-scrollbar-corner {
     background: var(--scrollbar-track);
   }
+
+  /* Hide scrollbar strictly when preloader is active */
+  html.preloader-active::-webkit-scrollbar,
+  html.preloader-active body::-webkit-scrollbar,
+  html:has(.site-shell).preloader-active ::-webkit-scrollbar,
+  html:has(.site-shell).preloader-active body::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+}
+
+/* Hide scrollbar strictly when preloader is active */
+html.preloader-active,
+html.preloader-active body {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 @supports not selector(::-webkit-scrollbar) {

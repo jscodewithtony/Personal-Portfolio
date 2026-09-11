@@ -35,13 +35,31 @@ function Preloader({ onComplete }) {
     const counterWrapEl = counterWrapRef.current;
     const mascotWrapEl = mascotWrapRef.current;
 
+    // Hide scrollbar and prevent background scroll while preloader is visible
+    document.documentElement.classList.add("preloader-active");
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    let unlocked = false;
+    const unlockScroll = () => {
+      if (unlocked) return;
+      unlocked = true;
+      document.documentElement.classList.remove("preloader-active");
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+    };
+
     // Fast-path for reduced motion preference: skip animations straight to onComplete
     if (shouldReduceMotion) {
       waitForRealLoad().then(() => {
+        unlockScroll();
         if (!cancelled) onComplete();
       });
       return () => {
         cancelled = true;
+        unlockScroll();
       };
     }
 
@@ -55,6 +73,7 @@ function Preloader({ onComplete }) {
 
       const tl = gsap.timeline({
         onComplete: () => {
+          unlockScroll();
           if (!cancelled) onComplete();
         },
       });
@@ -131,6 +150,7 @@ function Preloader({ onComplete }) {
 
     return () => {
       cancelled = true;
+      unlockScroll();
       counterTween.kill();
     };
   }, [shouldReduceMotion, onComplete]);
