@@ -215,14 +215,14 @@ function PageTransitionOverlay() {
       />
       <div
         ref={headlineWrapRef}
-        className="absolute inset-0 flex items-center justify-center px-6"
+        className="absolute inset-0 flex items-center justify-center px-4 sm:px-6"
       >
         {label && (
           <Shuffle
             key={label}
             text={label}
             tag="h2"
-            className={`select-none whitespace-nowrap font-display font-black uppercase leading-[0.82] tracking-tighter text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] ${textColorClass}`}
+            className={`select-none whitespace-nowrap font-display font-black uppercase leading-[0.82] tracking-tighter text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl md:text-9xl lg:text-[10rem] ${textColorClass}`}
             shuffleDirection="right"
             duration={SHUFFLE_DURATION}
             animationMode="evenodd"

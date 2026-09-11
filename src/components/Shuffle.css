@@ -1,7 +1,6 @@
 .shuffle-parent {
   display: inline-block;
-  white-space: normal;
-  word-wrap: break-word;
+  white-space: nowrap;
   line-height: 0.8;
   text-transform: uppercase;
   visibility: hidden;
