@@ -396,6 +396,21 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
+      name: "travelGalleryStyle",
+      title: "Travel gallery style",
+      description: "Which layout renders the travel photo collage below. Only one is shown at a time.",
+      type: "string",
+      group: "personalTravel",
+      options: {
+        list: [
+          { title: "Scatter (default)", value: "scatter" },
+          { title: "Circular", value: "circular" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "scatter",
+    },
+    {
       name: "travelPhotoCollage",
       title: "Travel photo collage",
       description: "Photos for the travel collage strip. Add, remove, or reorder freely — no developer needed.",

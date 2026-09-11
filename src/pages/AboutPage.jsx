@@ -35,6 +35,7 @@ const Footer = lazy(() => import("../components/Footer"));
 // code-split so its JS and image set only load once it's actually
 // scrolled near, not bundled into the page's initial load.
 const AntiGravityGallery = lazy(() => import("../components/AntiGravityGallery"));
+const CircularGallery = lazy(() => import("../components/CircularGallery"));
 
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio
 //   Light: node-id=547-714 ("About-me-Blue-White-theme-enabled")
@@ -666,6 +667,14 @@ function AboutPage({ theme, onToggleTheme }) {
       : [{ thumbSrc: travelCollageImg, fullSrc: travelCollageImg, alt: "Collage of travel photos across India" }];
   }, [about?.travelPhotoCollage]);
 
+  // Studio toggle — only one gallery style mounts at a time (see render
+  // site below), so the other's rAF loop/listeners never attach.
+  const travelGalleryStyle = about?.travelGalleryStyle || "scatter";
+  const circularGalleryImages = useMemo(
+    () => travelPhotos.map((p) => p.fullSrc),
+    [travelPhotos]
+  );
+
   // Array order -> layout slot order, cycling past 29 photos. Always a
   // real array (never `undefined`) so AntiGravityGallery never falls
   // back to its own internal placeholder set — 1 photo renders as just
@@ -1061,10 +1070,19 @@ function AboutPage({ theme, onToggleTheme }) {
 
         <div className="w-full mt-16 mb-24 sm:mt-20 sm:mb-32 md:mb-40">
           <Suspense fallback={null}>
-            <AntiGravityGallery
-              headline={exploringIndiaHeadline}
-              cards={galleryCards}
-            />
+            {travelGalleryStyle === "circular" ? (
+              <div className="h-[100dvh] w-full">
+                <CircularGallery
+                  images={circularGalleryImages}
+                  background={theme === "dark" ? "#0c0a14" : "#fbfbf9"}
+                />
+              </div>
+            ) : (
+              <AntiGravityGallery
+                headline={exploringIndiaHeadline}
+                cards={galleryCards}
+              />
+            )}
           </Suspense>
         </div>
       </main>

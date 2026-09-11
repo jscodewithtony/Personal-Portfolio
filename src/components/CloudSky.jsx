@@ -293,6 +293,7 @@ function __OriginkitBase_CloudSky(props) {
         }
 
         let raf = 0
+        let isVisible = true
         let last = performance.now()
         let nearX = 0
         let farX = 0
@@ -301,6 +302,10 @@ function __OriginkitBase_CloudSky(props) {
         let leanY = 0
 
         const render = (now) => {
+            if (!isVisible) {
+                raf = 0
+                return
+            }
             const dt = Math.min(0.05, (now - last) / 1000)
             last = now
             const v = vRef.current
@@ -367,9 +372,26 @@ function __OriginkitBase_CloudSky(props) {
         canvas.addEventListener("pointerenter", track)
         canvas.addEventListener("pointerleave", onLeave)
 
+        // Off-screen pause — same IntersectionObserver pattern as
+        // Stats.jsx/NightSky/AntiGravityGallery/CircularGallery: keep the
+        // WebGL context/program alive, just stop/restart the rAF loop.
+        const sectionObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    isVisible = entry.isIntersecting
+                    if (isVisible && !raf) {
+                        raf = requestAnimationFrame(render)
+                    }
+                })
+            },
+            { threshold: 0.01 }
+        )
+        sectionObserver.observe(canvas)
+
         raf = requestAnimationFrame(render)
 
         return () => {
+            sectionObserver.disconnect()
             cancelAnimationFrame(raf)
             canvas.removeEventListener("pointermove", track)
             canvas.removeEventListener("pointerenter", track)

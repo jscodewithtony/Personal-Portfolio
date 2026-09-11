@@ -75,6 +75,7 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   personalParagraphTwo,
   exploringIndiaHeadline,
   exploringIndiaText,
+  travelGalleryStyle,
   travelPhotoCollage[]{ ... }
 }`;
 
