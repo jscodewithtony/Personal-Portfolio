@@ -37,7 +37,7 @@ const MOBILE_PIN_DISTANCE_VH = 1.8;
 // variant existed), so dark mode must keep that exact value now that
 // the base color is theme-driven rather than a compile-time constant.
 const RIBBON_1_COLOR = "bg-primary dark:bg-[#114AFC]"; // Bottom layer, slanting UP
-const RIBBON_2_COLOR = "bg-[#121212]"; // Dark Ribbon (Top layer, slanting DOWN) — not accent-colored, unaffected by theming
+const RIBBON_2_COLOR = "bg-[#F8FFB4]"; // Yellow Ribbon matching play button (Top layer, slanting DOWN)
 
 const SINGLE_MARQUEE_WORDS = [
   "HUMANS",
@@ -347,7 +347,7 @@ function About({ theme }) {
             type="button"
             onClick={() => setRibbonsActive((v) => !v)}
             aria-label="Toggle diagonal quote ribbons"
-            className="group relative inline-flex h-[0.95em] w-[0.95em] mx-1.5 sm:mx-2.5 align-middle items-center justify-center bg-primary text-white rounded-lg sm:rounded-xl shadow-md transition-all duration-200 hover:scale-110 hover:bg-primary-dark active:scale-95 active:bg-primary-active cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-active focus:ring-offset-2 overflow-hidden dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2] dark:focus:ring-[#0013B2]"
+            className="group relative inline-flex h-[0.95em] w-[0.95em] mx-1.5 sm:mx-2.5 align-middle items-center justify-center bg-[#F8FFB4] text-black rounded-lg sm:rounded-xl shadow-md transition-all duration-200 hover:scale-110 hover:brightness-95 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#F8FFB4] focus:ring-offset-2 overflow-hidden dark:bg-[#F8FFB4] dark:text-black"
           >
             <span className="inline-flex items-center justify-center w-full h-full animate-shake">
               {ribbonsActive ? (
@@ -466,10 +466,10 @@ function About({ theme }) {
             </div>
           </div>
 
-          {/* Ribbon 2: Dark (#121212) - Slanted DOWNWARDS (-14deg) in foreground crossing over Ribbon 1 */}
+          {/* Ribbon 2: Yellow (#F8FFB4) - Slanted DOWNWARDS (-14deg) in foreground crossing over Ribbon 1 */}
           <div
             ref={ribbon2Ref}
-            className={`absolute left-1/2 top-[52%] w-[240vw] ${RIBBON_2_COLOR} py-4 sm:py-6 md:py-7 text-white shadow-[0_25px_60px_rgba(0,0,0,0.8)] z-20`}
+            className={`absolute left-1/2 top-[52%] w-[240vw] ${RIBBON_2_COLOR} py-4 sm:py-6 md:py-7 text-black shadow-[0_15px_40px_rgba(0,0,0,0.1)] z-20`}
           >
             <div className="flex whitespace-nowrap overflow-hidden font-display text-2xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight">
               <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6">
