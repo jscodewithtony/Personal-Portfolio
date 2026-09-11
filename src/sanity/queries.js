@@ -58,6 +58,7 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   philosophyHeadline,
   experienceHeading,
   experienceEntries[]{ companyName, year, description },
+  resumeFile{ asset-> { url, originalFilename } },
   experienceBackgroundImageLight{
     ...,
     "aspectRatio": asset->metadata.dimensions.aspectRatio

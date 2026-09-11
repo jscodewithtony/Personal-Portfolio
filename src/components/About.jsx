@@ -446,22 +446,26 @@ function About({ theme }) {
             ref={ribbon1Ref}
             className={`absolute left-1/2 top-[60%] w-[240vw] ${RIBBON_1_COLOR} py-4 sm:py-6 md:py-7 text-white shadow-[0_20px_50px_rgba(0,0,0,0.6)] z-10`}
           >
-            <div className="flex whitespace-nowrap overflow-hidden font-display text-2xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight">
+            <div className="flex whitespace-nowrap overflow-hidden font-display text-2xl sm:text-4xl md:text-4xl font-medium uppercase tracking-tight">
               <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6">
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
+                <span>WILL REDESIGN THIS PAGE FIVE MORE TIMES •</span>
+                <span>HAS STRONG OPINIONS ABOUT BORDER-RADIUS AND PAST LIVES •</span>
+                <span>STILL THINKING IN PATTERNS, EVEN OFF THE CLOCK •</span>
+                <span>WILL REDESIGN THIS PAGE FIVE MORE TIMES •</span>
+                <span>HAS STRONG OPINIONS ABOUT BORDER-RADIUS AND PAST LIVES •</span>
+                <span>STILL THINKING IN PATTERNS, EVEN OFF THE CLOCK •</span>
+
+
               </div>
               <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6" aria-hidden="true">
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
+                <span>WILL REDESIGN THIS PAGE FIVE MORE TIMES •</span>
+                <span>HAS STRONG OPINIONS ABOUT BORDER-RADIUS AND PAST LIVES •</span>
+                <span>STILL THINKING IN PATTERNS, EVEN OFF THE CLOCK •</span>
+                <span>WILL REDESIGN THIS PAGE FIVE MORE TIMES •</span>
+                <span>HAS STRONG OPINIONS ABOUT BORDER-RADIUS AND PAST LIVES •</span>
+                <span>STILL THINKING IN PATTERNS, EVEN OFF THE CLOCK •</span>
+
+
               </div>
             </div>
           </div>
@@ -471,22 +475,28 @@ function About({ theme }) {
             ref={ribbon2Ref}
             className={`absolute left-1/2 top-[52%] w-[240vw] ${RIBBON_2_COLOR} py-4 sm:py-6 md:py-7 text-black shadow-[0_15px_40px_rgba(0,0,0,0.1)] z-20`}
           >
-            <div className="flex whitespace-nowrap overflow-hidden font-display text-2xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight">
+            <div className="flex whitespace-nowrap overflow-hidden font-display text-2xl sm:text-4xl md:text-4xl font-medium uppercase tracking-tight">
               <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6">
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
+                <span>PLANS EVERYTHING •</span>
+                <span>STILL SHIPS BY INSTINCT •</span>
+                <span>REDRAWS THE SAME SCREEN TWELVE TIMES •</span>
+                <span>DESIGN IS A DECISION, NOT A DECORATION •</span>
+                <span>PLANS EVERYTHING •</span>
+                <span>STILL SHIPS BY INSTINCT •</span>
+                <span>REDRAWS THE SAME SCREEN TWELVE TIMES •</span>
+                <span>DESIGN IS A DECISION, NOT A DECORATION •</span>
+
+
               </div>
               <div className="animate-marquee inline-flex shrink-0 items-center space-x-6 pr-6" aria-hidden="true">
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
-                <span>MOST OF MY IDEAS COMES IN THE MORNING •</span>
+                <span>PLANS EVERYTHING •</span>
+                <span>STILL SHIPS BY INSTINCT •</span>
+                <span>REDRAWS THE SAME SCREEN TWELVE TIMES •</span>
+                <span>DESIGN IS A DECISION, NOT A DECORATION •</span>
+                <span>PLANS EVERYTHING •</span>
+                <span>STILL SHIPS BY INSTINCT •</span>
+                <span>REDRAWS THE SAME SCREEN TWELVE TIMES •</span>
+                <span>DESIGN IS A DECISION, NOT A DECORATION •</span>
               </div>
             </div>
           </div>

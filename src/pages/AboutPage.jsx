@@ -25,6 +25,8 @@ import { isPreviewMode } from "../sanity/preview";
 import { previewClient } from "../sanity/previewClient";
 import CloudSky from "../components/CloudSky";
 import NightSky from "../components/NightSky";
+import { Download } from "lucide-react";
+import DirectionHover from "../components/DirectionHover";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
@@ -596,6 +598,11 @@ function AboutPage({ theme, onToggleTheme }) {
 
   const currentResumeBg = theme === 'dark' ? resumeBgDarkImg : resumeBgLightImg;
 
+  // No static fallback PDF exists in the project — the button is hidden
+  // entirely (see below) rather than pointing at a fake/placeholder file.
+  const resumeFileUrl = about?.resumeFile?.asset?.url;
+  const resumeFileName = about?.resumeFile?.asset?.originalFilename || "Resume.pdf";
+
   // Sanity's `travelPhotoCollage` array is the single source of truth
   // for this gallery. When it's empty (nothing entered in the Studio
   // yet), fall back to the one shipped local photo — same "never show
@@ -891,8 +898,18 @@ function AboutPage({ theme, onToggleTheme }) {
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2.5rem)] z-10">
             <Reveal
               delay={150}
-              className="flex flex-col gap-8 bg-[#fbfbf9] dark:bg-[#0c0a14] p-5 text-[#0d0c14] dark:text-white xs:p-6 sm:p-8"
+              className="relative flex flex-col gap-8 bg-[#fbfbf9] dark:bg-[#0c0a14] p-5 text-[#0d0c14] dark:text-white xs:p-6 sm:p-8"
             >
+              {resumeFileUrl && (
+                <a
+                  href={resumeFileUrl}
+                  download={resumeFileName}
+                  className="absolute right-5 top-5 z-10 inline-flex select-none items-center gap-1.5 bg-primary px-3 py-2 font-display text-[0.65rem] font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98] xs:right-6 xs:top-6 sm:right-8 sm:top-8"
+                >
+                  <DirectionHover>Download Resume</DirectionHover>
+                  <Download className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
+                </a>
+              )}
               <div className="flex flex-col gap-6">
                 <img src={iconMark} alt="" loading="lazy" className="h-8 w-8 xs:h-10 xs:w-10" />
                 <h3 className="w-min font-display text-xl xs:text-xl font-extrabold uppercase tracking-tight text-[#0d0c14] dark:text-white sm:text-2xl leading-tight">
@@ -948,6 +965,16 @@ function AboutPage({ theme, onToggleTheme }) {
             delay={150}
             className="relative mx-6 mt-6 flex flex-col gap-8 bg-[#fbfbf9] dark:bg-[#0c0a14] p-8 text-[#0d0c14] dark:text-white sm:mx-10 md:absolute md:inset-x-auto md:left-1/2 md:top-1/2 md:mx-0 md:mt-0 md:w-[40rem] md:-translate-x-1/2 md:-translate-y-1/2 md:p-9"
           >
+            {resumeFileUrl && (
+              <a
+                href={resumeFileUrl}
+                download={resumeFileName}
+                className="absolute right-8 top-8 z-10 inline-flex select-none items-center gap-2 bg-primary px-4 py-2.5 font-display text-xs font-bold uppercase tracking-tight text-white transition-opacity hover:opacity-85 active:scale-[0.98] md:right-9 md:top-9"
+              >
+                <DirectionHover>Download Resume</DirectionHover>
+                <Download className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+              </a>
+            )}
             <img src={iconMark} alt="" loading="lazy" className="h-12 w-12" />
             <h3 className="w-min font-display text-2xl font-extrabold uppercase tracking-tight text-[#0d0c14] dark:text-white md:text-4xl leading-tight">
               {experienceHeading}

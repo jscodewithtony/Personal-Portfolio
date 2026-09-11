@@ -274,6 +274,14 @@ export default {
       ],
     },
     {
+      name: "resumeFile",
+      title: "Resume (PDF)",
+      description: "Downloadable resume shown as a button on the Professional Experience card. PDF only.",
+      type: "file",
+      options: { accept: "application/pdf" },
+      group: "professionalExperience",
+    },
+    {
       name: "experienceBackgroundImageLight",
       title: "Background — Light Theme",
       description: "Full-width parallax background photo behind the Professional Experience card, shown in light mode. Falls back to a built-in default photo if left blank.",
