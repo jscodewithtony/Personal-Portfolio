@@ -517,6 +517,94 @@ function KnowMoreHeadlineWithAnnotations({ headlineText, annotations }) {
   );
 }
 
+function AboutPortraitReveal({ src, alt, caption, subCaption, fallbackSrc }) {
+  const [revealed, setRevealed] = useState(false);
+  const containerRef = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setRevealed(true);
+      return;
+    }
+
+    const el = containerRef.current;
+    if (!el) return;
+
+    // Check if element is already in or near viewport on mount
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.95 && rect.bottom > 0) {
+      setRevealed(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setRevealed(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.05, rootMargin: "0px 0px 80px 0px" }
+    );
+    observer.observe(el);
+
+    // Fail-safe: ensure image is always visible after 1.2s
+    const timer = setTimeout(() => setRevealed(true), 1200);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
+  }, [shouldReduceMotion]);
+
+  return (
+    <div className="flex flex-col gap-4 w-full md:w-auto shrink-0">
+      <div
+        ref={containerRef}
+        className="relative overflow-hidden w-full md:w-auto md:max-w-lg lg:max-w-[26rem]"
+        style={{
+          clipPath: revealed ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
+          transition: "clip-path 1.1s cubic-bezier(0.77, 0, 0.175, 1)",
+          willChange: "clip-path",
+        }}
+      >
+        <img
+          src={src}
+          alt={alt}
+          onError={(e) => {
+            if (fallbackSrc && e.currentTarget.src !== fallbackSrc) {
+              e.currentTarget.src = fallbackSrc;
+            }
+          }}
+          className="w-full h-auto object-contain origin-center transition-transform duration-1000 ease-out"
+          style={{
+            transform: revealed ? "scale(1)" : "scale(1.15)",
+          }}
+        />
+      </div>
+      {(caption || subCaption) && (
+        <div
+          className={`flex flex-col transition-all duration-700 delay-300 ${
+            revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+          }`}
+        >
+          {caption && (
+            <p className="font-display text-sm normal-case text-[#0d0c14] dark:text-white">
+              {caption}
+            </p>
+          )}
+          {subCaption && (
+            <p className="font-display text-sm normal-case text-[#0d0c14]/70 dark:text-white/70">
+              {subCaption}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AboutPage({ theme, onToggleTheme }) {
   const { data: content, status } = useSanityQuery(
     homepageContentQuery,
@@ -577,8 +665,21 @@ function AboutPage({ theme, onToggleTheme }) {
     text: about?.annotationDots?.[i]?.tooltipText || fallback.text,
   }));
 
-  const portraitImageUrl = urlFor(about?.portraitImage)?.width(1200).auto("format").url();
-  const portraitImageAlt = about?.portraitImageAlt || "Tony";
+  const portraitImageForTheme =
+    theme === "dark"
+      ? (about?.portraitImageDark || about?.portraitImageLight || about?.portraitImage)
+      : (about?.portraitImageLight || about?.portraitImage);
+  const portraitImageUrl =
+    urlFor(portraitImageForTheme)?.width(1200).auto("format").url() || portraitImg;
+  const portraitImageAlt =
+    (theme === "dark"
+      ? (about?.portraitImageDarkAlt || about?.portraitImageLightAlt || about?.portraitImageAlt)
+      : (about?.portraitImageLightAlt || about?.portraitImageAlt)) || "Tony";
+
+  const portraitLightUrl =
+    urlFor(about?.portraitImageLight || about?.portraitImage)?.width(1200).auto("format").url() || portraitImg;
+  const portraitDarkUrl =
+    urlFor(about?.portraitImageDark)?.width(1200).auto("format").url() || portraitLightUrl;
 
   const narrativeImageOneUrl = urlFor(about?.narrativeImageOne)?.width(2400).auto("format").url();
   const narrativeImageOneAlt = about?.narrativeImageOneAlt || "Tony";
@@ -735,10 +836,12 @@ function AboutPage({ theme, onToggleTheme }) {
       className={`site-shell relative min-h-[100dvh] font-display uppercase transition-colors duration-300 ${pageBackgroundColor ? "about-page-locked-colors" : "bg-[#fbfbf9] text-[#0d0c14] dark:bg-[#0c0a14] dark:text-white"}`}
       style={pageBackgroundColor ? { backgroundColor: pageBackgroundColor, color: pageTextColor } : undefined}
     >
-      {/* Preload both backgrounds so the theme swap is instant without flashing empty */}
+      {/* Preload both backgrounds and portraits so the theme swap is instant without flashing empty */}
       <div className="absolute w-0 h-0 opacity-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <img src={resumeBgLightImg} alt="" />
         <img src={resumeBgDarkImg} alt="" />
+        <img src={portraitLightUrl} alt="" />
+        <img src={portraitDarkUrl} alt="" />
       </div>
       <CanvasCursor />
       <Header
@@ -819,28 +922,13 @@ function AboutPage({ theme, onToggleTheme }) {
               still comes from the existing homepageContent document
               (shared with the homepage About ribbon), per scope. */}
           <div className="mt-16 flex flex-col md:flex-row items-start justify-between gap-16 md:mt-20">
-            <Reveal className="flex flex-col gap-4 w-full md:w-auto shrink-0">
-              <img
-                src={portraitImageUrl || portraitImg}
-                alt={portraitImageAlt}
-                loading="lazy"
-                className="w-full md:w-auto md:max-w-lg lg:max-w-[26rem] h-auto object-contain"
-              />
-              {(about?.portraitCaption || about?.portraitSubCaption) && (
-                <div className="flex flex-col">
-                  {about?.portraitCaption && (
-                    <p className="font-display text-sm normal-case text-[#0d0c14] dark:text-white">
-                      {about.portraitCaption}
-                    </p>
-                  )}
-                  {about?.portraitSubCaption && (
-                    <p className="font-display text-sm normal-case text-[#0d0c14]/70 dark:text-white/70">
-                      {about.portraitSubCaption}
-                    </p>
-                  )}
-                </div>
-              )}
-            </Reveal>
+            <AboutPortraitReveal
+              src={portraitImageUrl}
+              alt={portraitImageAlt}
+              caption={about?.portraitCaption}
+              subCaption={about?.portraitSubCaption}
+              fallbackSrc={portraitImg}
+            />
             <div className="flex flex-col gap-8 self-start w-full md:max-w-2xl shrink-0">
               <p className="whitespace-pre-wrap font-display text-base normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 sm:text-lg md:text-xl">
                 {aboutBodyParagraph}

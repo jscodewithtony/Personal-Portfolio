@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import aboutPortrait from "../assets/about-portrait.webp";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { homepageContentQuery } from "../sanity/queries";
+import { urlFor } from "../sanity/client";
 import { useThemeTokens } from "../theme/ThemeTokensContext";
 import CircularTextButton from "./CircularTextButton";
 
@@ -56,6 +57,19 @@ function About({ theme }) {
   const body =
     status === "ready" ? { ...FALLBACK_BODY, ...content } : FALLBACK_BODY;
   const themeTokens = useThemeTokens();
+
+  const isDark = theme
+    ? theme === "dark"
+    : typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+
+  const portraitAssetForTheme = isDark ? content?.aboutPortraitDark : content?.aboutPortraitLight;
+  const portraitUrl = urlFor(portraitAssetForTheme)?.width(1200).auto("format").url() || aboutPortrait;
+  const portraitAlt =
+    (isDark ? content?.aboutPortraitDarkAlt : content?.aboutPortraitLightAlt) ||
+    "Tony, seated outdoors in dark clothing beside a black horse";
+
+  const lightPortraitUrl = urlFor(content?.aboutPortraitLight)?.width(1200).auto("format").url() || aboutPortrait;
+  const darkPortraitUrl = urlFor(content?.aboutPortraitDark)?.width(1200).auto("format").url() || aboutPortrait;
 
   const sectionRef = useRef(null);
   const headlineRef = useRef(null);
@@ -309,6 +323,12 @@ function About({ theme }) {
       ref={sectionRef}
       className="relative z-10 -mt-px overflow-hidden px-6 py-24 text-ink transition-colors duration-300 sm:px-10 sm:py-28 md:px-14 md:py-32 dark:text-white"
     >
+      {/* Preload both portrait variants so switching is instant without flashing empty */}
+      <div className="absolute w-0 h-0 opacity-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <img src={lightPortraitUrl} alt="" />
+        <img src={darkPortraitUrl} alt="" />
+      </div>
+
       {/* Whole-screen background morphing layer */}
       <div
         ref={bgLayerRef}
@@ -409,8 +429,8 @@ function About({ theme }) {
           <div ref={imageOuterRef} className="h-full w-full overflow-hidden">
             <img
               ref={imageInnerRef}
-              src={aboutPortrait}
-              alt="Tony, seated outdoors in dark clothing beside a black horse"
+              src={portraitUrl}
+              alt={portraitAlt}
               loading="lazy"
               className="h-full w-full object-cover"
             />

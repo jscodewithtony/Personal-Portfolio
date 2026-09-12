@@ -16,7 +16,12 @@ const builder = sanityClient ? createImageUrlBuilder(sanityClient) : null;
 // their existing static asset in that case.
 export function urlFor(source) {
   if (!builder || !source) return null;
-  return builder.image(source);
+  if (typeof source === "object" && !source.asset && !source._ref) return null;
+  try {
+    return builder.image(source);
+  } catch {
+    return null;
+  }
 }
 
 // Sanity's image CDN flattens animated GIFs to a single static frame

@@ -26,6 +26,10 @@ export const homepageContentQuery = /* groq */ `*[_type == "homepageContent"][0]
   heroBadgeLine2,
   aboutBodyParagraph1,
   aboutBodyParagraph2,
+  aboutPortraitLight,
+  aboutPortraitLightAlt,
+  aboutPortraitDark,
+  aboutPortraitDarkAlt,
   statementHeadline,
   statementTrailingLine
 }`;
@@ -49,6 +53,10 @@ export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{
   rightText,
   portraitImage,
   portraitImageAlt,
+  portraitImageLight,
+  portraitImageLightAlt,
+  portraitImageDark,
+  portraitImageDarkAlt,
   portraitCaption,
   portraitSubCaption,
   aboutBodyParagraph,

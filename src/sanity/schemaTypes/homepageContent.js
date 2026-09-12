@@ -79,6 +79,38 @@ export default {
         "I like building things end to end, from the first sketch to the shipped product. And I trust frameworks over instinct — but only the ones I've tested myself.",
     },
     {
+      name: "aboutPortraitLight",
+      title: "Portrait — Light Theme",
+      description: "Portrait photo shown in the homepage About section in light mode. Falls back to built-in asset if blank.",
+      type: "image",
+      options: { hotspot: true },
+      group: "about",
+    },
+    {
+      name: "aboutPortraitLightAlt",
+      title: "Portrait — Light Theme — alt text",
+      type: "string",
+      group: "about",
+      placeholder: "Tony, seated outdoors in dark clothing beside a black horse",
+      hidden: ({ document }) => !document?.aboutPortraitLight,
+    },
+    {
+      name: "aboutPortraitDark",
+      title: "Portrait — Dark Theme",
+      description: "Portrait photo shown in the homepage About section in dark mode. Falls back to built-in asset if blank.",
+      type: "image",
+      options: { hotspot: true },
+      group: "about",
+    },
+    {
+      name: "aboutPortraitDarkAlt",
+      title: "Portrait — Dark Theme — alt text",
+      type: "string",
+      group: "about",
+      placeholder: "Tony, seated outdoors in dark clothing beside a black horse",
+      hidden: ({ document }) => !document?.aboutPortraitDark,
+    },
+    {
       name: "statementHeadline",
       title: "Headline",
       description:
