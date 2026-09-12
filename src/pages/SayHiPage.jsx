@@ -1,5 +1,6 @@
 import { lazy, Suspense, useRef, useState, useEffect } from "react";
 import Header from "../components/Header";
+import { useSeo } from "../hooks/useSeo";
 import CanvasCursor from "../components/CanvasCursor";
 import Reveal from "../components/Reveal";
 import DirectionHover from "../components/DirectionHover";
@@ -38,6 +39,13 @@ const EMPTY_FORM = { name: "", email: "", phone: "", message: "" };
 const ENABLE_CAPTCHA = true;
 
 function SayHiPage({ theme, onToggleTheme }) {
+  useSeo({
+    title: "Say Hi",
+    description:
+      "Get in touch about product design, design systems, or a project you're building — email, message, or book a call.",
+    path: "/say-hi",
+  });
+
   const menuButtonRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "../components/Header";
+import { useSeo } from "../hooks/useSeo";
 import Hero from "../components/Hero";
 import About from "../components/About";
 import CanvasCursor from "../components/CanvasCursor";
@@ -19,6 +20,12 @@ const Insight = lazy(() => import("../components/Insight"));
 const Footer = lazy(() => import("../components/Footer"));
 
 function HomePage({ theme, onToggleTheme }) {
+  useSeo({
+    description:
+      "Product & UX designer building AI-powered products, scalable design systems, and interfaces people actually enjoy using. Case studies, process, and work.",
+    path: "/",
+  });
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [introFinished, setIntroFinished] = useState(false);
   const menuButtonRef = useRef(null);

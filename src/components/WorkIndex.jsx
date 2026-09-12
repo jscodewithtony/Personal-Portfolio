@@ -43,6 +43,7 @@ function mapProject(doc) {
     slug: doc.slug,
     title: toTitleCase(doc.title),
     mediaUrl: imageUrl(doc.mainImage, 1600),
+    mediaAlt: doc.mainImage?.alt,
     overview: doc.shortDescription,
     infoRows: infoRows
       .map((field) => ({ label: field.label, value: getInfoRowValue(field) }))
@@ -56,7 +57,7 @@ function MediaLayer({ project, mediaRef }) {
     <div ref={mediaRef} className="absolute inset-0 opacity-0">
       <img
         src={project.mediaUrl}
-        alt={project.title}
+        alt={project.mediaAlt || project.title}
         className="h-full w-full object-cover"
       />
     </div>
@@ -155,7 +156,7 @@ function MobileWork({ projects, activeIndex, onSelect }) {
                       <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
                         <img
                           src={project.mediaUrl}
-                          alt={project.title}
+                          alt={project.mediaAlt || project.title}
                           className="h-full w-full object-cover"
                         />
                       </div>

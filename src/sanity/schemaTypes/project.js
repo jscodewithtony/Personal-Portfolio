@@ -15,6 +15,10 @@ export default {
     { name: "content", title: "Content" },
     { name: "sidebarInfo", title: "Sidebar Info" },
     { name: "style", title: "Style" },
+    // Last on purpose — secondary metadata, not part of the main
+    // editing flow. Everything here is optional and falls back to the
+    // Overview fields, so a project never needs this tab to ship.
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     // --- Overview ---
@@ -34,6 +38,16 @@ export default {
       options: { hotspot: true },
       group: "overview",
       validation: (Rule) => Rule.required(),
+      fields: [
+        {
+          name: "alt",
+          title: "Alt text",
+          description: "Describe what's in the image for screen readers and search engines — not the filename.",
+          type: "string",
+          placeholder: "Dashboard screens from the Tekxera design system on a dark background",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
     },
     {
       name: "mainImage",
@@ -43,6 +57,16 @@ export default {
       options: { hotspot: true },
       group: "overview",
       validation: (Rule) => Rule.required(),
+      fields: [
+        {
+          name: "alt",
+          title: "Alt text",
+          description: "Describe what's in the image for screen readers and search engines — not the filename.",
+          type: "string",
+          placeholder: "Mobile app onboarding flow shown across three phone screens",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
     },
     {
       name: "thumbnail",
@@ -52,6 +76,16 @@ export default {
       type: "image",
       group: "overview",
       validation: (Rule) => Rule.required(),
+      fields: [
+        {
+          name: "alt",
+          title: "Alt text",
+          description: "Describe what's in the image for screen readers and search engines — not the filename.",
+          type: "string",
+          placeholder: "Animated preview of the product's main interface",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
     },
     {
       name: "slug",
@@ -330,6 +364,43 @@ export default {
           hidden: ({ parent }) => !parent?.pageBackgroundColor,
         },
       ],
+    },
+
+    // --- SEO ---
+    // Read by the /projects/[slug] page's <head> tags. All optional:
+    // each falls back to its Overview counterpart when blank.
+    {
+      name: "seoTitle",
+      title: "SEO title",
+      description:
+        "Overrides the browser-tab / search-result title. Leave blank to use the Project Title.",
+      type: "string",
+      group: "seo",
+      placeholder: "Tekxera Technology — Design System Case Study",
+      validation: (Rule) =>
+        Rule.max(60).warning("Titles over ~60 characters get truncated in search results."),
+    },
+    {
+      name: "seoDescription",
+      title: "SEO description",
+      description:
+        "The snippet shown under the title in search results and link previews. Aim for ~155 characters; longer gets cut off. Leave blank to use the Short Description.",
+      type: "text",
+      rows: 3,
+      group: "seo",
+      placeholder:
+        "How a governed component library cut design-to-dev handoff time in half across 20+ client projects.",
+      validation: (Rule) =>
+        Rule.max(160).warning("Descriptions over ~160 characters get truncated in search results."),
+    },
+    {
+      name: "ogImage",
+      title: "Social preview image",
+      description:
+        "Shown when this project's link is shared on LinkedIn, X, Slack, etc. 1200×630 recommended. Leave blank to use the Project Cover.",
+      type: "image",
+      options: { hotspot: true },
+      group: "seo",
     },
   ],
   orderings: [

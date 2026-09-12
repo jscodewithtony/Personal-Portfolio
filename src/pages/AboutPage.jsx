@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } fro
 import { animate, AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
 import Header from "../components/Header";
+import { useSeo } from "../hooks/useSeo";
 import Reveal from "../components/Reveal";
 import CanvasCursor from "../components/CanvasCursor";
 import portraitImg from "../assets/about-page/portrait.webp";
@@ -611,6 +612,13 @@ function AboutPortraitReveal({ src, alt, caption, subCaption, fallbackSrc }) {
 }
 
 function AboutPage({ theme, onToggleTheme }) {
+  useSeo({
+    title: "About",
+    description:
+      "Who's behind the work: a product designer with 4+ years designing AI-powered experiences, design systems, and enterprise apps across desktop, web, and mobile.",
+    path: "/about",
+  });
+
   const { data: content, status } = useSanityQuery(
     homepageContentQuery,
     {},
@@ -777,7 +785,7 @@ function AboutPage({ theme, onToggleTheme }) {
   // site below), so the other's rAF loop/listeners never attach.
   const travelGalleryStyle = about?.travelGalleryStyle || "scatter";
   const circularGalleryImages = useMemo(
-    () => travelPhotos.map((p) => p.fullSrc),
+    () => travelPhotos.map((p) => ({ src: p.fullSrc, alt: p.alt })),
     [travelPhotos]
   );
 

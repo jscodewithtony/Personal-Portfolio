@@ -18,7 +18,28 @@
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Tony — Product Designer & UX Designer portfolio." />
+    <meta name="description" content="Product & UX designer building AI-powered products, scalable design systems, and interfaces people actually enjoy using. Case studies, process, and work." />
+
+    <!-- Static social/OG fallback. This is what crawlers that don't run
+         JS (LinkedIn, X, Slack, WhatsApp) see for EVERY route until
+         SSR/prerendering exists — per-route values are applied
+         client-side by src/hooks/useSeo.js and only reach JS-executing
+         clients. Keep this set generic and site-wide. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Tony — Product & UX Designer" />
+    <meta property="og:title" content="I'm Tony — Product & UX Designer" />
+    <meta property="og:description" content="Product & UX designer building AI-powered products, scalable design systems, and interfaces people actually enjoy using." />
+    <meta property="og:url" content="https://heytony.design/" />
+    <meta property="og:image" content="https://heytony.design/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="I'm Tony — Product & UX Designer" />
+    <meta name="twitter:description" content="Product & UX designer building AI-powered products, scalable design systems, and interfaces people actually enjoy using." />
+    <meta name="twitter:image" content="https://heytony.design/og-image.png" />
+    <!-- No static canonical on purpose: this shell serves every route,
+         so a static href would mark /about and every case study as a
+         duplicate of "/". useSeo.js sets the correct one per route. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Preloads the Latin subset's actual woff2 file (the one that

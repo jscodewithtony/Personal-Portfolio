@@ -70,7 +70,9 @@ function mapSanityProject(doc) {
     industry: doc.industry,
     role: doc.role,
     image: mainImageUrl || projectTekxera,
+    imageAlt: doc.mainImage?.alt,
     thumbnailImage: thumbUrl || projectJewelry,
+    thumbnailAlt: doc.thumbnail?.alt,
     slug: doc.slug,
   };
 }
@@ -379,7 +381,7 @@ function FeaturedProjects() {
                   <div className="md:col-span-5 relative overflow-hidden h-72 sm:h-96 md:h-full w-full">
                     <img
                       src={project.image}
-                      alt={project.client}
+                      alt={project.imageAlt || project.title}
                       loading="lazy"
                       className="h-full w-full object-cover rounded-none transition-transform duration-700 hover:scale-105"
                     />
@@ -421,7 +423,7 @@ function FeaturedProjects() {
                       <div className="relative overflow-hidden rounded-none border border-ink/10 dark:border-white/10 bg-bg dark:bg-black/60 shadow-2xl w-48 sm:w-60 lg:w-72 aspect-[16/10] shrink-0 self-end">
                         <img
                           src={project.thumbnailImage}
-                          alt={`${project.client} preview`}
+                          alt={project.thumbnailAlt || `${project.title} preview`}
                           loading="lazy"
                           className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-none"
                         />

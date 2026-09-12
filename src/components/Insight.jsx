@@ -16,6 +16,7 @@ function mapSanityArticle(doc) {
     excerpt: doc.excerpt,
     date: doc.publishDate,
     image: urlFor(doc.thumbnail)?.width(800).auto("format").url(),
+    imageAlt: doc.thumbnail?.alt,
     link: doc.externalLink,
     source: doc.sourcePlatform,
   };
@@ -132,6 +133,7 @@ function Insight() {
                 excerpt: entry.excerpt,
                 date: formatDisplayDate(entry.date),
                 image: entry.image,
+                imageAlt: entry.imageAlt,
                 href: entry.link,
                 source: entry.source,
               }}

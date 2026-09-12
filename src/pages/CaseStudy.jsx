@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectBySlugQuery } from "../sanity/queries";
 import { imageUrl } from "../sanity/client";
+import { useSeo } from "../hooks/useSeo";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
@@ -230,6 +231,19 @@ function CaseStudy({ theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
 
+  // Each SEO field falls back to its Overview counterpart. Runs on
+  // every render (hook rules), but the effect inside only fires when
+  // a value actually changes — i.e. once the project loads. Image
+  // chain ends on mainImage because existing projects predate
+  // coverImage being required and some have none set.
+  useSeo({
+    title: project?.seoTitle || project?.title,
+    description: project?.seoDescription || project?.shortDescription,
+    image: imageUrl(project?.ogImage || project?.coverImage || project?.mainImage, 1200),
+    path: `/projects/${slug}`,
+    type: "article",
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);
@@ -293,6 +307,7 @@ function CaseStudy({ theme, onToggleTheme }) {
     title: project.title || FALLBACK_PROJECT.title,
     eyebrow: project.eyebrow || FALLBACK_PROJECT.eyebrow,
     coverImageUrl: imageUrl(project.coverImage, 2400),
+    coverImageAlt: project.coverImage?.alt,
     shortDescription: project.shortDescription || FALLBACK_PROJECT.shortDescription,
     industry: project.industry || FALLBACK_PROJECT.industry,
     role: project.role || FALLBACK_PROJECT.role,
@@ -480,7 +495,7 @@ function CaseStudy({ theme, onToggleTheme }) {
             <div className="relative left-1/2 mt-12 w-screen -translate-x-1/2">
               <img
                 src={data.coverImageUrl}
-                alt={data.title}
+                alt={data.coverImageAlt || data.title}
                 loading="lazy"
                 className="w-full h-auto"
               />

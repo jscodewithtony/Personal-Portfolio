@@ -3,7 +3,7 @@
 // anywhere else) can be added to the INSIGHT_ARTICLES list in
 // Insight.jsx without touching this component or its layout.
 function ArticleCard({ article }) {
-  const { title, excerpt, date, image, href, source } = article;
+  const { title, excerpt, date, image, imageAlt, href, source } = article;
 
   return (
     <a
@@ -15,7 +15,7 @@ function ArticleCard({ article }) {
       <div className="relative aspect-[16/10] w-full overflow-hidden">
         <img
           src={image}
-          alt=""
+          alt={imageAlt || ""}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />

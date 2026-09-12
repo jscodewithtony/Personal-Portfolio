@@ -32,6 +32,16 @@ export default {
       type: "image",
       options: { hotspot: true },
       validation: (Rule) => Rule.required(),
+      fields: [
+        {
+          name: "alt",
+          title: "Alt text",
+          description: "Describe what's in the image for screen readers and search engines — not the filename.",
+          type: "string",
+          placeholder: "Illustration of a phone notification pulling a user back into an app",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
     },
     {
       name: "externalLink",

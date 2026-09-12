@@ -115,6 +115,9 @@ export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.curre
   bodyContent,
   projectInfoFields[]{ label, fieldType, textValue, selectValue, numberValue },
   tags,
+  seoTitle,
+  seoDescription,
+  ogImage,
   styleSettings{
     pagePadding{ paddingTop, paddingRight, paddingBottom, paddingLeft },
     contentSpacing,

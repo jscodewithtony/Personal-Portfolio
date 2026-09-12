@@ -51,11 +51,15 @@ function clamp(value, min, max) {
 
 const smoothstep = (t) => t * t * (3 - 2 * t);
 
-function resolveSrc(item) {
+// Accepts either a bare URL string or a { src, alt } object. Alt is
+// carried through so CMS-authored alt text isn't dropped on the way to
+// the rendered <img>.
+function resolveImage(item) {
   if (!item) return null;
-  if (typeof item === "string") return item || null;
+  if (typeof item === "string") return item ? { src: item, alt: "" } : null;
   const src = item.src;
-  return typeof src === "string" && src ? src : null;
+  if (typeof src !== "string" || !src) return null;
+  return { src, alt: typeof item.alt === "string" ? item.alt : "" };
 }
 
 function placeholderFill(index) {
@@ -122,7 +126,7 @@ export default function CircularGallery({
   const cardOpts = { ...DEFAULT_CARD, ...card };
 
   const source = useMemo(() => {
-    const resolved = (images ?? []).map(resolveSrc).filter(Boolean);
+    const resolved = (images ?? []).map(resolveImage).filter(Boolean);
     return resolved.length
       ? resolved
       : Array.from({ length: PLACEHOLDER_COUNT }, () => null);
@@ -492,7 +496,7 @@ export default function CircularGallery({
           }}
         >
           {Array.from({ length: cardCount }, (_, index) => {
-            const src = source[index % source.length];
+            const image = source[index % source.length];
             return (
               <div
                 key={index}
@@ -515,10 +519,10 @@ export default function CircularGallery({
                   willChange: "transform",
                 }}
               >
-                {src ? (
+                {image ? (
                   <img
-                    src={src}
-                    alt=""
+                    src={image.src}
+                    alt={image.alt}
                     draggable={false}
                     style={{
                       width: "100%",

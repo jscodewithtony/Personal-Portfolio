@@ -6,6 +6,7 @@ const CaseStudy = lazy(() => import("./pages/CaseStudy"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const WorkPage = lazy(() => import("./pages/WorkPage"));
 const SayHiPage = lazy(() => import("./pages/SayHiPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 import { ThemeTokensProvider } from "./theme/ThemeTokensContext";
 import { isPreviewMode } from "./sanity/preview";
@@ -146,6 +147,19 @@ function App() {
             element={
               <ThemeTokensProvider>
                 <HomePage theme={theme} onToggleTheme={toggleTheme} />
+              </ThemeTokensProvider>
+            }
+          />
+
+          {/* Catch-all — anything no route above matches. Without this
+              the shell rendered blank for arbitrary paths (still HTTP
+              200, via the .htaccess rewrite), which reads as a soft
+              404 to crawlers. */}
+          <Route
+            path="*"
+            element={
+              <ThemeTokensProvider>
+                <NotFoundPage theme={theme} onToggleTheme={toggleTheme} />
               </ThemeTokensProvider>
             }
           />
