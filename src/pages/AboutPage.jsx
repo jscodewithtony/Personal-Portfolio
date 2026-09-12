@@ -279,12 +279,17 @@ function useSharedScrollDirection() {
   }, []);
 }
 
+// `tag` defaults to "h2" because two of this component's three uses on
+// the page are section headlines. Only the page's top-level headline
+// passes tag="h1" — defaulting to h1 instead would silently give the
+// page three of them.
 function WordHeadline({
   text,
   className = "",
   direction = "top-to-bottom",
   animated = true,
   wordRef,
+  tag: Tag = "h2",
 }) {
   const shouldReduceMotion = useReducedMotion();
   const startClip = CURTAIN_INSET_MAP[direction] || CURTAIN_INSET_MAP["top-to-bottom"];
@@ -315,7 +320,7 @@ function WordHeadline({
   const hasLeading = className.includes("leading-");
 
   return (
-    <h2
+    <Tag
       ref={elRef}
       className={`select-none flex flex-wrap ${hasJustify ? "" : "justify-center"} gap-x-[0.28em] font-display font-extrabold uppercase ${hasLeading ? "" : "leading-[0.95]"} tracking-tight text-[#0d0c14] dark:text-white ${className}`}
       style={isAnimated ? { clipPath: startClip, willChange: "clip-path" } : undefined}
@@ -329,7 +334,7 @@ function WordHeadline({
           {word}
         </span>
       ))}
-    </h2>
+    </Tag>
   );
 }
 
@@ -879,6 +884,7 @@ function AboutPage({ theme, onToggleTheme }) {
         > */}
         <WordHeadline
           text={heroHeadline}
+          tag="h1"
           className="relative z-10 mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-[clamp(6rem,-14rem+31.25vw,16rem)]"
           animated={false}
         />
