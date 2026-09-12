@@ -19,7 +19,7 @@
      recolor just the stat numbers to its accent without recoloring
      every other piece of body/heading text that also reads --color-ink. */
   --color-stat-value: #0d0c14;
-  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Albert Sans", "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
 
   /* Strong custom eases (weak CSS built-ins lack punch). Generates
      ease-snap / ease-glide / ease-drawer Tailwind utilities. */

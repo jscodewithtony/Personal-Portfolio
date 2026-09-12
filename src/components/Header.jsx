@@ -77,7 +77,7 @@ function Header({ menuButtonRef, menuOpen, onToggle, theme, onToggleTheme }) {
 
   return (
     <header
-      className={`sticky top-0 z-[60] flex items-center justify-between bg-transparent px-6 py-6 transition-[transform,colors] duration-300 ease-out md:px-12 md:py-8 lg:px-24 lg:py-8 ${hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
+      className={`sticky top-0 z-[60] flex items-center justify-between bg-transparent w-full max-w-none md:max-w-[92vw] mx-auto px-4 sm:px-6 md:px-0 py-6 md:py-8 transition-[transform,colors] duration-300 ease-out ${hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
         }`}
     >
       {/* Wordmark + (desktop-only) role subtitle */}

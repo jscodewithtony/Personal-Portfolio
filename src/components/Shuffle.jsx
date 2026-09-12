@@ -289,6 +289,7 @@ const Shuffle = ({
 
       const cleanupToStill = () => {
         wrappersRef.current.forEach(w => {
+          w.style.overflow = 'visible';
           const strip = w.firstElementChild;
           if (!strip) return;
           const real = strip.querySelector('[data-orig="1"]');
@@ -407,6 +408,7 @@ const Shuffle = ({
 
             if (strip.dataset.animating === 'true') return;
             strip.dataset.animating = 'true';
+            wrap.style.overflow = 'hidden';
 
             const isVertical = shuffleDirection === 'up' || shuffleDirection === 'down';
             // Same reasoning as the build-time measurement above: offset*
@@ -437,6 +439,7 @@ const Shuffle = ({
               force3D: true,
               onComplete: () => {
                 strip.dataset.animating = 'false';
+                wrap.style.overflow = 'visible';
               }
             };
 
@@ -504,11 +507,14 @@ const Shuffle = ({
       });
       ro.observe(el);
       document.fonts?.ready?.then(() => remeasure());
+      const onFontsDone = () => remeasure();
+      document.fonts?.addEventListener?.('loadingdone', onFontsDone);
 
       return () => {
         st.kill();
         ro.disconnect();
         clearTimeout(resizeTimer);
+        document.fonts?.removeEventListener?.('loadingdone', onFontsDone);
         removeHover();
         teardown();
         setReady(false);

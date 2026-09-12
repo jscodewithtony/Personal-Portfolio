@@ -49,11 +49,16 @@ function FitText({
     const resizeObserver = new ResizeObserver(recalc);
     resizeObserver.observe(container);
 
-    // Bricolage Grotesque loads async; glyph metrics shift once it's
-    // ready, so the fit must be recomputed after the swap.
+    // Web fonts load async; glyph metrics shift once ready,
+    // so the fit must be recomputed on initial ready and any subsequent font loads.
     document.fonts?.ready?.then(recalc);
+    const onFontsDone = () => recalc();
+    document.fonts?.addEventListener?.("loadingdone", onFontsDone);
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      resizeObserver.disconnect();
+      document.fonts?.removeEventListener?.("loadingdone", onFontsDone);
+    };
   }, [maxFontSize, minFontSize]);
 
   return (
