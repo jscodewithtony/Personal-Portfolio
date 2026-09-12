@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run sitemap && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "sitemap": "node scripts/generate-sitemap.mjs",
     "seed": "node --env-file=.env scripts/seed-sanity.mjs"
   },
   "dependencies": {
