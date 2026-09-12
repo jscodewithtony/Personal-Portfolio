@@ -34,7 +34,7 @@ const FALLBACK_TESTIMONIALS = [
     platform: "topmate",
     role: "UI/UX Designer",
     stackRot: 6,
-    stackY: 8,
+    stackY: 4,
   },
   {
     id: "vaishnavi",
@@ -44,7 +44,7 @@ const FALLBACK_TESTIMONIALS = [
     platform: "topmate",
     role: "Aspiring Designer",
     stackRot: -3,
-    stackY: 16,
+    stackY: 8,
   },
   {
     id: "neha",
@@ -54,7 +54,7 @@ const FALLBACK_TESTIMONIALS = [
     platform: "topmate",
     role: "UX Researcher",
     stackRot: 4,
-    stackY: 24,
+    stackY: 12,
   },
   {
     id: "ankit",
@@ -64,7 +64,7 @@ const FALLBACK_TESTIMONIALS = [
     platform: "topmate",
     role: "Product Designer",
     stackRot: -2,
-    stackY: 32,
+    stackY: 16,
   },
 ];
 
@@ -74,7 +74,7 @@ const STACK_POSITIONS = FALLBACK_TESTIMONIALS.map(({ stackRot, stackY }) => ({
 }));
 
 function mapSanityTestimonial(doc, index) {
-  const pos = STACK_POSITIONS[index] || { stackRot: 0, stackY: index * 8 };
+  const pos = STACK_POSITIONS[index] || { stackRot: 0, stackY: index * 4 };
   return {
     id: doc._id,
     name: doc.name,
@@ -257,7 +257,7 @@ function MentorshipTestimonials() {
       className="relative z-10 flex h-screen w-full overflow-hidden bg-bg transition-colors duration-300 dark:bg-[#0c0a14]"
     >
       {/* Centered Heading Layer */}
-      <div className="absolute inset-0 z-10 flex pointer-events-none items-center justify-center px-6 text-center">
+      <div className="absolute inset-0 z-10 flex pointer-events-none items-center justify-center -translate-y-6 sm:-translate-y-10 md:-translate-y-12 px-6 text-center">
         <div ref={headingRef} className="will-change-transform">
           <h2 className="select-none font-display text-4xl font-black uppercase leading-[0.95] tracking-tight text-ink dark:text-white sm:text-6xl md:text-7xl lg:text-8xl xl:text-[110px]">
             FROM THE PEOPLE
@@ -268,7 +268,7 @@ function MentorshipTestimonials() {
       </div>
 
       {/* Stacked Card Deck Layer (Version 2) */}
-      <div className="absolute inset-0 z-20 flex pointer-events-none items-center justify-center">
+      <div className="absolute inset-0 z-20 flex pointer-events-none items-center justify-center -translate-y-6 sm:-translate-y-10 md:-translate-y-12">
         {TESTIMONIALS.map((t, idx) => (
           <div
             key={t.id}
@@ -287,11 +287,11 @@ function MentorshipTestimonials() {
       </div>
 
       {/* Book a Call Button */}
-      <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center pointer-events-none sm:bottom-12 md:bottom-16">
+      <div className="absolute bottom-6 sm:bottom-8 md:bottom-10 left-0 right-0 z-30 flex justify-center pointer-events-none">
         <a
           href="mailto:Tony2742000@gmail.com"
           ref={buttonRef}
-          className="pointer-events-auto select-none px-6 py-4 font-display text-base font-bold uppercase tracking-tight transition-colors sm:px-8 sm:py-5 sm:text-xl bg-primary text-white hover:bg-primary-dark active:bg-primary-active dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2] shadow-lg"
+          className="pointer-events-auto select-none px-6 py-3.5 font-display text-sm font-bold uppercase tracking-tight transition-colors sm:px-8 sm:py-4 sm:text-base md:text-lg bg-primary text-white hover:bg-primary-dark active:bg-primary-active dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2] shadow-lg"
         >
           <DirectionHover>Book a call with me</DirectionHover>
         </a>

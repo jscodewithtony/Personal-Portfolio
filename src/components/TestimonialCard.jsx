@@ -29,7 +29,7 @@ function TestimonialCard({
 
   return (
     <div
-      className={`relative flex min-h-[320px] sm:min-h-[360px] flex-col justify-between rounded-none border border-transparent bg-primary p-7 sm:p-10 text-white shadow-xl shadow-primary/20 transition-colors duration-300 dark:border-white/15 dark:bg-[#141416] dark:text-white dark:shadow-2xl ${className}`}
+      className={`relative flex min-h-[280px] sm:min-h-[320px] flex-col justify-between rounded-none border border-transparent bg-primary p-6 sm:p-8 md:p-9 text-white shadow-xl shadow-primary/20 transition-colors duration-300 dark:border-white/15 dark:bg-[#141416] dark:text-white dark:shadow-2xl ${className}`}
     >
       <div>
         {/* Mentee Name */}
@@ -45,13 +45,13 @@ function TestimonialCard({
         )}
 
         {/* Quote Content */}
-        <p className="mt-5 font-sans text-base font-normal normal-case leading-relaxed text-white/80 transition-colors duration-300 dark:text-gray-200 sm:text-lg">
+        <p className="mt-4 sm:mt-5 font-sans text-sm sm:text-base md:text-[17px] font-normal normal-case leading-relaxed text-white/80 transition-colors duration-300 dark:text-gray-200">
           {quote}
         </p>
       </div>
 
       {/* Platform Logo Footer */}
-      <div className="mt-8 flex items-center justify-start border-t border-white/10 transition-colors duration-300 dark:border-white/10 pt-4 sm:pt-5">
+      <div className="mt-6 flex items-center justify-start border-t border-white/10 transition-colors duration-300 dark:border-white/10 pt-3 sm:pt-4">
         {logoSrc ? (
           <div className="inline-flex items-center rounded-lg bg-[#0d0c14] px-3 py-1.5 dark:bg-transparent dark:p-0">
             <img
