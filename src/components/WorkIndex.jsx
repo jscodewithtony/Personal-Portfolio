@@ -458,7 +458,7 @@ function WorkIndex() {
           (each tuned for one fixed frame width). */}
       <section className="bg-bg pl-6 pt-20 pb-12 sm:pb-16 text-ink transition-colors duration-300 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white">
         <h1 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
-          My Work
+          Selected Work
         </h1>
       </section>
       <section
