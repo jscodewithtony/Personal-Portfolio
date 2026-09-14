@@ -591,9 +591,8 @@ function AboutPortraitReveal({ src, alt, caption, subCaption, fallbackSrc }) {
       </div>
       {(caption || subCaption) && (
         <div
-          className={`flex flex-col transition-all duration-700 delay-300 ${
-            revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
-          }`}
+          className={`flex flex-col transition-all duration-700 delay-300 ${revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+            }`}
         >
           {caption && (
             <p className="font-display text-sm normal-case text-[#0d0c14] dark:text-white">

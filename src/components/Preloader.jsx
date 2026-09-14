@@ -164,7 +164,7 @@ function Preloader({ onComplete }) {
       aria-label="Loading"
     >
       <div ref={mascotWrapRef} className="flex items-center justify-center pointer-events-none">
-        <Mascot hideBody />
+        <Mascot hideBody blink />
       </div>
       <div
         ref={counterWrapRef}

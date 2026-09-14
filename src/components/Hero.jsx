@@ -316,7 +316,7 @@ function Hero() {
                 visible size stays exactly the smooth clamp curve despite
                 native size stepping. */}
             <div className="absolute left-1/2 top-1/2 md:[transform:translate(-50%,-50%)_scale(calc((-7.86rem_+_53.57vw)/28rem))] lg:[transform:translate(-50%,-50%)_scale(calc((-7.86rem_+_53.57vw)/34rem))] xl:[transform:translate(-50%,-50%)_scale(0.875)]">
-              <Mascot faceRef={desktopMascotFaceRef} />
+              <Mascot faceRef={desktopMascotFaceRef} blink />
             </div>
           </div>
 
@@ -339,7 +339,7 @@ function Hero() {
             ref={mobileMascotWrapRef}
             className={`relative z-30 w-full min-h-[320px] sm:min-h-[380px] bg-primary dark:bg-[#114AFC] flex items-center justify-center p-6 rounded-none overflow-hidden ${MOBILE_MASCOT_TOP_GAP}`}
           >
-            <Mascot faceRef={mobileMascotFaceRef} />
+            <Mascot faceRef={mobileMascotFaceRef} blink />
           </div>
         </div>
       </div>

@@ -30,7 +30,7 @@ const BROW_LIFT_BASE_PX = -1;
 const BROW_LIFT_RANGE_PX = 8;
 const BROW_EDGE_LIFT_BONUS_PX = 4;
 
-function Mascot({ faceRef, hideBody = false }) {
+function Mascot({ faceRef, hideBody = false, blink = false }) {
   const containerRef = useRef(null);
   const leftEyeRef = useRef(null);
   const rightEyeRef = useRef(null);
@@ -55,6 +55,21 @@ function Mascot({ faceRef, hideBody = false }) {
     const reduceMotion =
       isA11y ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Natural blink parameters: quick ~150ms duration with rapid close, brief hold, snappy reopen
+    const canBlink = blink && !reduceMotion;
+    const BLINK_CLOSE_MS = 45;
+    const BLINK_HOLD_MS = 35;
+    const BLINK_OPEN_MS = 70;
+    const BLINK_TOTAL_MS = BLINK_CLOSE_MS + BLINK_HOLD_MS + BLINK_OPEN_MS;
+    const MIN_SCALE_Y = 0.05;
+
+    const getRandomBlinkInterval = () => 2200 + Math.random() * 3300; // 2.2s to 5.5s
+
+    let isBlinking = false;
+    let blinkStartTime = 0;
+    // Initial blink fires slightly sooner (1.1s - 1.5s) so it triggers reliably during Preloader
+    let nextBlinkTime = performance.now() + 1100 + Math.random() * 400;
 
     const handleMouseMove = (e) => {
       mouse.current.x = e.clientX;
@@ -85,6 +100,7 @@ function Mascot({ faceRef, hideBody = false }) {
       eyes.forEach(({ socketRef, key }) => {
         const socket = socketRef.current;
         if (!socket) return;
+        socket.style.transformOrigin = "50% 60%";
         const pupilEl = socket.querySelector(".pupil");
         if (!pupilEl) return;
         const socketRect = socket.getBoundingClientRect();
@@ -112,6 +128,13 @@ function Mascot({ faceRef, hideBody = false }) {
           if (isVisible && !frameId) {
             lastTime = performance.now();
             updateMetrics();
+            if (isBlinking) {
+              isBlinking = false;
+              nextBlinkTime = performance.now() + getRandomBlinkInterval();
+              eyes.forEach(({ socketRef }) => {
+                if (socketRef.current) socketRef.current.style.transform = "";
+              });
+            }
             frameId = requestAnimationFrame(tick);
           }
         });
@@ -193,6 +216,47 @@ function Mascot({ faceRef, hideBody = false }) {
         }
       });
 
+      // Piggyback blink animation directly onto the rAF tick:
+      // independent of pupil springs, respects prefers-reduced-motion,
+      // and only active when blink={true}.
+      if (canBlink) {
+        if (!isBlinking && now >= nextBlinkTime) {
+          isBlinking = true;
+          blinkStartTime = now;
+        }
+
+        if (isBlinking) {
+          const elapsed = now - blinkStartTime;
+          if (elapsed >= BLINK_TOTAL_MS) {
+            isBlinking = false;
+            nextBlinkTime = now + getRandomBlinkInterval();
+            eyes.forEach(({ socketRef }) => {
+              if (socketRef.current) socketRef.current.style.transform = "";
+            });
+          } else {
+            let scaleY = 1;
+            if (elapsed < BLINK_CLOSE_MS) {
+              const p = elapsed / BLINK_CLOSE_MS;
+              const easeIn = p * p;
+              scaleY = 1 - (1 - MIN_SCALE_Y) * easeIn;
+            } else if (elapsed < BLINK_CLOSE_MS + BLINK_HOLD_MS) {
+              scaleY = MIN_SCALE_Y;
+            } else {
+              const p = (elapsed - BLINK_CLOSE_MS - BLINK_HOLD_MS) / BLINK_OPEN_MS;
+              const easeOut = 1 - Math.pow(1 - p, 2);
+              scaleY = MIN_SCALE_Y + (1 - MIN_SCALE_Y) * easeOut;
+            }
+
+            const transformStr = `scaleY(${scaleY.toFixed(4)})`;
+            eyes.forEach(({ socketRef }) => {
+              if (socketRef.current) {
+                socketRef.current.style.transform = transformStr;
+              }
+            });
+          }
+        }
+      }
+
       // Eyebrows: shared target driven off the viewport-normalized vector.
       // Lifting toward the top of the screen and toward either extreme
       // edge reads as widened, "locked-in" eye contact; horizontal tilt
@@ -229,8 +293,11 @@ function Mascot({ faceRef, hideBody = false }) {
       window.removeEventListener("scroll", updateMetrics);
       observer.disconnect();
       if (frameId) cancelAnimationFrame(frameId);
+      eyes.forEach(({ socketRef }) => {
+        if (socketRef.current) socketRef.current.style.transform = "";
+      });
     };
-  }, []);
+  }, [blink]);
 
   return (
     <div
