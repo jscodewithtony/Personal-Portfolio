@@ -338,7 +338,7 @@ function About({ theme }) {
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          backgroundSize: "72px 72px",
+          backgroundSize: "120px 120px",
           backgroundImage: `
             linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
             linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px)

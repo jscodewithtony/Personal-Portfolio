@@ -31,7 +31,7 @@
   /* iOS-like drawer/overlay */
 }
 
-/* Every section's 72px grid overlay reads its line color from this one
+/* Every section's 120px grid overlay reads its line color from this one
    variable instead of hardcoding rgba per section — since the whole site
    flips polarity together under the theme toggle, a light section's
    dark-on-light lines and a dark section's light-on-dark lines both
@@ -52,7 +52,7 @@
 .site-shell main,
 .site-shell footer,
 .site-shell section {
-  background-size: 72px 72px;
+  background-size: 120px 120px;
   background-image:
     linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);

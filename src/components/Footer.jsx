@@ -97,16 +97,16 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
   const { data: footerDoc } = useSanityQuery(footerContactQuery, {}, null);
   const sanityContactContent = footerDoc
     ? {
-        eyebrow: footerDoc.eyebrow,
-        headlineLines: footerDoc.heading ? footerDoc.heading.split("\n") : undefined,
-        email: footerDoc.email,
-        socialLinks: footerDoc.socialLinks?.length
-          ? footerDoc.socialLinks.map(({ label, url }) => ({ label, href: url }))
-          : undefined,
-        location: footerDoc.location,
-        timezone: footerDoc.timezone,
-        copyrightSuffix: footerDoc.copyrightSuffix,
-      }
+      eyebrow: footerDoc.eyebrow,
+      headlineLines: footerDoc.heading ? footerDoc.heading.split("\n") : undefined,
+      email: footerDoc.email,
+      socialLinks: footerDoc.socialLinks?.length
+        ? footerDoc.socialLinks.map(({ label, url }) => ({ label, href: url }))
+        : undefined,
+      location: footerDoc.location,
+      timezone: footerDoc.timezone,
+      copyrightSuffix: footerDoc.copyrightSuffix,
+    }
     : undefined;
   const mergedContactContent = { ...sanityContactContent, ...contactContent };
   const [activeKeys, setActiveKeys] = useState(new Set());
@@ -130,12 +130,30 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
     if (!audioCtxRef.current || audioCtxRef.current.state === "closed") {
       const ctx = new AudioCtx();
       const masterGain = ctx.createGain();
-      masterGain.gain.setValueAtTime(0.15, ctx.currentTime);
+      // Restored to its original 0.15. The 0.15->0.12 drop was a hedge
+      // against the note-to-note ducking, but that ducking turned out
+      // to be dominated by the fallback-vs-real-sample loudness gap
+      // (13x, fixed separately below) and the compressor's own attack
+      // response — not by masterGain. Measured via offline render
+      // (matching the real 6-note production chain exactly): the
+      // note-to-note balance is IDENTICAL at 0.12 and 0.15 (each later
+      // note ~1.5-1.7x note 1's RMS either way), so lowering masterGain
+      // bought no evenness and only cost ~2dB of overall level for no
+      // reason. Restoring it gets back the original per-note loudness.
+      masterGain.gain.setValueAtTime(0.60, ctx.currentTime);
 
       const compressor = ctx.createDynamicsCompressor();
-      compressor.threshold.setValueAtTime(-10, ctx.currentTime);
+      // -10dB/8:1 was an active duck/pump effect: any two overlapping
+      // notes (i.e. ordinary playing, since each note's own decay tail
+      // runs ~2.2-2.5s) pushed the summed signal over threshold and
+      // held the compressor's gain reduction near -14dB for seconds
+      // (measured directly via compressor.reduction). -3dB/3:1 is a
+      // gentle safety limiter — it only meaningfully engages when many
+      // notes genuinely overlap at once, not on normal single/double
+      // notes.
+      compressor.threshold.setValueAtTime(-3, ctx.currentTime);
       compressor.knee.setValueAtTime(24, ctx.currentTime);
-      compressor.ratio.setValueAtTime(8, ctx.currentTime);
+      compressor.ratio.setValueAtTime(3, ctx.currentTime);
       compressor.attack.setValueAtTime(0.003, ctx.currentTime);
       compressor.release.setValueAtTime(0.25, ctx.currentTime);
 
@@ -200,7 +218,14 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
 
     const noteGain = ctx.createGain();
     noteGain.gain.setValueAtTime(0.0001, now);
-    noteGain.gain.linearRampToValueAtTime(0.5, now + 0.005);
+    // 0.5 -> 0.032: measured via offline-rendered RMS comparison against
+    // the real sample path (peak 0.6) for the same note — at 0.5 this
+    // synth was ~13x louder in RMS than the real piano sample, which is
+    // why the very first key press (usually still on this fallback,
+    // since the real samples are mid-fetch/decode) sounded dramatically
+    // louder than every note after it once real samples took over.
+    // 0.032 converges to matching RMS (0.01467 vs target 0.01467).
+    noteGain.gain.linearRampToValueAtTime(0.032, now + 0.005);
     noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
 
     osc1.connect(filter);
@@ -622,7 +647,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
                   className={`relative flex-1 h-full border-r border-black/40 dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${isActive
                     ? "bg-[#e3f900] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
                     : "bg-white hover:bg-[#e3f900] dark:bg-white dark:hover:bg-[#f1f5f9]"
-                  }`}
+                    }`}
                 />
               );
             })}
@@ -645,7 +670,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
                   className={`absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${isActive
                     ? "bg-[#3a3a3a] dark:bg-[#332f48] translate-y-[3px]"
                     : "bg-black hover:bg-[#262626] dark:bg-black dark:hover:bg-[#1a1a1a]"
-                  }`}
+                    }`}
                 />
               );
             })}

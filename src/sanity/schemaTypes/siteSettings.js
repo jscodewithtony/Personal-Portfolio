@@ -35,7 +35,7 @@ export default {
     {
       name: "showBackgroundGrid",
       title: "Show background grid pattern",
-      description: "Sitewide toggle for the faint 72px grid overlay behind every section, header, and footer. Off hides it everywhere on the site. Defaults to on (also stays on if this is left unset).",
+      description: "Sitewide toggle for the faint 120px grid overlay behind every section, header, and footer. Off hides it everywhere on the site. Defaults to on (also stays on if this is left unset).",
       type: "boolean",
       initialValue: true,
     },
