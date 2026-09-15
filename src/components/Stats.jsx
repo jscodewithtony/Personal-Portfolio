@@ -86,6 +86,7 @@ const STAT_ITEMS = [
 const FALLBACK_CENTERPIECE = {
   label: "Projects Shipped",
   value: "20+",
+  title: "Crafting UX & Systems",
   description:
     "NudgeFile renames and sorts your files with a local AI — but it asks first, and it always has an undo button, because trusting an AI with your file system sight-unseen is how horror movies start.",
 };
@@ -112,8 +113,18 @@ function Stats({ theme }) {
       copy: cms.description || item.copy,
     };
   });
-  const centerpiece =
-    (cmsReady && statCards[4]) || FALLBACK_CENTERPIECE;
+  const rawCenterpiece = (cmsReady && statCards[4]) || null;
+  const centerpiece = rawCenterpiece
+    ? {
+        ...FALLBACK_CENTERPIECE,
+        ...rawCenterpiece,
+        title: rawCenterpiece.title !== undefined ? rawCenterpiece.title : FALLBACK_CENTERPIECE.title,
+        label: rawCenterpiece.label || FALLBACK_CENTERPIECE.label,
+        value: rawCenterpiece.value || FALLBACK_CENTERPIECE.value,
+        description:
+          rawCenterpiece.description || FALLBACK_CENTERPIECE.description,
+      }
+    : FALLBACK_CENTERPIECE;
 
   const themeTokens = useThemeTokens();
 
@@ -746,6 +757,13 @@ function Stats({ theme }) {
           <h2 className="mt-3 font-display text-5xl font-black leading-none tracking-tight text-stat-value sm:text-7xl md:text-8xl dark:text-white">
             <NumberCounter value={centerpiece.value} />
           </h2>
+
+          {/* Sub-line Title */}
+          {centerpiece.title ? (
+            <div className="mt-2.5 font-display text-xs font-bold text-ink dark:text-white sm:mt-3 sm:text-sm md:text-base">
+              {centerpiece.title}
+            </div>
+          ) : null}
 
           {/* High contrast body text */}
           <p className="mt-4 font-display text-[11px] font-normal normal-case leading-relaxed text-ink/80 sm:text-sm md:text-base dark:text-white/80">
