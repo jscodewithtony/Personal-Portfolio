@@ -116,14 +116,14 @@ function Stats({ theme }) {
   const rawCenterpiece = (cmsReady && statCards[4]) || null;
   const centerpiece = rawCenterpiece
     ? {
-        ...FALLBACK_CENTERPIECE,
-        ...rawCenterpiece,
-        title: rawCenterpiece.title !== undefined ? rawCenterpiece.title : FALLBACK_CENTERPIECE.title,
-        label: rawCenterpiece.label || FALLBACK_CENTERPIECE.label,
-        value: rawCenterpiece.value || FALLBACK_CENTERPIECE.value,
-        description:
-          rawCenterpiece.description || FALLBACK_CENTERPIECE.description,
-      }
+      ...FALLBACK_CENTERPIECE,
+      ...rawCenterpiece,
+      title: rawCenterpiece.title !== undefined ? rawCenterpiece.title : FALLBACK_CENTERPIECE.title,
+      label: rawCenterpiece.label || FALLBACK_CENTERPIECE.label,
+      value: rawCenterpiece.value || FALLBACK_CENTERPIECE.value,
+      description:
+        rawCenterpiece.description || FALLBACK_CENTERPIECE.description,
+    }
     : FALLBACK_CENTERPIECE;
 
   const themeTokens = useThemeTokens();
@@ -754,7 +754,7 @@ function Stats({ theme }) {
           </div>
 
           {/* Big Stat Text Color #0D0C14 for 20+ */}
-          <h2 className="mt-3 font-display text-5xl font-black leading-none tracking-tight text-stat-value sm:text-7xl md:text-8xl dark:text-white">
+          <h2 className="mt-3 font-display text-5xl font-black leading-none tracking-tight text-stat-value sm:text-5xl md:text-6xl dark:text-white">
             <NumberCounter value={centerpiece.value} />
           </h2>
 
