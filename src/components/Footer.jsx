@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import PianoLidContact from "./PianoLidContact";
+import Flap from "./Flap";
 import { useSanityQuery } from "../sanity/useSanityQuery";
-import { footerContactQuery } from "../sanity/queries";
+import { footerContactQuery, siteSettingsQuery } from "../sanity/queries";
 import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
 
 // --- 3 OCTAVES PIANO NOTES (C3 to C6: 22 White Keys, 15 Black Keys) ---
@@ -95,6 +96,8 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
   // spreading `undefined` for a key that isn't in the singleton doc
   // just falls through to PianoLidContact's own default parameter.
   const { data: footerDoc } = useSanityQuery(footerContactQuery, {}, null);
+  const { data: siteSettings } = useSanityQuery(siteSettingsQuery, {}, null);
+  const isFlap = siteSettings?.footerInteractive === "flap";
   const sanityContactContent = footerDoc
     ? {
       eyebrow: footerDoc.eyebrow,
@@ -407,6 +410,8 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
 
   // --- VISIBILITY OBSERVER & FLOATING MUSICAL NOTES SPAWNER (FLOATS UP THROUGH PianoLidContact) ---
   useEffect(() => {
+    if (isFlap) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -468,7 +473,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       clearInterval(interval);
       observer.disconnect();
     };
-  }, [animateParticles]);
+  }, [isFlap, animateParticles]);
 
   const triggerNoteOn = useCallback(
     (note) => {
@@ -575,6 +580,8 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
 
   // QWERTY keyboard listener
   useEffect(() => {
+    if (isFlap) return;
+
     const handleKeyDown = (e) => {
       if (!isVisibleRef.current) return;
       if (
@@ -609,7 +616,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [triggerNoteOn, triggerNoteOff]);
+  }, [isFlap, triggerNoteOn, triggerNoteOff]);
 
   return (
     <footer
@@ -617,66 +624,76 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       className="relative z-30 w-full overflow-hidden transition-colors duration-300 select-none py-6 bg-bg text-ink dark:bg-[#0c0a14] dark:text-white"
     >
       {/* REAL-TIME CANVAS PARTICLE LAYER (FLOATS UP ACROSS FULL FOOTER & PianoLidContact) */}
-      <canvas
-        ref={canvasRef}
-        className="pointer-events-none absolute inset-0 z-30 h-full w-full"
-      />
+      {!isFlap && (
+        <canvas
+          ref={canvasRef}
+          className="pointer-events-none absolute inset-0 z-30 h-full w-full"
+        />
+      )}
 
       {/* Contact / outro panel */}
       <PianoLidContact variant={variant} {...mergedContactContent} />
 
-      {/* --- 100% FULL WIDTH EDGE-TO-EDGE TALL PIANO KEYBOARD --- */}
-      <div
-        className="relative w-full overflow-hidden border-t border-b shadow-2xl border-black/40 bg-[#161616] dark:border-white/20 dark:bg-[#12101b]"
-      >
-        <div className="overflow-x-auto overflow-y-hidden no-scrollbar w-full">
-          <div
-            ref={keyContainerRef}
-            onPointerDown={handlePointerDown}
-            className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] min-w-[760px] w-full flex touch-none overflow-hidden"
-          >
-            {/* NATURAL NOTES LAYER */}
-            {whiteKeys.map((note) => {
-              const isActive = activeKeys.has(note.id);
-              return (
-                <button
-                  key={note.id}
-                  type="button"
-                  data-note-id={note.id}
-                  aria-label={`Piano key ${note.name}`}
-                  className={`relative flex-1 h-full border-r border-black/40 dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${isActive
-                    ? "bg-[#e3f900] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
-                    : "bg-white hover:bg-[#e3f900] dark:bg-white dark:hover:bg-[#f1f5f9]"
-                    }`}
-                />
-              );
-            })}
-
-            {/* SHARP NOTES LAYER */}
-            {blackKeys.map((note) => {
-              const isActive = activeKeys.has(note.id);
-              // Position black key over the boundary line of its corresponding white key index
-              const leftPercent = ((note.blackAfter + 1) / TOTAL_WHITE_KEYS) * 100;
-
-              return (
-                <button
-                  key={note.id}
-                  type="button"
-                  data-note-id={note.id}
-                  aria-label={`Piano black key ${note.name}`}
-                  style={{
-                    left: `calc(${leftPercent}% - 1.15rem)`,
-                  }}
-                  className={`absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${isActive
-                    ? "bg-[#3a3a3a] dark:bg-[#332f48] translate-y-[3px]"
-                    : "bg-black hover:bg-[#262626] dark:bg-black dark:hover:bg-[#1a1a1a]"
-                    }`}
-                />
-              );
-            })}
+      {/* --- FOOTER INTERACTIVE ELEMENT (PIANO KEYBOARD OR FLAP MINI-GAME) --- */}
+      {isFlap ? (
+        <div className="relative w-full overflow-hidden border-t border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
+          <div className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] w-full">
+            <Flap />
           </div>
         </div>
-      </div>
+      ) : (
+        <div
+          className="relative w-full overflow-hidden border-t border-b shadow-2xl border-black/40 bg-[#161616] dark:border-white/20 dark:bg-[#12101b]"
+        >
+          <div className="overflow-x-auto overflow-y-hidden no-scrollbar w-full">
+            <div
+              ref={keyContainerRef}
+              onPointerDown={handlePointerDown}
+              className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] min-w-[760px] w-full flex touch-none overflow-hidden"
+            >
+              {/* NATURAL NOTES LAYER */}
+              {whiteKeys.map((note) => {
+                const isActive = activeKeys.has(note.id);
+                return (
+                  <button
+                    key={note.id}
+                    type="button"
+                    data-note-id={note.id}
+                    aria-label={`Piano key ${note.name}`}
+                    className={`relative flex-1 h-full border-r border-black/40 dark:border-black/20 rounded-b-[6px] transition-colors duration-75 outline-none ${isActive
+                      ? "bg-[#e3f900] dark:bg-[#cbd5e1] shadow-inner translate-y-[3px]"
+                      : "bg-white hover:bg-[#e3f900] dark:bg-white dark:hover:bg-[#f1f5f9]"
+                      }`}
+                  />
+                );
+              })}
+
+              {/* SHARP NOTES LAYER */}
+              {blackKeys.map((note) => {
+                const isActive = activeKeys.has(note.id);
+                // Position black key over the boundary line of its corresponding white key index
+                const leftPercent = ((note.blackAfter + 1) / TOTAL_WHITE_KEYS) * 100;
+
+                return (
+                  <button
+                    key={note.id}
+                    type="button"
+                    data-note-id={note.id}
+                    aria-label={`Piano black key ${note.name}`}
+                    style={{
+                      left: `calc(${leftPercent}% - 1.15rem)`,
+                    }}
+                    className={`absolute top-0 z-20 h-[60%] w-8 sm:w-10 md:w-12 lg:w-14 rounded-b-[6px] shadow-xl transition-colors duration-75 outline-none ${isActive
+                      ? "bg-[#3a3a3a] dark:bg-[#332f48] translate-y-[3px]"
+                      : "bg-black hover:bg-[#262626] dark:bg-black dark:hover:bg-[#1a1a1a]"
+                      }`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 }

@@ -53,6 +53,21 @@ export default {
       },
       initialValue: "classic",
     },
+    {
+      name: "footerInteractive",
+      title: "Footer interactive element",
+      description:
+        'Which interactive element renders at the bottom of the footer. "Piano" is the 3-octave interactive piano keyboard; "Flap" is the interactive pixel flap mini-game. Defaults to Piano.',
+      type: "string",
+      options: {
+        list: [
+          { title: "Piano Keyboard", value: "piano" },
+          { title: "Flap Mini-Game", value: "flap" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "piano",
+    },
   ],
   preview: {
     select: { themeName: "selectedTheme.name" },

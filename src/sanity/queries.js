@@ -185,7 +185,8 @@ export const siteSettingsQuery = /* groq */ `*[_type == "siteSettings"][0]{
   "customFontFileUrl": customFontFile.asset->url,
   customFontFamily,
   showBackgroundGrid,
-  workPageTemplate
+  workPageTemplate,
+  footerInteractive
 }`;
 
 export const archiveCategoriesQuery = /* groq */ `*[_type == "archiveCategory"] | order(displayOrder asc){
