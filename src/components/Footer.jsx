@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import PianoLidContact from "./PianoLidContact";
 import Flap from "./Flap";
+import SliceBlade from "./SliceBlade";
+import StackTower from "./StackTower";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { footerContactQuery, siteSettingsQuery } from "../sanity/queries";
 import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
@@ -97,7 +99,11 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
   // just falls through to PianoLidContact's own default parameter.
   const { data: footerDoc } = useSanityQuery(footerContactQuery, {}, null);
   const { data: siteSettings } = useSanityQuery(siteSettingsQuery, {}, null);
-  const isFlap = siteSettings?.footerInteractive === "flap";
+  const interactiveMode = siteSettings?.footerInteractive || "piano";
+  const isFlap = interactiveMode === "flap";
+  const isSlice = interactiveMode === "slice";
+  const isStack = interactiveMode === "stack";
+  const isPiano = !isFlap && !isSlice && !isStack;
   const sanityContactContent = footerDoc
     ? {
       eyebrow: footerDoc.eyebrow,
@@ -410,7 +416,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
 
   // --- VISIBILITY OBSERVER & FLOATING MUSICAL NOTES SPAWNER (FLOATS UP THROUGH PianoLidContact) ---
   useEffect(() => {
-    if (isFlap) return;
+    if (!isPiano) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -473,7 +479,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       clearInterval(interval);
       observer.disconnect();
     };
-  }, [isFlap, animateParticles]);
+  }, [isPiano, animateParticles]);
 
   const triggerNoteOn = useCallback(
     (note) => {
@@ -558,6 +564,8 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
 
   // Global pointer up / move listener for seamless glissando swipe across keys
   useEffect(() => {
+    if (!isPiano) return;
+
     const onWindowPointerMove = (e) => {
       if (isPointerDownRef.current) {
         handlePointerMove(e);
@@ -576,11 +584,11 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       window.removeEventListener("pointerup", onWindowPointerUp);
       window.removeEventListener("pointercancel", onWindowPointerUp);
     };
-  }, [handlePointerMove, handlePointerUp]);
+  }, [isPiano, handlePointerMove, handlePointerUp]);
 
   // QWERTY keyboard listener
   useEffect(() => {
-    if (isFlap) return;
+    if (!isPiano) return;
 
     const handleKeyDown = (e) => {
       if (!isVisibleRef.current) return;
@@ -616,7 +624,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isFlap, triggerNoteOn, triggerNoteOff]);
+  }, [isPiano, triggerNoteOn, triggerNoteOff]);
 
   return (
     <footer
@@ -624,7 +632,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       className="relative z-30 w-full overflow-hidden transition-colors duration-300 select-none py-6 bg-bg text-ink dark:bg-[#0c0a14] dark:text-white"
     >
       {/* REAL-TIME CANVAS PARTICLE LAYER (FLOATS UP ACROSS FULL FOOTER & PianoLidContact) */}
-      {!isFlap && (
+      {isPiano && (
         <canvas
           ref={canvasRef}
           className="pointer-events-none absolute inset-0 z-30 h-full w-full"
@@ -634,14 +642,32 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       {/* Contact / outro panel */}
       <PianoLidContact variant={variant} {...mergedContactContent} />
 
-      {/* --- FOOTER INTERACTIVE ELEMENT (PIANO KEYBOARD OR FLAP MINI-GAME) --- */}
-      {isFlap ? (
+      {/* --- FOOTER INTERACTIVE ELEMENT (PIANO KEYBOARD, FLAP MINI-GAME, OR SLICE BLADE) --- */}
+      {isFlap && (
         <div className="relative w-full overflow-hidden border-t border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
           <div className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] w-full">
             <Flap />
           </div>
         </div>
-      ) : (
+      )}
+
+      {isSlice && (
+        <div className="relative w-full overflow-hidden border-t border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
+          <div className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] w-full">
+            <SliceBlade />
+          </div>
+        </div>
+      )}
+
+      {isStack && (
+        <div className="relative w-full overflow-hidden border-t border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
+          <div className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] w-full">
+            <StackTower />
+          </div>
+        </div>
+      )}
+
+      {isPiano && (
         <div
           className="relative w-full overflow-hidden border-t border-b shadow-2xl border-black/40 bg-[#161616] dark:border-white/20 dark:bg-[#12101b]"
         >

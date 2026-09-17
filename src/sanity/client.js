@@ -2,11 +2,16 @@ import { createClient } from "@sanity/client";
 import { createImageUrlBuilder } from "@sanity/image-url";
 import { projectId, dataset, apiVersion, hasSanityConfig } from "./env";
 
-// `useCdn: true` — every read on the public site is anonymous/published
-// content, so the fast, cached CDN endpoint is preferred over the
-// live API used inside the Studio itself.
+// `useCdn: import.meta.env.PROD` — in production, the fast, cached CDN
+// endpoint is used; in development, the live API is used so Studio edits
+// reflect immediately on reload without waiting for CDN edge cache invalidation.
 export const sanityClient = hasSanityConfig
-  ? createClient({ projectId, dataset, apiVersion, useCdn: true })
+  ? createClient({
+    projectId,
+    dataset,
+    apiVersion,
+    useCdn: import.meta.env.PROD,
+  })
   : null;
 
 const builder = sanityClient ? createImageUrlBuilder(sanityClient) : null;

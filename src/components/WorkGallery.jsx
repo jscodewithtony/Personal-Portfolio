@@ -81,7 +81,7 @@ function GalleryProjectCard({ project, size }) {
       </div>
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between gap-4">
-          <p className={`font-display font-extrabold normal-case tracking-tight text-ink dark:text-white ${cls.title}`}>
+          <p className={`font-display font-bold normal-case tracking-tight text-ink dark:text-white ${cls.title}`}>
             {project.title}
           </p>
           {project.slug && (
