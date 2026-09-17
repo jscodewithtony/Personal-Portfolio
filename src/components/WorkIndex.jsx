@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectsQuery } from "../sanity/queries";
 import { imageUrl } from "../sanity/client";
+import ArchiveSection from "./ArchiveSection";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -354,7 +355,18 @@ function WorkIndex() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slots[0]]);
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect): ScrollTrigger's pin mutates the DOM
+  // directly (wraps the section in a pin-spacer) outside React's
+  // tracking. On unmount, React removes this component's DOM nodes
+  // during its synchronous commit phase, before any useEffect cleanup
+  // runs — so a plain useEffect's st.kill() here would fire too late,
+  // after React already tried (and failed, with a removeChild error) to
+  // remove nodes GSAP had rearranged. useLayoutEffect cleanup runs
+  // synchronously in that same commit phase, before React's own DOM
+  // removal, so the pin reverts first. This matters because WorkIndex
+  // can now unmount at runtime — the siteSettings.workPageTemplate
+  // toggle swaps it for WorkGallery once the query resolves.
+  useLayoutEffect(() => {
     if (status !== "ready" || !projects.length) return;
     const section = sectionRef.current;
     const list = listRef.current;
@@ -405,7 +417,7 @@ function WorkIndex() {
       scrollTriggerRef.current = st;
 
       return () => {
-        st.kill();
+        st.kill(true);
         scrollTriggerRef.current = null;
       };
     });
@@ -528,6 +540,8 @@ function WorkIndex() {
           />
         </div>
       </section>
+
+      <ArchiveSection />
     </>
   );
 }

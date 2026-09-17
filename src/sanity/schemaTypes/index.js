@@ -8,6 +8,7 @@ import project from "./project";
 import statCard from "./statCard";
 import testimonial from "./testimonial";
 import article from "./article";
+import archiveCategory from "./archiveCategory";
 import { portableTextObjects } from "./objects/portableTextObjects";
 
 export const singletonTypes = new Set([
@@ -29,5 +30,6 @@ export const schemaTypes = [
   statCard,
   testimonial,
   article,
+  archiveCategory,
   ...portableTextObjects,
 ];

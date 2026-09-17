@@ -2,8 +2,11 @@ import { lazy, Suspense, useRef, useState } from "react";
 import Header from "../components/Header";
 import { useSeo } from "../hooks/useSeo";
 import WorkIndex from "../components/WorkIndex";
+import WorkGallery from "../components/WorkGallery";
 import CanvasCursor from "../components/CanvasCursor";
 import ProjectContactForm from "../components/ProjectContactForm";
+import { useSanityQuery } from "../sanity/useSanityQuery";
+import { siteSettingsQuery } from "../sanity/queries";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
@@ -19,6 +22,18 @@ function WorkPage({ theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
 
+  // "classic" is the safe default: it renders unless the field is
+  // confidently read as "gallery". Loading, empty (doc/field unset),
+  // and error states all fall through to classic rather than flashing
+  // or guessing.
+  const { data: siteSettings, status: siteSettingsStatus } = useSanityQuery(
+    siteSettingsQuery,
+    {},
+    null,
+  );
+  const useGalleryTemplate =
+    siteSettingsStatus === "ready" && siteSettings?.workPageTemplate === "gallery";
+
   return (
     <div className="site-shell relative min-h-[100dvh] bg-bg font-display text-ink uppercase transition-colors duration-300 dark:bg-[#0c0a14] dark:text-white">
       <Header
@@ -29,7 +44,7 @@ function WorkPage({ theme, onToggleTheme }) {
         onToggleTheme={onToggleTheme}
       />
 
-      <WorkIndex />
+      {useGalleryTemplate ? <WorkGallery /> : <WorkIndex />}
 
       <ProjectContactForm />
 

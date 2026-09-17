@@ -39,6 +39,20 @@ export default {
       type: "boolean",
       initialValue: true,
     },
+    {
+      name: "workPageTemplate",
+      title: "Work page template",
+      description: "Which layout renders /work. \"Gallery\" is the newer grid + Archive design. Defaults to Classic — nothing changes until this is switched.",
+      type: "string",
+      options: {
+        list: [
+          { title: "Classic", value: "classic" },
+          { title: "Gallery", value: "gallery" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "classic",
+    },
   ],
   preview: {
     select: { themeName: "selectedTheme.name" },

@@ -98,6 +98,7 @@ export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOr
   role,
   displayOrder,
   externalLink,
+  tags,
   projectInfoFields[]{ label, fieldType, textValue, selectValue, numberValue }
 }`;
 
@@ -183,5 +184,14 @@ export const siteSettingsQuery = /* groq */ `*[_type == "siteSettings"][0]{
   customFontUrl,
   "customFontFileUrl": customFontFile.asset->url,
   customFontFamily,
-  showBackgroundGrid
+  showBackgroundGrid,
+  workPageTemplate
+}`;
+
+export const archiveCategoriesQuery = /* groq */ `*[_type == "archiveCategory"] | order(displayOrder asc){
+  _id,
+  title,
+  categoryTag,
+  dateRangeLabel,
+  items[]{ media, alt }
 }`;
