@@ -14,9 +14,10 @@ import { imageUrl } from "../sanity/client";
 function ArchiveRow({ category }) {
   const items = category.items || [];
   return (
-    <div className="flex flex-col gap-6 border-b border-ink/10 py-8 sm:flex-row sm:items-center sm:justify-between sm:gap-10 dark:border-white/10">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-8">
-        <p className="font-display text-2xl font-bold normal-case tracking-tight text-ink sm:text-3xl md:text-4xl dark:text-white">
+    <div className="flex flex-col gap-6 border-b border-ink/10 py-12 sm:col-span-3 sm:grid sm:grid-cols-subgrid sm:items-center sm:py-10 md:py-14 dark:border-white/10">
+      {/* Column 1: Title + Date (auto-adjusts to the widest title across rows) */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6 md:gap-8 sm:whitespace-nowrap">
+        <p className="font-display text-2xl font-medium normal-case tracking-tight text-ink sm:text-2xl md:text-3xl dark:text-white">
           {category.title}
         </p>
         {category.dateRangeLabel && (
@@ -24,14 +25,20 @@ function ArchiveRow({ category }) {
             {category.dateRangeLabel}
           </p>
         )}
+      </div>
+
+      {/* Column 2: Category Tag (vertically aligned across all rows) */}
+      <div className="flex items-center">
         {category.categoryTag && (
-          <div className="inline-block w-fit rounded-none border border-ink/20 bg-[#f1f0fa] px-3.5 py-1 font-display text-xs font-bold uppercase tracking-wider text-ink/90 dark:border-white/30 dark:bg-white/10 dark:text-white/90">
+          <div className="inline-block w-fit rounded-none border border-ink/20 px-3.5 py-1 font-display text-xs font-bold uppercase tracking-wider text-ink/90 dark:border-white/30 dark:bg-white/10 dark:text-white/90">
             {category.categoryTag}
           </div>
         )}
       </div>
-      {items.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+
+      {/* Column 3: Thumbnails (aligned to right) */}
+      {items.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-3 sm:justify-end sm:gap-4">
           {items.map((item, i) => {
             const url = imageUrl(item.media, 400);
             if (!url) return null;
@@ -47,6 +54,8 @@ function ArchiveRow({ category }) {
             );
           })}
         </div>
+      ) : (
+        <div />
       )}
     </div>
   );
@@ -61,10 +70,10 @@ function ArchiveSection() {
   return (
     <section className="bg-bg pl-6 pt-24 pb-12 text-ink transition-colors duration-300 sm:pt-32 sm:pb-16 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white">
       <div className="pr-6 md:pr-12 lg:pr-16">
-        <h2 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
+        <h2 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-4xl md:text-5xl lg:text-[5rem]">
           Archive
         </h2>
-        <div className="mt-8 flex flex-col border-t border-ink/10 sm:mt-10 dark:border-white/10">
+        <div className="mt-8 flex flex-col border-t border-ink/10 sm:mt-10 sm:grid sm:grid-cols-[max-content_auto_1fr] sm:gap-x-8 md:gap-x-12 dark:border-white/10">
           {archiveCategories.map((category) => (
             <ArchiveRow key={category._id} category={category} />
           ))}
