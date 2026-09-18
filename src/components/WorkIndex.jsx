@@ -49,6 +49,7 @@ function mapProject(doc) {
     infoRows: infoRows
       .map((field) => ({ label: field.label, value: getInfoRowValue(field) }))
       .filter((row) => row.value != null && row.value !== ""),
+    caseStudyLinkLabel: doc.caseStudyLinkLabel || "View Case study",
   };
 }
 
@@ -107,13 +108,13 @@ function MetaPanel({ project, metaRef, compact }) {
             data-transition-label={project.title}
             className={`mt-2 inline-block font-display text-[12px] normal-case tracking-wide text-primary transition-opacity hover:opacity-70`}
           >
-            View Case study →
+            {project.caseStudyLinkLabel} →
           </Link>
         ) : (
           <span
             className={`mt-2 inline-block font-display text-sm normal-case tracking-wide text-primary transition-opacity hover:opacity-70`}
           >
-            View Case study →
+            {project.caseStudyLinkLabel} →
           </span>
         )
       )}

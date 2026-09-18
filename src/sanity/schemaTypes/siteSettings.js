@@ -40,6 +40,13 @@ export default {
       initialValue: true,
     },
     {
+      name: "customCursorEnabled",
+      title: "Custom cursor trail",
+      description: "Sitewide toggle for the decorative mouse-trail cursor effect. Off disables it everywhere on the site. Defaults to on (also stays on if this is left unset).",
+      type: "boolean",
+      initialValue: true,
+    },
+    {
       name: "workPageTemplate",
       title: "Work page template",
       description: "Which layout renders /work. \"Gallery\" is the newer grid + Archive design. Defaults to Classic — nothing changes until this is switched.",

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const useCanvasCursor = () => {
+const useCanvasCursor = (enabled = true) => {
   function n(e) {
     this.init(e || {});
   }
@@ -85,36 +85,47 @@ const useCanvasCursor = () => {
     },
   };
 
+  // c/l were originally declared *inside* onMousemove, recreated fresh
+  // on every call and then swapped in via removeEventListener(
+  // "mousemove", onMousemove) + addEventListener("mousemove", c) — so
+  // once the user moved their mouse once, the only handle the outer
+  // effect's cleanup still had (`onMousemove`) was already gone from
+  // `document`, and the real active listeners (these inner closures)
+  // were unreachable from outside, so they were never removed on
+  // unmount/toggle-off. Hoisted to stable, named outer-scope functions
+  // so the cleanup below can always remove the actual live listeners
+  // regardless of which phase (pre- or post-first-move) it's in.
+  function trackPointer(evt) {
+    if (evt.touches) {
+      pos.x = evt.touches[0].clientX;
+      pos.y = evt.touches[0].clientY;
+    } else {
+      pos.x = evt.clientX;
+      pos.y = evt.clientY;
+    }
+  }
+  function trackTouchStart(evt) {
+    if (evt.touches && 1 === evt.touches.length) {
+      pos.x = evt.touches[0].clientX;
+      pos.y = evt.touches[0].clientY;
+    }
+  }
+  function initLines() {
+    lines = [];
+    for (var idx = 0; idx < E.trails; idx++) {
+      lines.push(new Line({ spring: 0.4 + (idx / E.trails) * 0.025 }));
+    }
+  }
+
   function onMousemove(e) {
     if (window.innerWidth < 1024) return;
-    function o() {
-      lines = [];
-      for (var idx = 0; idx < E.trails; idx++) {
-        lines.push(new Line({ spring: 0.4 + (idx / E.trails) * 0.025 }));
-      }
-    }
-    function c(evt) {
-      if (evt.touches) {
-        pos.x = evt.touches[0].clientX;
-        pos.y = evt.touches[0].clientY;
-      } else {
-        pos.x = evt.clientX;
-        pos.y = evt.clientY;
-      }
-    }
-    function l(evt) {
-      if (evt.touches && 1 === evt.touches.length) {
-        pos.x = evt.touches[0].clientX;
-        pos.y = evt.touches[0].clientY;
-      }
-    }
     document.removeEventListener("mousemove", onMousemove);
     document.removeEventListener("touchstart", onMousemove);
-    document.addEventListener("mousemove", c);
-    document.addEventListener("touchmove", c, { passive: true });
-    document.addEventListener("touchstart", l, { passive: true });
-    c(e);
-    o();
+    document.addEventListener("mousemove", trackPointer);
+    document.addEventListener("touchmove", trackPointer, { passive: true });
+    document.addEventListener("touchstart", trackTouchStart, { passive: true });
+    trackPointer(e);
+    initLines();
     render();
   }
 
@@ -209,6 +220,11 @@ const useCanvasCursor = () => {
   };
 
   useEffect(() => {
+    // Disabled: skip setup entirely — no mousemove listener, no rAF
+    // loop, no canvas context ever created. Toggling back on re-runs
+    // this effect from scratch (enabled is a dependency below).
+    if (!enabled) return;
+
     renderCanvas();
 
     const onFocus = () => {
@@ -232,12 +248,15 @@ const useCanvasCursor = () => {
       }
       document.removeEventListener("mousemove", onMousemove);
       document.removeEventListener("touchstart", onMousemove);
+      document.removeEventListener("mousemove", trackPointer);
+      document.removeEventListener("touchmove", trackPointer);
+      document.removeEventListener("touchstart", trackTouchStart);
       document.body.removeEventListener("orientationchange", resizeCanvas);
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("focus", onFocus);
       window.removeEventListener("blur", onBlur);
     };
-  }, []);
+  }, [enabled]);
 };
 
 export default useCanvasCursor;

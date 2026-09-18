@@ -140,6 +140,14 @@ export default {
       type: "url",
       group: "overview",
     },
+    {
+      name: "caseStudyLinkLabel",
+      title: "Case Study Link Label",
+      description: 'Overrides the "View Case Study" link text shown on this project\'s card (Work index and gallery templates). Leave blank to use the default.',
+      type: "string",
+      group: "overview",
+      placeholder: "View Case Study",
+    },
 
     // --- Content ---
     {

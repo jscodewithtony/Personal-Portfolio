@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectsQuery } from "../sanity/queries";
 import { imageUrl } from "../sanity/client";
 import ArchiveSection from "./ArchiveSection";
+import DirectionHover from "./DirectionHover";
 
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio?node-id=1003-552
 // Alternate /work template — additive, does not touch WorkIndex.jsx.
@@ -62,20 +64,35 @@ function mapProject(doc) {
     mediaUrl: imageUrl(doc.mainImage, 1600),
     mediaAlt: doc.mainImage?.alt,
     tags: doc.tags || [],
+    caseStudyLinkLabel: doc.caseStudyLinkLabel || "View Case Study",
   };
 }
 
-function GalleryProjectCard({ project, size }) {
+function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd }) {
+  const navigate = useNavigate();
   const cls = CARD_SIZE_CLASSES[size];
+
+  const handleCardClick = (e) => {
+    if (e.target.closest("a")) return;
+    if (project.slug) {
+      navigate(`/projects/${project.slug}`);
+    }
+  };
+
   return (
-    <div className={`flex flex-col gap-2 ${cls.wrap}`}>
+    <div
+      onClick={handleCardClick}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+      className={`group flex flex-col gap-2 ${cls.wrap} cursor-pointer md:cursor-none`}
+    >
       <div className="aspect-[669/539] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
         {project.mediaUrl && (
           <img
             src={project.mediaUrl}
             alt={project.mediaAlt || project.title}
             loading="lazy"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         )}
       </div>
@@ -88,9 +105,9 @@ function GalleryProjectCard({ project, size }) {
             <Link
               to={`/projects/${project.slug}`}
               data-transition-label={project.title}
-              className={`shrink-0 whitespace-nowrap border-b border-primary font-display normal-case tracking-tight text-primary transition-opacity hover:opacity-70 dark:border-[#114AFC] dark:text-[#114AFC] ${cls.link}`}
+              className={`shrink-0 whitespace-nowrap border-b border-primary font-display normal-case tracking-tight text-primary dark:border-white dark:text-white ${cls.link}`}
             >
-              View Case Study →
+              <DirectionHover>{project.caseStudyLinkLabel}</DirectionHover> →
             </Link>
           )}
         </div>
@@ -115,9 +132,114 @@ function WorkGallery() {
   const { data: projectDocs, status: projectsStatus } = useSanityQuery(projectsQuery, {}, []);
   const projects = projectsStatus === "ready" ? projectDocs.map(mapProject) : [];
 
+  const sectionRef = useRef(null);
+  const followerRef = useRef(null);
+  const mousePosRef = useRef({ x: -200, y: -200 });
+  const posRef = useRef({ x: -200, y: -200 });
+  const scaleRef = useRef(0);
+  const activeHoverCardRef = useRef(false);
+
+  useEffect(() => {
+    // Only run on desktop/fine pointer devices
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    if (isTouch) return;
+
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const handleMouseMove = (e) => {
+      mousePosRef.current = { x: e.clientX, y: e.clientY };
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+
+    let animId;
+    let isVisible = true;
+
+    const tick = () => {
+      posRef.current.x += (mousePosRef.current.x - posRef.current.x) * 0.2;
+      posRef.current.y += (mousePosRef.current.y - posRef.current.y) * 0.2;
+
+      const targetScale = isVisible && activeHoverCardRef.current ? 1 : 0;
+      scaleRef.current += (targetScale - scaleRef.current) * 0.22;
+
+      if (followerRef.current) {
+        followerRef.current.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0) translate(-50%, -50%) scale(${scaleRef.current})`;
+        followerRef.current.style.opacity = scaleRef.current > 0.01 ? "1" : "0";
+      }
+
+      // Keep ticking until scaled down completely to 0 even if isVisible became false
+      if (!isVisible && scaleRef.current <= 0.01) {
+        animId = null;
+        return;
+      }
+
+      animId = requestAnimationFrame(tick);
+    };
+
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible) {
+            if (!animId) {
+              tick();
+            }
+          } else {
+            activeHoverCardRef.current = false;
+            document.body.dataset.cursorProjectHover = "false";
+            // Ensure tick runs to finish scale-down or reset immediately
+            if (!animId) {
+              tick();
+            }
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+    sectionObserver.observe(section);
+
+    animId = requestAnimationFrame(tick);
+
+    return () => {
+      document.body.dataset.cursorProjectHover = "false";
+      sectionObserver.disconnect();
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (animId) cancelAnimationFrame(animId);
+    };
+  }, []);
+
+  const handleHoverStart = () => {
+    activeHoverCardRef.current = true;
+    document.body.dataset.cursorProjectHover = "true";
+  };
+
+  const handleHoverEnd = () => {
+    activeHoverCardRef.current = false;
+    document.body.dataset.cursorProjectHover = "false";
+  };
+
   return (
     <>
-      <section className="bg-bg pl-6 pt-20 pb-12 text-ink transition-colors duration-300 sm:pb-16 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white">
+      {/* SCOPED CUSTOM CIRCULAR CURSOR FOLLOWER */}
+      <div
+        ref={followerRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed top-0 left-0 z-50 flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-primary text-white shadow-2xl shadow-primary/40 opacity-0 will-change-transform dark:bg-[#114AFC] dark:shadow-[#114AFC]/40"
+        style={{ transform: "translate3d(-200px, -200px, 0) translate(-50%, -50%) scale(0)" }}
+      >
+        <div className="select-none font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-center leading-[1.15] text-white drop-shadow-sm">
+          VIEW
+          <br />
+          PROJECT
+        </div>
+      </div>
+
+      <section
+        ref={sectionRef}
+        onMouseLeave={handleHoverEnd}
+        className="bg-bg pl-6 pt-20 pb-12 text-ink transition-colors duration-300 sm:pb-16 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white"
+      >
         <div className="pr-6 md:pr-12 lg:pr-16">
           <h1 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
             Selected Work
@@ -127,7 +249,13 @@ function WorkGallery() {
         {projects.length > 0 && (
           <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 pr-6 sm:mt-20 md:pr-12 lg:grid-cols-12 lg:pr-16">
             {projects.map((project, i) => (
-              <GalleryProjectCard key={project.id} project={project} size={GRID_COLUMN_SIZE[i % 3]} />
+              <GalleryProjectCard
+                key={project.id}
+                project={project}
+                size={GRID_COLUMN_SIZE[i % 3]}
+                onHoverStart={handleHoverStart}
+                onHoverEnd={handleHoverEnd}
+              />
             ))}
           </div>
         )}
