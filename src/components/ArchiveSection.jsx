@@ -43,7 +43,10 @@ function ArchiveRow({ category }) {
             const url = imageUrl(item.media, 400);
             if (!url) return null;
             return (
-              <div key={i} className="h-24 w-32 shrink-0 overflow-hidden bg-ink/5 sm:h-28 sm:w-36 dark:bg-white/5">
+              <div
+                key={i}
+                className="relative z-0 h-24 w-32 shrink-0 overflow-hidden bg-ink/5 transition-all duration-300 ease-out hover:z-10 hover:scale-120 hover:shadow-xl sm:h-28 sm:w-36 dark:bg-white/5 dark:hover:shadow-black/60 motion-reduce:transition-none motion-reduce:hover:scale-100"
+              >
                 <img
                   src={url}
                   alt={item.alt || category.title}
