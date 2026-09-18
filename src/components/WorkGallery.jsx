@@ -56,6 +56,23 @@ const CARD_SIZE_CLASSES = {
   },
 };
 
+// Text-type projectInfoFields rows only (e.g. Type/Industry/Timeline/
+// Category). If any row has `showOnGalleryCard === true`, only the
+// selected rows are shown; otherwise falls back to showing all text
+// rows so projects without explicit selection don't break. Select/Number
+// rows are intentionally excluded. Empty when a project has no text rows
+// (e.g. Aurelle, Meridian), rendering nothing in that slot.
+function getGalleryInfoValues(doc) {
+  const fields = doc.projectInfoFields || [];
+  const textRows = fields.filter((f) => f.fieldType === "text" && f.textValue?.trim());
+  if (textRows.length === 0) return [];
+
+  const selectedRows = textRows.filter((f) => f.showOnGalleryCard === true);
+  const activeRows = selectedRows.length > 0 ? selectedRows : textRows;
+
+  return activeRows.map((f) => f.textValue.trim());
+}
+
 function mapProject(doc) {
   return {
     id: doc._id,
@@ -63,7 +80,7 @@ function mapProject(doc) {
     title: toTitleCase(doc.title),
     mediaUrl: imageUrl(doc.mainImage, 1600),
     mediaAlt: doc.mainImage?.alt,
-    tags: doc.tags || [],
+    infoValues: getGalleryInfoValues(doc),
     caseStudyLinkLabel: doc.caseStudyLinkLabel || "View Case Study",
   };
 }
@@ -111,14 +128,14 @@ function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd }) {
             </Link>
           )}
         </div>
-        {project.tags.length > 0 && (
-          <div className="flex flex-col gap-1">
-            {project.tags.map((tag) => (
+        {project.infoValues.length > 0 && (
+          <div className="flex flex-col gap-y-1">
+            {project.infoValues.map((val, idx) => (
               <span
-                key={tag}
+                key={idx}
                 className={`font-display normal-case text-ink/60 dark:text-white/60 ${cls.tag}`}
               >
-                {tag}
+                {val}
               </span>
             ))}
           </div>

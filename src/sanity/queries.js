@@ -100,7 +100,7 @@ export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOr
   externalLink,
   caseStudyLinkLabel,
   tags,
-  projectInfoFields[]{ label, fieldType, textValue, selectValue, numberValue }
+  projectInfoFields[]{ label, fieldType, textValue, selectValue, numberValue, showOnGalleryCard }
 }`;
 
 export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.current == $slug][0]{

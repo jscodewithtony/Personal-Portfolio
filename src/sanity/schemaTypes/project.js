@@ -241,6 +241,15 @@ export default {
               placeholder: "2024",
               hidden: ({ parent }) => parent?.fieldType !== "number",
             },
+            {
+              name: "showOnGalleryCard",
+              title: "Show on Gallery Card",
+              description:
+                "Display this value as a subtitle tag on the Work gallery card (text fields only). Leave all unchecked to show every text field.",
+              type: "boolean",
+              initialValue: false,
+              hidden: ({ parent }) => parent?.fieldType !== "text",
+            },
           ],
           // The Work index page resolves "Year" specifically by matching
           // this label (case-insensitive) and requires it to be a Number
