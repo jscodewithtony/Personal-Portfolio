@@ -258,7 +258,7 @@ function WorkGallery() {
         className="bg-bg pl-6 pt-20 pb-12 text-ink transition-colors duration-300 sm:pb-16 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white"
       >
         <div className="pr-6 md:pr-12 lg:pr-16">
-          <h1 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-7xl md:text-8xl lg:text-[8.5rem]">
+          <h1 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-7xl md:text-[clamp(6rem,4.33rem+3.47vw,8.5rem)]">
             Selected Work
           </h1>
         </div>

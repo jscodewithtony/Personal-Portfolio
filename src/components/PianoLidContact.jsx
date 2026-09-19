@@ -87,7 +87,7 @@ function PianoLidContact({
           </p>
         )}
         <h2
-          className="select-none font-display text-4xl font-black uppercase leading-[1 ] tracking-tight sm:text-3xl md:text-8xl lg:text-[10rem] mb-10 sm:mb-12 md:mb-14 text-left md:text-center text-ink dark:text-white"
+          className="select-none font-display text-4xl font-black uppercase leading-[1 ] tracking-tight sm:text-3xl md:text-[clamp(6rem,3.33rem+5.56vw,10rem)] mb-10 sm:mb-12 md:mb-14 text-left md:text-center text-ink dark:text-white"
         >
           {headlineLines.filter(Boolean).map((line, i) => (
             <span key={i} className="block">

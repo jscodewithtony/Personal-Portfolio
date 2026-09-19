@@ -73,7 +73,7 @@ function ArchiveSection() {
   return (
     <section className="bg-bg pl-6 pt-24 pb-12 text-ink transition-colors duration-300 sm:pt-32 sm:pb-16 md:pl-12 lg:pl-16 dark:bg-[#0c0a14] dark:text-white">
       <div className="pr-6 md:pr-12 lg:pr-16">
-        <h2 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-4xl md:text-5xl lg:text-[5rem]">
+        <h2 className="font-display text-5xl font-semibold normal-case leading-[0.95] tracking-tighter sm:text-4xl md:text-[clamp(3rem,1.67rem+2.78vw,5rem)]">
           Archive
         </h2>
         <div className="mt-8 flex flex-col border-t border-ink/10 sm:mt-10 sm:grid sm:grid-cols-[max-content_auto_1fr] sm:gap-x-8 md:gap-x-12 dark:border-white/10">

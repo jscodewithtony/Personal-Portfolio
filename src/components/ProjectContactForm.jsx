@@ -160,7 +160,7 @@ function ProjectContactForm() {
       <div className="mx-auto w-full max-w-4xl px-6 py-20 sm:px-10 md:px-14 md:py-28 lg:px-16">
         <Reveal
           as="h2"
-          className="font-display text-4xl font-medium normal-case leading-[0.95] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl"
+          className="font-display text-4xl font-medium normal-case leading-[0.95] tracking-tight sm:text-6xl md:text-[clamp(4.5rem,3.5rem+2.08vw,6rem)]"
         >
           Got Something Serious
         </Reveal>

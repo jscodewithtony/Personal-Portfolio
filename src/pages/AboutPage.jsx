@@ -498,7 +498,7 @@ function KnowMoreHeadlineWithAnnotations({ headlineText, annotations }) {
     <div ref={containerRef} className="relative">
       <WordHeadline
         text={headlineText}
-        className="mt-16 text-5xl leading-[0.80] gap-y-2 sm:mt-40 sm:text-6xl md:text-8xl lg:text-[10rem] md:leading-[0.95] justify-start sm:justify-center text-left sm:text-center"
+        className="mt-16 text-5xl leading-[0.80] gap-y-2 sm:mt-40 sm:text-6xl md:text-[clamp(6rem,3.33rem+5.56vw,10rem)] md:leading-[0.95] justify-start sm:justify-center text-left sm:text-center"
         wordRef={handleWordRef}
       />
       {annotations.map((annotation) => {
@@ -892,7 +892,7 @@ function AboutPage({ theme, onToggleTheme }) {
         <WordHeadline
           text={heroHeadline}
           tag="h1"
-          className="relative z-10 mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-[clamp(6rem,-14rem+31.25vw,16rem)]"
+          className="relative z-10 mt-6 px-6 text-5xl sm:mt-10 sm:text-7xl md:text-[clamp(6rem,-14rem+25vw,16rem)]"
           animated={false}
         />
         {/* </CursorImageTrail> */}
@@ -1018,7 +1018,7 @@ function AboutPage({ theme, onToggleTheme }) {
           {/* 547:716 — second headline */}
           <WordHeadline
             text={philosophyHeadline}
-            className="mt-16 text-5xl leading-[0.80] gap-y-2 sm:mt-20 sm:text-6xl md:text-[clamp(6rem,-2rem+12.5vw,10rem)] md:leading-[0.95] justify-start sm:justify-center text-left sm:text-center"
+            className="mt-16 text-5xl leading-[0.80] gap-y-2 sm:mt-20 sm:text-6xl md:text-[clamp(6rem,-2rem+10vw,10rem)] md:leading-[0.95] justify-start sm:justify-center text-left sm:text-center"
           />
         </div>
 
@@ -1120,7 +1120,7 @@ function AboutPage({ theme, onToggleTheme }) {
               </a>
             )}
             <img src={iconMark} alt="" loading="lazy" className="h-12 w-12" />
-            <h3 className="w-min font-display text-2xl font-extrabold uppercase tracking-tight text-[#0d0c14] dark:text-white md:text-4xl leading-tight">
+            <h3 className="w-min font-display text-2xl font-extrabold uppercase tracking-tight text-[#0d0c14] dark:text-white sm:text-[clamp(1.5rem,1.125rem+0.94vw,2.25rem)] leading-tight">
               {experienceHeading}
             </h3>
             <div className="flex flex-col">
