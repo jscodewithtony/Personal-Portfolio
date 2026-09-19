@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import projectTekxera from "../assets/project-tekxera.webp";
@@ -9,6 +9,8 @@ import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectsQuery } from "../sanity/queries";
 import { urlFor, imageUrl } from "../sanity/client";
 import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
+import PasswordModal from "./PasswordModal";
+import { isProjectUnlocked } from "../utils/unlockedProjects";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -74,6 +76,8 @@ function mapSanityProject(doc) {
     thumbnailImage: thumbUrl || projectJewelry,
     thumbnailAlt: doc.thumbnail?.alt,
     slug: doc.slug,
+    isPasswordProtected: doc.isPasswordProtected === true,
+    caseStudyPassword: doc.caseStudyPassword || "",
   };
 }
 
@@ -95,6 +99,25 @@ function FeaturedProjects() {
   const bgWallRef = useRef(null);
   const bgRowsRef = useRef([]);
   const cardRefs = useRef([]);
+
+  const [lockedProjectModal, setLockedProjectModal] = useState(null);
+  const navigate = useNavigate();
+
+  const handleProjectClick = (e, project) => {
+    if (!project?.slug) return;
+    if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      setLockedProjectModal(project);
+    }
+  };
+
+  const handleModalSuccess = (slug) => {
+    setLockedProjectModal(null);
+    navigate(`/projects/${slug}`);
+  };
 
   // Mouse & Custom Cursor Refs (no re-renders, 60fps persistent RAF)
   const followerRef = useRef(null);
@@ -292,8 +315,9 @@ function FeaturedProjects() {
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
+    <>
+      <section
+        ref={sectionRef}
       id="featured-projects"
       onMouseLeave={() => {
         activeHoverCardRef.current = false;
@@ -342,16 +366,20 @@ function FeaturedProjects() {
       {/* INDIVIDUAL CLEAN CARD STAGE */}
       <div className="relative z-10 flex flex-col md:flex-row h-full w-full items-center justify-center pt-28 pb-10 md:py-4 px-4 sm:px-6 lg:px-10 gap-12 md:gap-0 pointer-events-none">
         {projects.map((project, index) => {
+          const isLocked = Boolean(project.isPasswordProtected && !isProjectUnlocked(project.slug));
           const CardTag = project.slug ? Link : "div";
           const cardTagProps = project.slug ? { to: `/projects/${project.slug}` } : {};
           return (
             <div
               key={index}
               ref={(el) => (cardRefs.current[index] = el)}
+              style={{ zIndex: 30 - index * 10 }}
               className="relative md:absolute md:inset-0 flex items-center justify-center pointer-events-auto will-change-transform w-full"
             >
               <CardTag
                 {...cardTagProps}
+                onClick={(e) => handleProjectClick(e, project)}
+                data-no-transition={isLocked ? "true" : undefined}
                 data-transition-label={project.client}
                 onMouseEnter={() => {
                   activeHoverCardRef.current = true;
@@ -361,7 +389,13 @@ function FeaturedProjects() {
                   activeHoverCardRef.current = false;
                   document.body.dataset.cursorProjectHover = "false";
                 }}
+                onMouseDown={(e) => {
+                  if (isLocked) {
+                    e.preventDefault();
+                  }
+                }}
                 onFocus={() => {
+                  if (isLocked) return;
                   const section = document.getElementById("featured-projects");
                   if (!section) return;
                   const isMobile = window.innerWidth < 768;
@@ -438,7 +472,16 @@ function FeaturedProjects() {
           );
         })}
       </div>
-    </section>
+
+      </section>
+
+      <PasswordModal
+        isOpen={Boolean(lockedProjectModal)}
+        onClose={() => setLockedProjectModal(null)}
+        project={lockedProjectModal}
+        onSuccess={handleModalSuccess}
+      />
+    </>
   );
 }
 

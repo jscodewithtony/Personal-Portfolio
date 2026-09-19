@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { PortableText } from "@portabletext/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,6 +9,7 @@ import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectBySlugQuery } from "../sanity/queries";
 import { imageUrl } from "../sanity/client";
 import { useSeo } from "../hooks/useSeo";
+import { isProjectUnlocked, unlockProject } from "../utils/unlockedProjects";
 
 const MenuOverlay = lazy(() => import("../components/MenuOverlay"));
 const Footer = lazy(() => import("../components/Footer"));
@@ -221,6 +223,130 @@ function getProjectInfoValue(field) {
   return field.textValue;
 }
 
+function CaseStudyPasswordGate({ project, onUnlock }) {
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isShaking, setIsShaking] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const expected = (project?.caseStudyPassword || "").trim();
+    const entered = password.trim();
+
+    if (expected && entered === expected) {
+      setErrorMessage("");
+      onUnlock();
+    } else {
+      setErrorMessage("Incorrect password. Please try again.");
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 500);
+      inputRef.current?.select();
+    }
+  };
+
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center px-4 py-16 sm:px-6">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          x: isShaking ? [-8, 8, -6, 6, -3, 3, 0] : 0,
+        }}
+        transition={{
+          duration: 0.3,
+          ease: [0.32, 0.72, 0, 1],
+          x: { duration: 0.4, ease: "easeInOut" },
+        }}
+        className="relative w-full max-w-[496px] border border-ink/10 bg-[#fbfbf9] p-8 text-[#0d0c14] shadow-[0_24px_64px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.6)] dark:border-white/10 dark:bg-[#12111a] dark:text-white dark:shadow-[0_24px_64px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.08)]"
+      >
+        <div className="flex w-full items-center justify-between">
+          <div className="flex h-[34px] items-center gap-[6px] border border-[rgba(13,12,20,0.15)] px-3 py-1 dark:border-white/15">
+            <span className="h-[6px] w-[6px] rounded-full bg-[#0d38bf] dark:bg-[#114AFC]" />
+            <span className="font-display text-[10px] font-bold uppercase tracking-[2px] text-[rgba(13,12,20,0.8)] dark:text-white/80">
+              Protected Case Study
+            </span>
+          </div>
+
+          <Link
+            to="/work"
+            aria-label="Back to Work"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 16 16"
+              stroke="currentColor"
+              strokeWidth="1.75"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l10 10M13 3L3 13" />
+            </svg>
+          </Link>
+        </div>
+
+        <div className="mt-5 flex flex-col items-start w-full">
+          <h1
+            className="font-display text-[30px] font-bold uppercase leading-[36px] tracking-[-0.75px] text-[#0d0c14] dark:text-white"
+          >
+            {project?.title || "Case Study"}
+          </h1>
+          <p className="mt-2 font-display text-[14px] font-normal leading-[22.75px] normal-case text-[rgba(13,12,20,0.6)] dark:text-white/60">
+            This case study is under a confidential NDA. Please enter the password provided to access the full work.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col w-full">
+          <div>
+            <input
+              ref={inputRef}
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (errorMessage) setErrorMessage("");
+              }}
+              placeholder="ENTER PASSWORD…"
+              className="h-[50px] w-full border border-[rgba(13,12,20,0.15)] bg-white/70 px-4 font-display text-[14px] uppercase tracking-[0.35px] text-ink placeholder:text-[rgba(13,12,20,0.4)] focus:border-[#0d38bf] focus:outline-none focus:ring-1 focus:ring-[#0d38bf]/20 dark:border-white/15 dark:bg-black/40 dark:text-white dark:placeholder:text-white/30 dark:focus:border-[#114AFC] dark:focus:ring-[#114AFC]/30"
+            />
+            {errorMessage && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 font-display text-xs font-semibold normal-case text-red-500 dark:text-red-400"
+              >
+                {errorMessage}
+              </motion.p>
+            )}
+          </div>
+
+          <div className="mt-4 flex flex-col gap-3 items-center w-full">
+            <button
+              type="submit"
+              className="flex h-[48px] w-full items-center justify-center bg-[#0d38bf] font-display text-[19px] font-bold uppercase tracking-[-0.6px] text-white shadow-[0px_10px_7.5px_rgba(13,56,191,0.25),0px_4px_3px_rgba(13,56,191,0.25)] transition-all hover:bg-[#0b2fa3] active:scale-[0.99] dark:bg-[#114AFC] dark:shadow-[0px_10px_15px_rgba(17,74,252,0.3)] dark:hover:bg-[#0d3ecf]"
+            >
+              Unlock Case Study
+            </button>
+
+            <Link
+              to="/work"
+              className="flex h-[40px] w-full items-center justify-center font-display text-[12px] font-bold uppercase tracking-[0.6px] text-[rgba(13,12,20,0.6)] transition-colors hover:text-[#0d0c14] dark:text-white/60 dark:hover:text-white"
+            >
+              Cancel
+            </Link>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
 function CaseStudy({ theme, onToggleTheme }) {
   const { slug } = useParams();
   const { data: project, status } = useSanityQuery(
@@ -230,6 +356,10 @@ function CaseStudy({ theme, onToggleTheme }) {
   );
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
+
+  const [unlockedNonce, setUnlockedNonce] = useState(0);
+  const isUnlocked = isProjectUnlocked(slug) || unlockedNonce > 0;
+  const isLocked = Boolean(project?.isPasswordProtected && !isUnlocked);
 
   // Each SEO field falls back to its Overview counterpart. Runs on
   // every render (hook rules), but the effect inside only fires when
@@ -249,10 +379,9 @@ function CaseStudy({ theme, onToggleTheme }) {
   }, [slug]);
 
   const pageContainerRef = useRef(null);
-  const revealRefs = useRef([]);
 
   useEffect(() => {
-    if (status !== "ready" || !project) return;
+    if (status !== "ready" || !project || isLocked) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) return;
@@ -300,7 +429,7 @@ function CaseStudy({ theme, onToggleTheme }) {
     }, pageContainerRef);
 
     return () => ctx.revert();
-  }, [status, project]);
+  }, [status, project, isLocked]);
 
   // Merge Sanity query results with Syncrio defaults/fallback data
   const data = status === "ready" && project ? {
@@ -455,10 +584,19 @@ function CaseStudy({ theme, onToggleTheme }) {
       )}
 
       {status === "ready" && data && (
-        <main
-          style={{ ...mainStyle, ...(pageTextColor ? { color: "var(--cs-text)" } : {}) }}
-          className={`w-full ${pageTextColor ? "case-study-locked-colors" : ""}`}
-        >
+        isLocked ? (
+          <CaseStudyPasswordGate
+            project={project}
+            onUnlock={() => {
+              unlockProject(slug);
+              setUnlockedNonce((n) => n + 1);
+            }}
+          />
+        ) : (
+          <main
+            style={{ ...mainStyle, ...(pageTextColor ? { color: "var(--cs-text)" } : {}) }}
+            className={`w-full ${pageTextColor ? "case-study-locked-colors" : ""}`}
+          >
           {/* Custom Style-tab background+text color is an intentional,
               fixed pair for this page's own content — the site's light/
               dark toggle stays visible/functional (it lives in <Header>,
@@ -595,7 +733,8 @@ function CaseStudy({ theme, onToggleTheme }) {
               </div>
             </Link>
           )}
-        </main>
+          </main>
+        )
       )}
 
       <Suspense fallback={null}>

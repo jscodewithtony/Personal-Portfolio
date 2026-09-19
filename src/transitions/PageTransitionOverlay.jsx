@@ -47,6 +47,7 @@ function findInternalLink(target) {
   if (!href || !href.startsWith("/")) return null;
   if (a.target && a.target !== "_self") return null;
   if (href.startsWith("/admin")) return null;
+  if (a.getAttribute("data-no-transition") === "true") return null;
   return a;
 }
 

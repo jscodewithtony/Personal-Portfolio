@@ -148,6 +148,22 @@ export default {
       group: "overview",
       placeholder: "View Case Study",
     },
+    {
+      name: "isPasswordProtected",
+      title: "Password Protected",
+      description: "Require a password to view this case study (soft content gate).",
+      type: "boolean",
+      group: "overview",
+      initialValue: false,
+    },
+    {
+      name: "caseStudyPassword",
+      title: "Case Study Password",
+      description: "Password required to unlock this case study.",
+      type: "string",
+      group: "overview",
+      hidden: ({ document }) => !document?.isPasswordProtected,
+    },
 
     // --- Content ---
     {

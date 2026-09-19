@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,6 +7,8 @@ import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectsQuery } from "../sanity/queries";
 import { imageUrl } from "../sanity/client";
 import ArchiveSection from "./ArchiveSection";
+import PasswordModal from "./PasswordModal";
+import { isProjectUnlocked } from "../utils/unlockedProjects";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,6 +52,8 @@ function mapProject(doc) {
       .map((field) => ({ label: field.label, value: getInfoRowValue(field) }))
       .filter((row) => row.value != null && row.value !== ""),
     caseStudyLinkLabel: doc.caseStudyLinkLabel || "View Case study",
+    isPasswordProtected: doc.isPasswordProtected === true,
+    caseStudyPassword: doc.caseStudyPassword || "",
   };
 }
 
@@ -73,7 +77,7 @@ function MediaLayer({ project, mediaRef }) {
 // and must never change size while pinned). `compact` switches to the
 // mobile frame's own type scale (Figma node 736:1009) rather than
 // scaling the desktop numbers down by eye.
-function MetaPanel({ project, metaRef, compact }) {
+function MetaPanel({ project, metaRef, compact, onProjectClick }) {
   if (!project) return null;
   const gridCols = compact ? "grid-cols-[170px_1fr]" : "grid-cols-[140px_1fr]";
   const rowGap = compact ? "gap-3" : "gap-6";
@@ -105,6 +109,17 @@ function MetaPanel({ project, metaRef, compact }) {
         compact ? (
           <Link
             to={`/projects/${project.slug}`}
+            onClick={(e) => {
+              if (onProjectClick) {
+                onProjectClick(e, project);
+              }
+            }}
+            onMouseDown={(e) => {
+              if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
+                e.preventDefault();
+              }
+            }}
+            data-no-transition={project.isPasswordProtected && !isProjectUnlocked(project.slug) ? "true" : undefined}
             data-transition-label={project.title}
             className={`mt-2 inline-block font-display text-[12px] normal-case tracking-wide text-primary transition-opacity hover:opacity-70`}
           >
@@ -128,7 +143,7 @@ function MetaPanel({ project, metaRef, compact }) {
 // the tapped-away-from project returns to the list at its original
 // array position since `remaining` is re-derived from the untouched
 // `projects` order every render, never reshuffled.
-function MobileWork({ projects, activeIndex, onSelect }) {
+function MobileWork({ projects, activeIndex, onSelect, onProjectClick }) {
   return (
     <div className="pb-16 pr-6 md:pr-12">
       <ul className="flex flex-col gap-6">
@@ -155,7 +170,10 @@ function MobileWork({ projects, activeIndex, onSelect }) {
                     className="overflow-hidden"
                   >
                     <div className="mt-4 flex flex-col pb-4">
-                      <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
+                      <div
+                        onClick={(e) => onProjectClick && onProjectClick(e, project)}
+                        className="relative aspect-[4096/2381] w-full cursor-pointer overflow-hidden bg-ink/5 dark:bg-white/5"
+                      >
                         <img
                           src={project.mediaUrl}
                           alt={project.mediaAlt || project.title}
@@ -164,7 +182,7 @@ function MobileWork({ projects, activeIndex, onSelect }) {
                       </div>
 
                       <div className="relative mt-3">
-                        <MetaPanel project={project} metaRef={null} compact />
+                        <MetaPanel project={project} metaRef={null} compact onProjectClick={onProjectClick} />
                       </div>
                     </div>
                   </motion.div>
@@ -445,6 +463,27 @@ function WorkIndex() {
     setActiveIndex(index);
   };
 
+  const [lockedProjectModal, setLockedProjectModal] = useState(null);
+  const navigate = useNavigate();
+
+  const handleProjectClick = (e, project) => {
+    if (!project?.slug) return;
+    if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      setLockedProjectModal(project);
+    } else if (e?.currentTarget && e.currentTarget.tagName !== "A") {
+      navigate(`/projects/${project.slug}`);
+    }
+  };
+
+  const handleModalSuccess = (slug) => {
+    setLockedProjectModal(null);
+    navigate(`/projects/${slug}`);
+  };
+
   if (status === "loading" || status === "empty") return null;
 
   return (
@@ -482,7 +521,21 @@ function WorkIndex() {
         {/* Desktop/tablet — pinned, scrub-synced two-column layout. */}
         <div className="hidden h-screen w-full lg:grid lg:grid-cols-2 lg:gap-x-24">
           <Link
-            to={projects[activeIndex]?.slug ? `/projects/${projects[activeIndex].slug}` : "#"}
+            to={projects[activeIndex]?.slug ? `/projects/${projects[activeIndex].slug}` : undefined}
+            onClick={(e) => handleProjectClick(e, projects[activeIndex])}
+            onMouseDown={(e) => {
+              if (
+                projects[activeIndex]?.isPasswordProtected &&
+                !isProjectUnlocked(projects[activeIndex]?.slug)
+              ) {
+                e.preventDefault();
+              }
+            }}
+            data-no-transition={
+              projects[activeIndex]?.isPasswordProtected && !isProjectUnlocked(projects[activeIndex]?.slug)
+                ? "true"
+                : undefined
+            }
             data-transition-label={projects[activeIndex]?.title}
             onMouseEnter={() => {
               activeHoverCardRef.current = true;
@@ -538,9 +591,17 @@ function WorkIndex() {
             projects={projects}
             activeIndex={activeIndex}
             onSelect={handleSelect}
+            onProjectClick={handleProjectClick}
           />
         </div>
       </section>
+
+      <PasswordModal
+        isOpen={Boolean(lockedProjectModal)}
+        onClose={() => setLockedProjectModal(null)}
+        project={lockedProjectModal}
+        onSuccess={handleModalSuccess}
+      />
 
       <ArchiveSection />
     </>

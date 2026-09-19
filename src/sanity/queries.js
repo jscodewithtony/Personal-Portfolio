@@ -99,6 +99,8 @@ export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOr
   displayOrder,
   externalLink,
   caseStudyLinkLabel,
+  isPasswordProtected,
+  caseStudyPassword,
   tags,
   projectInfoFields[]{ label, fieldType, textValue, selectValue, numberValue, showOnGalleryCard }
 }`;
@@ -114,6 +116,8 @@ export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.curre
   industry,
   role,
   externalLink,
+  isPasswordProtected,
+  caseStudyPassword,
   bodyContent,
   projectInfoFields[]{ label, fieldType, textValue, selectValue, numberValue },
   tags,

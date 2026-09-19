@@ -1,10 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectsQuery } from "../sanity/queries";
 import { imageUrl } from "../sanity/client";
 import ArchiveSection from "./ArchiveSection";
 import DirectionHover from "./DirectionHover";
+import PasswordModal from "./PasswordModal";
+import { isProjectUnlocked } from "../utils/unlockedProjects";
 
 // Figma: https://www.figma.com/design/I84MayZQYr2Bri3Se2lfRT/Personal-Portfolio?node-id=1003-552
 // Alternate /work template — additive, does not touch WorkIndex.jsx.
@@ -82,17 +84,36 @@ function mapProject(doc) {
     mediaAlt: doc.mainImage?.alt,
     infoValues: getGalleryInfoValues(doc),
     caseStudyLinkLabel: doc.caseStudyLinkLabel || "View Case Study",
+    isPasswordProtected: doc.isPasswordProtected === true,
+    caseStudyPassword: doc.caseStudyPassword || "",
   };
 }
 
-function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd }) {
+function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd, onProjectClick }) {
   const navigate = useNavigate();
   const cls = CARD_SIZE_CLASSES[size];
+  const isLocked = Boolean(project.isPasswordProtected && !isProjectUnlocked(project.slug));
 
   const handleCardClick = (e) => {
     if (e.target.closest("a")) return;
     if (project.slug) {
+      if (onProjectClick && onProjectClick(e, project)) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        return;
+      }
       navigate(`/projects/${project.slug}`);
+    }
+  };
+
+  const handleLinkClick = (e) => {
+    if (onProjectClick && onProjectClick(e, project)) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     }
   };
 
@@ -121,6 +142,13 @@ function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd }) {
           {project.slug && (
             <Link
               to={`/projects/${project.slug}`}
+              onClick={handleLinkClick}
+              onMouseDown={(e) => {
+                if (isLocked) {
+                  e.preventDefault();
+                }
+              }}
+              data-no-transition={isLocked ? "true" : undefined}
               data-transition-label={project.title}
               className={`shrink-0 whitespace-nowrap border-b border-primary font-display normal-case tracking-tight text-primary dark:border-white dark:text-white ${cls.link}`}
             >
@@ -226,6 +254,27 @@ function WorkGallery() {
     };
   }, []);
 
+  const [lockedProjectModal, setLockedProjectModal] = useState(null);
+  const navigate = useNavigate();
+
+  const handleProjectClick = (e, project) => {
+    if (!project?.slug) return false;
+    if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      setLockedProjectModal(project);
+      return true;
+    }
+    return false;
+  };
+
+  const handleModalSuccess = (slug) => {
+    setLockedProjectModal(null);
+    navigate(`/projects/${slug}`);
+  };
+
   const handleHoverStart = () => {
     activeHoverCardRef.current = true;
     document.body.dataset.cursorProjectHover = "true";
@@ -272,11 +321,19 @@ function WorkGallery() {
                 size={GRID_COLUMN_SIZE[i % 3]}
                 onHoverStart={handleHoverStart}
                 onHoverEnd={handleHoverEnd}
+                onProjectClick={handleProjectClick}
               />
             ))}
           </div>
         )}
       </section>
+
+      <PasswordModal
+        isOpen={Boolean(lockedProjectModal)}
+        onClose={() => setLockedProjectModal(null)}
+        project={lockedProjectModal}
+        onSuccess={handleModalSuccess}
+      />
 
       <ArchiveSection />
     </>
