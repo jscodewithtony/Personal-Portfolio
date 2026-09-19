@@ -91,6 +91,7 @@ function mapProject(doc) {
 
 function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd, onProjectClick }) {
   const navigate = useNavigate();
+  const linkRef = useRef(null);
   const cls = CARD_SIZE_CLASSES[size];
   const isLocked = Boolean(project.isPasswordProtected && !isProjectUnlocked(project.slug));
 
@@ -104,7 +105,11 @@ function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd, onProject
         }
         return;
       }
-      navigate(`/projects/${project.slug}`);
+      if (linkRef.current) {
+        linkRef.current.click();
+      } else {
+        navigate(`/projects/${project.slug}`);
+      }
     }
   };
 
@@ -141,6 +146,7 @@ function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd, onProject
           </p>
           {project.slug && (
             <Link
+              ref={linkRef}
               to={`/projects/${project.slug}`}
               onClick={handleLinkClick}
               onMouseDown={(e) => {

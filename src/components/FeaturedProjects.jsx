@@ -380,7 +380,7 @@ function FeaturedProjects() {
                 {...cardTagProps}
                 onClick={(e) => handleProjectClick(e, project)}
                 data-no-transition={isLocked ? "true" : undefined}
-                data-transition-label={project.client}
+                data-transition-label={project.title ? project.title.replace(/\n/g, " ") : "PROJECT"}
                 onMouseEnter={() => {
                   activeHoverCardRef.current = true;
                   document.body.dataset.cursorProjectHover = "true";

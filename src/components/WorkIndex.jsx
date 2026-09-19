@@ -170,16 +170,28 @@ function MobileWork({ projects, activeIndex, onSelect, onProjectClick }) {
                     className="overflow-hidden"
                   >
                     <div className="mt-4 flex flex-col pb-4">
-                      <div
-                        onClick={(e) => onProjectClick && onProjectClick(e, project)}
-                        className="relative aspect-[4096/2381] w-full cursor-pointer overflow-hidden bg-ink/5 dark:bg-white/5"
+                      <Link
+                        to={project.slug ? `/projects/${project.slug}` : undefined}
+                        onClick={(e) => {
+                          if (onProjectClick) onProjectClick(e, project);
+                        }}
+                        onMouseDown={(e) => {
+                          if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        data-no-transition={
+                          project.isPasswordProtected && !isProjectUnlocked(project.slug) ? "true" : undefined
+                        }
+                        data-transition-label={project.title}
+                        className="relative aspect-[4096/2381] w-full cursor-pointer overflow-hidden bg-ink/5 dark:bg-white/5 block"
                       >
                         <img
                           src={project.mediaUrl}
                           alt={project.mediaAlt || project.title}
                           className="h-full w-full object-cover"
                         />
-                      </div>
+                      </Link>
 
                       <div className="relative mt-3">
                         <MetaPanel project={project} metaRef={null} compact onProjectClick={onProjectClick} />

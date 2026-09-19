@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import Shuffle from "../components/Shuffle";
@@ -62,6 +62,7 @@ function findInternalLink(target) {
 // already render.
 function PageTransitionOverlay() {
   const navigate = useNavigate();
+  const location = useLocation();
   const panelRef = useRef(null);
   const headlineWrapRef = useRef(null);
   const timelineRef = useRef(null);
@@ -69,9 +70,14 @@ function PageTransitionOverlay() {
     typeof window !== "undefined" ? window.location.pathname : "/"
   );
   const [active, setActive] = useState(false);
+  const [showHeadline, setShowHeadline] = useState(false);
   const [label, setLabel] = useState("");
   const [panelColor, setPanelColor] = useState("#114AFC");
   const [textColorClass, setTextColorClass] = useState("text-white");
+
+  useEffect(() => {
+    currentPathRef.current = location.pathname;
+  }, [location.pathname]);
 
   const runTransition = useCallback(
     // `navHref` is the full href as written (may carry a #hash, e.g.
@@ -83,7 +89,9 @@ function PageTransitionOverlay() {
     (navHref, pathname, clickedLinkText) => {
       // Ignore re-clicks while a transition is already mid-flight
       // rather than starting a second, overlapping one.
-      if (timelineRef.current) return;
+      if (timelineRef.current) {
+        return;
+      }
 
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
@@ -109,10 +117,14 @@ function PageTransitionOverlay() {
       setPanelColor(color);
       setTextColorClass(resolvedTextColor);
       setLabel(resolvedLabel);
+      setShowHeadline(false);
       setActive(true);
       currentPathRef.current = pathname;
 
       document.body.style.overflow = "hidden";
+      if (panel.parentElement) {
+        panel.parentElement.style.visibility = "visible";
+      }
 
       gsap.set(panel, { scaleY: 0, transformOrigin: "bottom center" });
       gsap.set(headlineWrap, {
@@ -126,6 +138,10 @@ function PageTransitionOverlay() {
           timelineRef.current = null;
           document.body.style.overflow = "";
           setActive(false);
+          setShowHeadline(false);
+          if (panel.parentElement) {
+            panel.parentElement.style.visibility = "hidden";
+          }
         },
       });
       timelineRef.current = tl;
@@ -138,6 +154,7 @@ function PageTransitionOverlay() {
         .call(() => {
           window.scrollTo(0, 0);
           navigate(navHref);
+          setShowHeadline(true);
         })
         .set(headlineWrap, { autoAlpha: 1 })
         // Headroom for the reused Shuffle entrance to finish playing,
@@ -218,7 +235,7 @@ function PageTransitionOverlay() {
         ref={headlineWrapRef}
         className="absolute inset-0 flex items-center justify-center px-4 sm:px-6"
       >
-        {label && (
+        {showHeadline && label && (
           <Shuffle
             key={label}
             text={label}
@@ -234,6 +251,7 @@ function PageTransitionOverlay() {
             triggerOnce={true}
             triggerOnHover={true}
             respectReducedMotion={true}
+            autoPlay={true}
           />
         )}
       </div>

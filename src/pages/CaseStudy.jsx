@@ -709,6 +709,7 @@ function CaseStudy({ theme, onToggleTheme }) {
           {data.nextProject && (
             <Link
               to={`/projects/${data.nextProject.slug}`}
+              data-transition-label={data.nextProject.title}
               className="group relative flex w-full items-center justify-center overflow-hidden border-t border-neutral-200"
             >
               {data.nextProject.mainImage && (

@@ -57,10 +57,16 @@ const Shuffle = ({
   triggerOnce = true,
   respectReducedMotion = true,
   triggerOnHover = true,
+  autoPlay = false,
   fontSize
 }) => {
   const ref = useRef(null);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [fontsLoaded, setFontsLoaded] = useState(() => {
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      return document.fonts.status === 'loaded';
+    }
+    return true;
+  });
   const [ready, setReady] = useState(false);
 
   const splitRef = useRef(null);
@@ -460,6 +466,7 @@ const Shuffle = ({
       };
 
       const create = () => {
+        el.classList.add('is-ready');
         build();
         if (scrambleCharset) randomizeScrambles();
         play();
@@ -493,12 +500,17 @@ const Shuffle = ({
         armHover();
       };
 
-      const st = ScrollTrigger.create({
-        trigger: el,
-        start,
-        once: triggerOnce,
-        onEnter: create
-      });
+      let st;
+      if (autoPlay) {
+        create();
+      } else {
+        st = ScrollTrigger.create({
+          trigger: el,
+          start,
+          once: triggerOnce,
+          onEnter: create
+        });
+      }
 
       let resizeTimer;
       const ro = new ResizeObserver(() => {
@@ -511,7 +523,7 @@ const Shuffle = ({
       document.fonts?.addEventListener?.('loadingdone', onFontsDone);
 
       return () => {
-        st.kill();
+        st?.kill();
         ro.disconnect();
         clearTimeout(resizeTimer);
         document.fonts?.removeEventListener?.('loadingdone', onFontsDone);
@@ -541,6 +553,7 @@ const Shuffle = ({
         respectReducedMotion,
         triggerOnHover,
         onShuffleComplete,
+        autoPlay,
         fontSize
       ],
       scope: ref
