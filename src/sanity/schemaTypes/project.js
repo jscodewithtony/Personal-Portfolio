@@ -134,11 +134,36 @@ export default {
       validation: (Rule) => Rule.required().integer(),
     },
     {
+      name: "projectType",
+      title: "Project Type",
+      description:
+        "Select whether this project opens an internal case study or links directly to an external URL (e.g. Behance, live site).",
+      type: "string",
+      group: "overview",
+      options: {
+        list: [
+          { title: "Internal Case Study", value: "internal" },
+          { title: "External Link", value: "external" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "internal",
+      validation: (Rule) => Rule.required(),
+    },
+    {
       name: "externalLink",
       title: "External Link",
-      description: "Optional external link (e.g. live site, Behance). Leave blank if not applicable.",
+      description: "URL to the external project or case study (e.g. Behance, live site).",
       type: "url",
       group: "overview",
+      hidden: ({ document }) => document?.projectType === "internal",
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          if (context.document?.projectType === "external" && !value) {
+            return "External Link URL is required when Project Type is set to External Link.";
+          }
+          return true;
+        }),
     },
     {
       name: "caseStudyLinkLabel",
@@ -155,6 +180,7 @@ export default {
       type: "boolean",
       group: "overview",
       initialValue: false,
+      hidden: ({ document }) => document?.projectType === "external",
     },
     {
       name: "caseStudyPassword",
@@ -162,7 +188,8 @@ export default {
       description: "Password required to unlock this case study.",
       type: "string",
       group: "overview",
-      hidden: ({ document }) => !document?.isPasswordProtected,
+      hidden: ({ document }) =>
+        document?.projectType === "external" || !document?.isPasswordProtected,
     },
 
     // --- Content ---
@@ -172,7 +199,15 @@ export default {
       description: "The main editorial content: headings, paragraphs, embedded images, and galleries.",
       type: "array",
       group: "content",
-      validation: (Rule) => Rule.required().min(1),
+      readOnly: ({ document }) => document?.projectType === "external",
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          if (context.document?.projectType === "external") return true;
+          if (!value || !Array.isArray(value) || value.length === 0) {
+            return "Process / Approach is required for internal case studies.";
+          }
+          return true;
+        }),
       of: [
         {
           type: "block",

@@ -41,6 +41,9 @@ function toTitleCase(str) {
 
 function mapProject(doc) {
   const infoRows = doc.projectInfoFields || [];
+  const isExternal =
+    doc.projectType === "external" ||
+    (!doc.projectType && Boolean(doc.externalLink));
   return {
     id: doc._id,
     slug: doc.slug,
@@ -51,9 +54,11 @@ function mapProject(doc) {
     infoRows: infoRows
       .map((field) => ({ label: field.label, value: getInfoRowValue(field) }))
       .filter((row) => row.value != null && row.value !== ""),
-    caseStudyLinkLabel: doc.caseStudyLinkLabel || "View Case study",
-    isPasswordProtected: doc.isPasswordProtected === true,
+    caseStudyLinkLabel: doc.caseStudyLinkLabel || (isExternal ? "View Project" : "View Case study"),
+    isPasswordProtected: !isExternal && doc.isPasswordProtected === true,
     caseStudyPassword: doc.caseStudyPassword || "",
+    projectType: doc.projectType,
+    externalLink: isExternal ? doc.externalLink : null,
   };
 }
 
@@ -105,7 +110,16 @@ function MetaPanel({ project, metaRef, compact, onProjectClick }) {
           ))}
         </div>
       )}
-      {project.slug && (
+      {project.externalLink ? (
+        <a
+          href={project.externalLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`mt-2 inline-block font-display ${compact ? "text-[12px]" : "text-sm"} normal-case tracking-wide text-primary transition-opacity hover:opacity-70`}
+        >
+          {project.caseStudyLinkLabel} ↗
+        </a>
+      ) : project.slug ? (
         compact ? (
           <Link
             to={`/projects/${project.slug}`}
@@ -132,7 +146,7 @@ function MetaPanel({ project, metaRef, compact, onProjectClick }) {
             {project.caseStudyLinkLabel} →
           </span>
         )
-      )}
+      ) : null}
     </div>
   );
 }
@@ -170,28 +184,43 @@ function MobileWork({ projects, activeIndex, onSelect, onProjectClick }) {
                     className="overflow-hidden"
                   >
                     <div className="mt-4 flex flex-col pb-4">
-                      <Link
-                        to={project.slug ? `/projects/${project.slug}` : undefined}
-                        onClick={(e) => {
-                          if (onProjectClick) onProjectClick(e, project);
-                        }}
-                        onMouseDown={(e) => {
-                          if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
-                            e.preventDefault();
+                      {project.externalLink ? (
+                        <a
+                          href={project.externalLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative aspect-[4096/2381] w-full cursor-pointer overflow-hidden bg-ink/5 dark:bg-white/5 block"
+                        >
+                          <img
+                            src={project.mediaUrl}
+                            alt={project.mediaAlt || project.title}
+                            className="h-full w-full object-cover"
+                          />
+                        </a>
+                      ) : (
+                        <Link
+                          to={project.slug ? `/projects/${project.slug}` : undefined}
+                          onClick={(e) => {
+                            if (onProjectClick) onProjectClick(e, project);
+                          }}
+                          onMouseDown={(e) => {
+                            if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          data-no-transition={
+                            project.isPasswordProtected && !isProjectUnlocked(project.slug) ? "true" : undefined
                           }
-                        }}
-                        data-no-transition={
-                          project.isPasswordProtected && !isProjectUnlocked(project.slug) ? "true" : undefined
-                        }
-                        data-transition-label={project.title}
-                        className="relative aspect-[4096/2381] w-full cursor-pointer overflow-hidden bg-ink/5 dark:bg-white/5 block"
-                      >
-                        <img
-                          src={project.mediaUrl}
-                          alt={project.mediaAlt || project.title}
-                          className="h-full w-full object-cover"
-                        />
-                      </Link>
+                          data-transition-label={project.title}
+                          className="relative aspect-[4096/2381] w-full cursor-pointer overflow-hidden bg-ink/5 dark:bg-white/5 block"
+                        >
+                          <img
+                            src={project.mediaUrl}
+                            alt={project.mediaAlt || project.title}
+                            className="h-full w-full object-cover"
+                          />
+                        </Link>
+                      )}
 
                       <div className="relative mt-3">
                         <MetaPanel project={project} metaRef={null} compact onProjectClick={onProjectClick} />
@@ -479,6 +508,12 @@ function WorkIndex() {
   const navigate = useNavigate();
 
   const handleProjectClick = (e, project) => {
+    if (project?.externalLink) {
+      if (e?.currentTarget && e.currentTarget.tagName !== "A") {
+        window.open(project.externalLink, "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
     if (!project?.slug) return;
     if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
       if (e) {
@@ -532,42 +567,68 @@ function WorkIndex() {
       >
         {/* Desktop/tablet — pinned, scrub-synced two-column layout. */}
         <div className="hidden h-screen w-full lg:grid lg:grid-cols-2 lg:gap-x-24">
-          <Link
-            to={projects[activeIndex]?.slug ? `/projects/${projects[activeIndex].slug}` : undefined}
-            onClick={(e) => handleProjectClick(e, projects[activeIndex])}
-            onMouseDown={(e) => {
-              if (
-                projects[activeIndex]?.isPasswordProtected &&
-                !isProjectUnlocked(projects[activeIndex]?.slug)
-              ) {
-                e.preventDefault();
+          {projects[activeIndex]?.externalLink ? (
+            <a
+              href={projects[activeIndex].externalLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onMouseEnter={() => {
+                activeHoverCardRef.current = true;
+                document.body.dataset.cursorProjectHover = "true";
+              }}
+              onMouseLeave={() => {
+                activeHoverCardRef.current = false;
+                document.body.dataset.cursorProjectHover = "false";
+              }}
+              className="relative flex flex-col justify-center group cursor-pointer lg:cursor-none text-ink dark:text-white hover:no-underline"
+            >
+              <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
+                <MediaLayer project={slots[0]} mediaRef={mediaRefs[0]} />
+                <MediaLayer project={slots[1]} mediaRef={mediaRefs[1]} />
+              </div>
+              <div className="relative mt-6 grid">
+                <MetaPanel project={slots[0]} metaRef={metaRefs[0]} />
+                <MetaPanel project={slots[1]} metaRef={metaRefs[1]} />
+              </div>
+            </a>
+          ) : (
+            <Link
+              to={projects[activeIndex]?.slug ? `/projects/${projects[activeIndex].slug}` : undefined}
+              onClick={(e) => handleProjectClick(e, projects[activeIndex])}
+              onMouseDown={(e) => {
+                if (
+                  projects[activeIndex]?.isPasswordProtected &&
+                  !isProjectUnlocked(projects[activeIndex]?.slug)
+                ) {
+                  e.preventDefault();
+                }
+              }}
+              data-no-transition={
+                projects[activeIndex]?.isPasswordProtected && !isProjectUnlocked(projects[activeIndex]?.slug)
+                  ? "true"
+                  : undefined
               }
-            }}
-            data-no-transition={
-              projects[activeIndex]?.isPasswordProtected && !isProjectUnlocked(projects[activeIndex]?.slug)
-                ? "true"
-                : undefined
-            }
-            data-transition-label={projects[activeIndex]?.title}
-            onMouseEnter={() => {
-              activeHoverCardRef.current = true;
-              document.body.dataset.cursorProjectHover = "true";
-            }}
-            onMouseLeave={() => {
-              activeHoverCardRef.current = false;
-              document.body.dataset.cursorProjectHover = "false";
-            }}
-            className="relative flex flex-col justify-center group cursor-pointer lg:cursor-none text-ink dark:text-white hover:no-underline"
-          >
-            <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
-              <MediaLayer project={slots[0]} mediaRef={mediaRefs[0]} />
-              <MediaLayer project={slots[1]} mediaRef={mediaRefs[1]} />
-            </div>
-            <div className="relative mt-6 grid">
-              <MetaPanel project={slots[0]} metaRef={metaRefs[0]} />
-              <MetaPanel project={slots[1]} metaRef={metaRefs[1]} />
-            </div>
-          </Link>
+              data-transition-label={projects[activeIndex]?.title}
+              onMouseEnter={() => {
+                activeHoverCardRef.current = true;
+                document.body.dataset.cursorProjectHover = "true";
+              }}
+              onMouseLeave={() => {
+                activeHoverCardRef.current = false;
+                document.body.dataset.cursorProjectHover = "false";
+              }}
+              className="relative flex flex-col justify-center group cursor-pointer lg:cursor-none text-ink dark:text-white hover:no-underline"
+            >
+              <div className="relative aspect-[4096/2381] w-full overflow-hidden bg-ink/5 dark:bg-white/5">
+                <MediaLayer project={slots[0]} mediaRef={mediaRefs[0]} />
+                <MediaLayer project={slots[1]} mediaRef={mediaRefs[1]} />
+              </div>
+              <div className="relative mt-6 grid">
+                <MetaPanel project={slots[0]} metaRef={metaRefs[0]} />
+                <MetaPanel project={slots[1]} metaRef={metaRefs[1]} />
+              </div>
+            </Link>
+          )}
 
           <div className="relative overflow-hidden">
             <ul

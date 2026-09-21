@@ -469,6 +469,17 @@ function CaseStudy({ theme, onToggleTheme }) {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  useEffect(() => {
+    if (status === "ready" && project) {
+      const isExternal =
+        project.projectType === "external" ||
+        (!project.projectType && Boolean(project.externalLink));
+      if (isExternal && project.externalLink) {
+        window.location.replace(project.externalLink);
+      }
+    }
+  }, [status, project]);
+
   const pageContainerRef = useRef(null);
 
   useEffect(() => {
@@ -797,34 +808,43 @@ function CaseStudy({ theme, onToggleTheme }) {
           )}
 
           {/* Next Case Study */}
-          {data.nextProject && (
-            <Link
-              to={`/projects/${data.nextProject.slug}`}
-              data-transition-label={data.nextProject.title}
-              className="group relative flex w-full items-center justify-center overflow-hidden border-t border-neutral-200"
-            >
-              {data.nextProject.mainImage && (
-                <img
-                  src={imageUrl(data.nextProject.mainImage, 1200)}
-                  alt=""
-                  aria-hidden="true"
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full scale-105 object-cover opacity-15 transition-transform duration-700 group-hover:scale-110"
-                />
-              )}
-              <div className="relative z-10 flex flex-col items-center gap-3 px-6 py-20 text-center sm:py-28">
-                <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-[#0d0c14]/60 dark:text-white/60">
-                  Next Case Study
-                </p>
-                <h3 className="font-display text-4xl font-black uppercase leading-[1.02] tracking-tight text-[#0d0c14] dark:text-white sm:text-6xl md:text-7xl">
-                  {data.nextProject.title}
-                </h3>
-                <span className="mt-2 font-display text-sm font-bold uppercase tracking-widest text-[#114AFC] transition-transform group-hover:translate-x-1">
-                  View project →
-                </span>
-              </div>
-            </Link>
-          )}
+          {data.nextProject && (() => {
+            const nextIsExternal =
+              data.nextProject.projectType === "external" ||
+              (!data.nextProject.projectType && Boolean(data.nextProject.externalLink));
+            const NextTag = nextIsExternal && data.nextProject.externalLink ? "a" : Link;
+            const nextProps = nextIsExternal && data.nextProject.externalLink
+              ? { href: data.nextProject.externalLink, target: "_blank", rel: "noopener noreferrer" }
+              : { to: `/projects/${data.nextProject.slug}`, "data-transition-label": data.nextProject.title };
+
+            return (
+              <NextTag
+                {...nextProps}
+                className="group relative flex w-full items-center justify-center overflow-hidden border-t border-neutral-200"
+              >
+                {data.nextProject.mainImage && (
+                  <img
+                    src={imageUrl(data.nextProject.mainImage, 1200)}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full scale-105 object-cover opacity-15 transition-transform duration-700 group-hover:scale-110"
+                  />
+                )}
+                <div className="relative z-10 flex flex-col items-center gap-3 px-6 py-20 text-center sm:py-28">
+                  <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-[#0d0c14]/60 dark:text-white/60">
+                    Next {nextIsExternal ? "Project" : "Case Study"}
+                  </p>
+                  <h3 className="font-display text-4xl font-black uppercase leading-[1.02] tracking-tight text-[#0d0c14] dark:text-white sm:text-6xl md:text-7xl">
+                    {data.nextProject.title}
+                  </h3>
+                  <span className="mt-2 font-display text-sm font-bold uppercase tracking-widest text-[#114AFC] transition-transform group-hover:translate-x-1">
+                    {nextIsExternal ? "View project ↗" : "View project →"}
+                  </span>
+                </div>
+              </NextTag>
+            );
+          })()}
           </main>
         )
       )}

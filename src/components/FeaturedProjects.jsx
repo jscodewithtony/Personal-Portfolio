@@ -61,6 +61,9 @@ const FALLBACK_PROJECTS = [
 function mapSanityProject(doc) {
   const mainImageUrl = urlFor(doc.mainImage)?.width(1200).auto("format").url();
   const thumbUrl = imageUrl(doc.thumbnail, 400);
+  const isExternal =
+    doc.projectType === "external" ||
+    (!doc.projectType && Boolean(doc.externalLink));
   return {
     id: doc._id,
     // The schema no longer has a separate "client" field — this small
@@ -76,7 +79,9 @@ function mapSanityProject(doc) {
     thumbnailImage: thumbUrl || projectJewelry,
     thumbnailAlt: doc.thumbnail?.alt,
     slug: doc.slug,
-    isPasswordProtected: doc.isPasswordProtected === true,
+    projectType: doc.projectType,
+    externalLink: isExternal ? doc.externalLink : null,
+    isPasswordProtected: !isExternal && doc.isPasswordProtected === true,
     caseStudyPassword: doc.caseStudyPassword || "",
   };
 }
@@ -104,6 +109,7 @@ function FeaturedProjects() {
   const navigate = useNavigate();
 
   const handleProjectClick = (e, project) => {
+    if (project?.externalLink) return;
     if (!project?.slug) return;
     if (project.isPasswordProtected && !isProjectUnlocked(project.slug)) {
       if (e) {
@@ -366,9 +372,14 @@ function FeaturedProjects() {
       {/* INDIVIDUAL CLEAN CARD STAGE */}
       <div className="relative z-10 flex flex-col md:flex-row h-full w-full items-center justify-center pt-28 pb-10 md:py-4 px-4 sm:px-6 lg:px-10 gap-12 md:gap-0 pointer-events-none">
         {projects.map((project, index) => {
-          const isLocked = Boolean(project.isPasswordProtected && !isProjectUnlocked(project.slug));
-          const CardTag = project.slug ? Link : "div";
-          const cardTagProps = project.slug ? { to: `/projects/${project.slug}` } : {};
+          const isExternal = Boolean(project.externalLink);
+          const isLocked = Boolean(!isExternal && project.isPasswordProtected && !isProjectUnlocked(project.slug));
+          const CardTag = isExternal ? "a" : project.slug ? Link : "div";
+          const cardTagProps = isExternal
+            ? { href: project.externalLink, target: "_blank", rel: "noopener noreferrer" }
+            : project.slug
+              ? { to: `/projects/${project.slug}` }
+              : {};
           return (
             <div
               key={index}
@@ -379,7 +390,7 @@ function FeaturedProjects() {
               <CardTag
                 {...cardTagProps}
                 onClick={(e) => handleProjectClick(e, project)}
-                data-no-transition={isLocked ? "true" : undefined}
+                data-no-transition={isLocked || isExternal ? "true" : undefined}
                 data-transition-label={project.title ? project.title.replace(/\n/g, " ") : "PROJECT"}
                 onMouseEnter={() => {
                   activeHoverCardRef.current = true;

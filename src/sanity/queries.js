@@ -97,6 +97,7 @@ export const projectsQuery = /* groq */ `*[_type == "project"] | order(displayOr
   industry,
   role,
   displayOrder,
+  projectType,
   externalLink,
   caseStudyLinkLabel,
   isPasswordProtected,
@@ -115,6 +116,7 @@ export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.curre
   shortDescription,
   industry,
   role,
+  projectType,
   externalLink,
   isPasswordProtected,
   caseStudyPassword,
@@ -133,10 +135,10 @@ export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.curre
   },
   "nextProject": coalesce(
     *[_type == "project" && displayOrder > ^.displayOrder] | order(displayOrder asc)[0]{
-      title, "slug": slug.current, mainImage
+      title, "slug": slug.current, mainImage, projectType, externalLink
     },
     *[_type == "project" && _id != ^._id] | order(displayOrder asc)[0]{
-      title, "slug": slug.current, mainImage
+      title, "slug": slug.current, mainImage, projectType, externalLink
     }
   )
 }`;

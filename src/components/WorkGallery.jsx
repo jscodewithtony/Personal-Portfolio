@@ -76,6 +76,9 @@ function getGalleryInfoValues(doc) {
 }
 
 function mapProject(doc) {
+  const isExternal =
+    doc.projectType === "external" ||
+    (!doc.projectType && Boolean(doc.externalLink));
   return {
     id: doc._id,
     slug: doc.slug,
@@ -83,9 +86,11 @@ function mapProject(doc) {
     mediaUrl: imageUrl(doc.mainImage, 1600),
     mediaAlt: doc.mainImage?.alt,
     infoValues: getGalleryInfoValues(doc),
-    caseStudyLinkLabel: doc.caseStudyLinkLabel || "View Case Study",
-    isPasswordProtected: doc.isPasswordProtected === true,
+    caseStudyLinkLabel: doc.caseStudyLinkLabel || (isExternal ? "View Project" : "View Case Study"),
+    isPasswordProtected: !isExternal && doc.isPasswordProtected === true,
     caseStudyPassword: doc.caseStudyPassword || "",
+    projectType: doc.projectType,
+    externalLink: isExternal ? doc.externalLink : null,
   };
 }
 
@@ -97,6 +102,10 @@ function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd, onProject
 
   const handleCardClick = (e) => {
     if (e.target.closest("a")) return;
+    if (project.externalLink) {
+      window.open(project.externalLink, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (project.slug) {
       if (onProjectClick && onProjectClick(e, project)) {
         if (e) {
@@ -144,7 +153,17 @@ function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd, onProject
           <p className={`font-display font-bold normal-case tracking-tight text-ink dark:text-white ${cls.title}`}>
             {project.title}
           </p>
-          {project.slug && (
+          {project.externalLink ? (
+            <a
+              ref={linkRef}
+              href={project.externalLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`shrink-0 whitespace-nowrap border-b border-primary font-display normal-case tracking-tight text-primary dark:border-white dark:text-white ${cls.link}`}
+            >
+              <DirectionHover>{project.caseStudyLinkLabel}</DirectionHover> ↗
+            </a>
+          ) : project.slug ? (
             <Link
               ref={linkRef}
               to={`/projects/${project.slug}`}
@@ -160,7 +179,7 @@ function GalleryProjectCard({ project, size, onHoverStart, onHoverEnd, onProject
             >
               <DirectionHover>{project.caseStudyLinkLabel}</DirectionHover> →
             </Link>
-          )}
+          ) : null}
         </div>
         {project.infoValues.length > 0 && (
           <div className="flex flex-col gap-y-1">
