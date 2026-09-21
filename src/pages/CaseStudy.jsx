@@ -106,6 +106,89 @@ function getBlockSpacingStyle(blockSpacing, defaultTopRem) {
   };
 }
 
+// Shared by `gallery` and `multiColumn`'s image columns — plain image +
+// optional caption directly beneath it, no full-bleed/parallax
+// treatment (that's `captionedImage`'s own, distinct look, left as-is).
+function ImageWithCaption({ image, widthPx }) {
+  const src = imageUrl(image, widthPx);
+  if (!src) return null;
+  return (
+    <figure>
+      <img src={src} alt={image.alt || ""} loading="lazy" className="w-full object-cover" />
+      {image.caption && (
+        <figcaption className="mt-2 font-display text-xs uppercase tracking-wider text-ink/50 dark:text-white/50">
+          {image.caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+// 2 columns: ratio-driven (editor's choice). 3/4 columns: always equal
+// width, no ratio concept — 3 stays fully stacked until a real desktop
+// width (no clean default for which column would be the tablet-width
+// odd one out in a 2+1 split, and tablet-portrait widths don't have
+// room for 3 comfortable columns anyway); 4 gets a 2x2 intermediate
+// step at tablet/small-desktop before going fully 4-across only once
+// each column has genuine room (1280px+).
+const MULTI_COLUMN_RATIO_CLASSES = {
+  "50-50": "grid-cols-1 md:grid-cols-2",
+  "60-40": "grid-cols-1 md:grid-cols-[3fr_2fr]",
+  "40-60": "grid-cols-1 md:grid-cols-[2fr_3fr]",
+};
+const MULTI_COLUMN_COUNT_CLASSES = {
+  2: "grid-cols-1 md:grid-cols-2",
+  3: "grid-cols-1 lg:grid-cols-3",
+  4: "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4",
+};
+
+// Preset tint + padding combos only (no free-text/raw hex) so every
+// option is guaranteed to work in both themes.
+//
+// Fixed dark-mode contrast bug (confirmed twice): this block sits
+// inside bodyContent's always-light `bg-[#fbfbf9]` container (never
+// inverts — out of scope to change that here), so a translucent
+// `dark:bg-white/5` / `dark:bg-[#114AFC]/10` overlay just tints an
+// already-light backdrop lighter — it can never actually go dark. The
+// nested text/caption components' existing `dark:text-white` was
+// always correct; the background just never became dark enough for it
+// to read against. Fix is solid, non-transparent dark colors instead
+// of more transparency:
+// - Muted dark: `#141418`, a direct reuse of the exact dark-card token
+//   FeaturedProjects.jsx already uses for a card sitting on a light
+//   page background (the same situation this block is in).
+// - Accent dark: `#141c3a`, no existing "dark blue subtle surface"
+//   token exists sitewide to copy (primary/#114AFC is otherwise only
+//   ever a solid CTA fill, too saturated for body text to sit on) — so
+//   this is a computed blend of that same `#141418` dark-card base
+//   with ~15% of the site's own primary/#114AFC accent, keeping the
+//   same color identity while staying genuinely dark enough for white
+//   text on top.
+// Light mode is unchanged (already correct, confirmed working).
+// Padding matches the Professional Experience card's own mobile
+// padding scale (AboutPage.jsx `p-5 xs:p-6 sm:p-8`) for consistency
+// with an existing similarly-weighted content panel.
+const MULTI_COLUMN_BACKGROUND_CLASSES = {
+  none: "",
+  muted: "bg-ink/5 dark:bg-[#141418] p-5 xs:p-6 sm:p-8",
+  accent: "bg-primary/10 dark:bg-[#141c3a] p-5 xs:p-6 sm:p-8",
+};
+
+// One column slot: image or text, per its own `contentType`. Text
+// reuses the exact same block-style renderers as the rest of the body
+// (nested PortableText with the same components map) rather than a
+// second copy of the normal/blockquote JSX.
+function MultiColumnSlot({ column }) {
+  if (!column) return null;
+  if (column.contentType === "image" && column.image) {
+    return <ImageWithCaption image={column.image} widthPx={1200} />;
+  }
+  if (column.contentType === "text" && column.text?.length > 0) {
+    return <PortableText value={column.text} components={portableTextComponents} />;
+  }
+  return null;
+}
+
 const portableTextComponents = {
   block: {
     h2: ({ children }) => (
@@ -195,22 +278,30 @@ const portableTextComponents = {
         style={getBlockSpacingStyle(value.blockSpacing, "2.5rem")}
         className="reveal-on-scroll grid grid-cols-1 gap-4 sm:grid-cols-2"
       >
-        {(value.images || []).map((img, i) => {
-          const src = imageUrl(img, 1000);
-          if (!src) return null;
-          return (
-            <figure key={img._key || i}>
-              <img src={src} alt={img.alt || ""} loading="lazy" className="w-full object-cover" />
-              {img.caption && (
-                <figcaption className="mt-2 font-display text-xs uppercase tracking-wider text-ink/50 dark:text-white/50">
-                  {img.caption}
-                </figcaption>
-              )}
-            </figure>
-          );
-        })}
+        {(value.images || []).map((img, i) => (
+          <ImageWithCaption key={img._key || i} image={img} widthPx={1000} />
+        ))}
       </div>
     ),
+    multiColumn: ({ value }) => {
+      const columns = value.columns || [];
+      const count = columns.length || 2;
+      const gridClass =
+        count === 2
+          ? MULTI_COLUMN_RATIO_CLASSES[value.columnRatio] || MULTI_COLUMN_RATIO_CLASSES["50-50"]
+          : MULTI_COLUMN_COUNT_CLASSES[count] || MULTI_COLUMN_COUNT_CLASSES[2];
+      const bgClass = MULTI_COLUMN_BACKGROUND_CLASSES[value.backgroundStyle] || "";
+      return (
+        <div
+          style={getBlockSpacingStyle(value.blockSpacing, "3.5rem")}
+          className={`reveal-on-scroll grid gap-x-8 gap-y-8 ${gridClass} ${bgClass}`}
+        >
+          {columns.map((column, i) => (
+            <MultiColumnSlot key={column._key || i} column={column} />
+          ))}
+        </div>
+      );
+    },
   },
 };
 

@@ -187,6 +187,7 @@ export default {
         { type: "captionedImage" },
         { type: "videoEmbed" },
         { type: "gallery" },
+        { type: "multiColumn" },
       ],
     },
 
