@@ -223,7 +223,7 @@ const portableTextComponents = {
       if (!src) return null;
       return (
         <figure
-          style={getBlockSpacingStyle(value.blockSpacing, "3.5rem")}
+          style={getBlockSpacingStyle(value.blockSpacing, "0rem")}
           className="reveal-on-scroll relative left-1/2 w-screen -translate-x-1/2 overflow-hidden"
         >
           <div className="parallax-image-wrap overflow-hidden">
