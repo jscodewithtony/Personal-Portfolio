@@ -223,6 +223,7 @@ export default {
         { type: "videoEmbed" },
         { type: "gallery" },
         { type: "multiColumn" },
+        { type: "spacer" },
       ],
     },
 

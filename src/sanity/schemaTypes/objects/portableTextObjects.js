@@ -213,4 +213,61 @@ export const multiColumn = {
   },
 };
 
-export const portableTextObjects = [captionedImage, videoEmbed, gallery, multiColumn];
+// Purely a layout element — no image/text/alt at all, just a
+// manually-sized empty vertical gap. Raw px number fields (not a
+// preset dropdown) to match the existing convention this schema
+// already uses for spacing (blockSpacing.js's spacingTop/spacingBottom
+// are also raw min(0).max(...) numbers, not presets).
+//
+// Only heightMobile is required — heightTablet/heightDesktop default
+// to a sensible multiple of it when left blank (1.25x / 1.5x, rounded
+// to the nearest 4px) rather than a flat cascade, so an editor filling
+// in just one field still gets a bit more breathing room on larger
+// screens instead of an identical gap at every size.
+function roundTo4(n) {
+  return Math.round(n / 4) * 4;
+}
+function resolveSpacerHeights({ heightMobile, heightTablet, heightDesktop }) {
+  const mobile = typeof heightMobile === "number" ? heightMobile : 40;
+  const tablet = typeof heightTablet === "number" ? heightTablet : roundTo4(mobile * 1.25);
+  const desktop = typeof heightDesktop === "number" ? heightDesktop : roundTo4(mobile * 1.5);
+  return { mobile, tablet, desktop };
+}
+
+export const spacer = {
+  name: "spacer",
+  title: "Spacer",
+  type: "object",
+  fields: [
+    {
+      name: "heightMobile",
+      title: "Height — Mobile (px)",
+      type: "number",
+      initialValue: 40,
+      validation: (Rule) => Rule.required().min(0).max(400),
+    },
+    {
+      name: "heightTablet",
+      title: "Height — Tablet (px)",
+      description: "Optional. Defaults to 1.25x the mobile height if left blank.",
+      type: "number",
+      validation: (Rule) => Rule.min(0).max(400),
+    },
+    {
+      name: "heightDesktop",
+      title: "Height — Desktop (px)",
+      description: "Optional. Defaults to 1.5x the mobile height if left blank.",
+      type: "number",
+      validation: (Rule) => Rule.min(0).max(400),
+    },
+  ],
+  preview: {
+    select: { heightMobile: "heightMobile", heightTablet: "heightTablet", heightDesktop: "heightDesktop" },
+    prepare(value) {
+      const { mobile, tablet, desktop } = resolveSpacerHeights(value);
+      return { title: `Spacer — ${mobile}px / ${tablet}px / ${desktop}px`, subtitle: "mobile / tablet / desktop" };
+    },
+  },
+};
+
+export const portableTextObjects = [captionedImage, videoEmbed, gallery, multiColumn, spacer];

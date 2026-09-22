@@ -106,6 +106,20 @@ function getBlockSpacingStyle(blockSpacing, defaultTopRem) {
   };
 }
 
+// Mirrors objects/portableTextObjects.js's own resolveSpacerHeights —
+// kept as a separate local copy rather than importing from the Studio
+// schema module, matching how blockSpacing's fallback math above also
+// lives only in this render file, not cross-imported from its schema.
+function roundTo4(n) {
+  return Math.round(n / 4) * 4;
+}
+function resolveSpacerHeights({ heightMobile, heightTablet, heightDesktop }) {
+  const mobile = typeof heightMobile === "number" ? heightMobile : 40;
+  const tablet = typeof heightTablet === "number" ? heightTablet : roundTo4(mobile * 1.25);
+  const desktop = typeof heightDesktop === "number" ? heightDesktop : roundTo4(mobile * 1.5);
+  return { mobile, tablet, desktop };
+}
+
 // Shared by `gallery` and `multiColumn`'s image columns — plain image +
 // optional caption directly beneath it, no full-bleed/parallax
 // treatment (that's `captionedImage`'s own, distinct look, left as-is).
@@ -300,6 +314,20 @@ const portableTextComponents = {
             <MultiColumnSlot key={column._key || i} column={column} />
           ))}
         </div>
+      );
+    },
+    spacer: ({ value }) => {
+      const { mobile, tablet, desktop } = resolveSpacerHeights(value);
+      return (
+        <div
+          aria-hidden="true"
+          className="pt-spacer"
+          style={{
+            "--spacer-h-mobile": `${mobile}px`,
+            "--spacer-h-tablet": `${tablet}px`,
+            "--spacer-h-desktop": `${desktop}px`,
+          }}
+        />
       );
     },
   },

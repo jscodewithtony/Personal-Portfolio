@@ -428,3 +428,25 @@ select:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px #0c0a14 inset !important;
   -webkit-text-fill-color: #FAFAFA !important;
 }
+
+/* Case study "Spacer" bodyContent block (CaseStudy.jsx) — height is
+   set per-instance via CSS custom properties (--spacer-h-*) in an
+   inline style, since the actual px values come from Sanity data at
+   runtime and Tailwind's build-time class scanner can't generate a
+   dynamic arbitrary-value class for that. This one static rule (not
+   per-instance) supplies the breakpoint logic those custom properties
+   can't express on their own. 640px/1024px match this project's own
+   sm:/lg: convention elsewhere. */
+.pt-spacer {
+  height: var(--spacer-h-mobile, 40px);
+}
+@media (min-width: 640px) {
+  .pt-spacer {
+    height: var(--spacer-h-tablet, var(--spacer-h-mobile, 40px));
+  }
+}
+@media (min-width: 1024px) {
+  .pt-spacer {
+    height: var(--spacer-h-desktop, var(--spacer-h-tablet, var(--spacer-h-mobile, 40px)));
+  }
+}
