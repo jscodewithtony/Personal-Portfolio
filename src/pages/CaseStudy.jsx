@@ -207,7 +207,7 @@ const portableTextComponents = {
       </h4>
     ),
     normal: ({ children }) => (
-      <p className="mt-0 font-sans text-base normal-case leading-relaxed text-ink/80 dark:text-white/80 sm:text-lg">
+      <p className="mt-0 max-w-4xl font-sans text-base normal-case leading-relaxed text-ink/80 dark:text-white/80 sm:text-lg">
         {children}
       </p>
     ),
@@ -790,11 +790,11 @@ function CaseStudy({ theme, onToggleTheme }) {
             {project.bodyContent?.length > 0 && (
               <div
                 style={spacingYStyle}
-                className={`w-full bg-[#fbfbf9] ${contentSpacingY ? "" : "py-16 md:py-24"}`}
+                className={`w-full bg-[#fcfcfb] dark:bg-[#0c0a14] ${contentSpacingY ? "" : "py-16 md:py-24"}`}
               >
                 <div
                   style={horizontalPaddingStyle}
-                  className="mx-auto w-full max-w-4xl px-6 sm:px-10 md:px-14"
+                  className="mx-auto w-full max-w-none md:max-w-[92vw]  px-6 sm:px-10 md:px-14"
                 >
                   <div className="normal-case">
                     <PortableText
