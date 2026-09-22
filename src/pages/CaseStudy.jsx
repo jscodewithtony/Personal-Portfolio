@@ -207,7 +207,7 @@ const portableTextComponents = {
       </h4>
     ),
     normal: ({ children }) => (
-      <p className="mt-6 font-sans text-base normal-case leading-relaxed text-ink/80 dark:text-white/80 sm:text-lg">
+      <p className="mt-0 font-sans text-base normal-case leading-relaxed text-ink/80 dark:text-white/80 sm:text-lg">
         {children}
       </p>
     ),
@@ -549,16 +549,16 @@ function CaseStudy({ theme, onToggleTheme }) {
     tags: project.tags?.length ? project.tags : FALLBACK_PROJECT.tools,
     projectInfoRows: project.projectInfoFields?.length
       ? project.projectInfoFields.map((field) => ({
-          label: field.label,
-          value: getProjectInfoValue(field),
-        }))
+        label: field.label,
+        value: getProjectInfoValue(field),
+      }))
       : [
-          { label: "Type", value: FALLBACK_PROJECT.contextType },
-          { label: "Industry", value: FALLBACK_PROJECT.contextIndustry },
-          { label: "Timeline", value: FALLBACK_PROJECT.contextTimeline },
-          { label: "Category", value: FALLBACK_PROJECT.contextCategory },
-          { label: "Year", value: FALLBACK_PROJECT.contextYear },
-        ],
+        { label: "Type", value: FALLBACK_PROJECT.contextType },
+        { label: "Industry", value: FALLBACK_PROJECT.contextIndustry },
+        { label: "Timeline", value: FALLBACK_PROJECT.contextTimeline },
+        { label: "Category", value: FALLBACK_PROJECT.contextCategory },
+        { label: "Year", value: FALLBACK_PROJECT.contextYear },
+      ],
     nextProject: project.nextProject
   } : {
     ...FALLBACK_PROJECT,
@@ -632,16 +632,16 @@ function CaseStudy({ theme, onToggleTheme }) {
   const mainStyle =
     paddingTop || paddingBottom
       ? {
-          ...(paddingTop ? { paddingTop: "var(--cs-padding-top)" } : {}),
-          ...(paddingBottom ? { paddingBottom: "var(--cs-padding-bottom)" } : {}),
-        }
+        ...(paddingTop ? { paddingTop: "var(--cs-padding-top)" } : {}),
+        ...(paddingBottom ? { paddingBottom: "var(--cs-padding-bottom)" } : {}),
+      }
       : undefined;
   const horizontalPaddingStyle =
     paddingLeft || paddingRight
       ? {
-          ...(paddingLeft ? { paddingLeft: "var(--cs-padding-left)" } : {}),
-          ...(paddingRight ? { paddingRight: "var(--cs-padding-right)" } : {}),
-        }
+        ...(paddingLeft ? { paddingLeft: "var(--cs-padding-left)" } : {}),
+        ...(paddingRight ? { paddingRight: "var(--cs-padding-right)" } : {}),
+      }
       : undefined;
   const spacingYStyle = contentSpacingY
     ? { paddingTop: "var(--cs-content-spacing)", paddingBottom: "var(--cs-content-spacing)" }
@@ -651,9 +651,8 @@ function CaseStudy({ theme, onToggleTheme }) {
     <div
       ref={pageContainerRef}
       style={pageRootStyle}
-      className={`site-shell relative min-h-[100dvh] font-display uppercase transition-colors duration-300 ${
-        pageBackgroundColor ? "" : "text-[#0d0c14] dark:text-white bg-[#fbfbf9] dark:bg-[#0c0a14]"
-      }`}
+      className={`site-shell relative min-h-[100dvh] font-display uppercase transition-colors duration-300 ${pageBackgroundColor ? "" : "text-[#0d0c14] dark:text-white bg-[#fbfbf9] dark:bg-[#0c0a14]"
+        }`}
     >
       <Header
         menuButtonRef={menuButtonRef}
@@ -699,7 +698,7 @@ function CaseStudy({ theme, onToggleTheme }) {
             style={{ ...mainStyle, ...(pageTextColor ? { color: "var(--cs-text)" } : {}) }}
             className={`w-full ${pageTextColor ? "case-study-locked-colors" : ""}`}
           >
-          {/* Custom Style-tab background+text color is an intentional,
+            {/* Custom Style-tab background+text color is an intentional,
               fixed pair for this page's own content — the site's light/
               dark toggle stays visible/functional (it lives in <Header>,
               a sibling of <main>, so it's untouched by this), but must
@@ -711,140 +710,140 @@ function CaseStudy({ theme, onToggleTheme }) {
               element's own more-specific class) — this scopes an
               override to just those classes, just within this page's
               content. */}
-          {pageTextColor && (
-            <style>{`
+            {pageTextColor && (
+              <style>{`
               .case-study-locked-colors [class*="dark:text-white"] {
                 color: var(--cs-text) !important;
               }
             `}</style>
-          )}
-          {/* Hero Section */}
-          <div className="w-full pt-10 pb-0 text-center">
-            <div style={horizontalPaddingStyle} className="mx-auto w-full max-w-[85rem] px-4 sm:px-6 md:px-8">
-              <span className="font-display text-xs font-bold tracking-widest text-[#0d0c14]/60 dark:text-white/60">
-                {data.eyebrow}
-              </span>
-              <h1 className="mt-4 font-display text-5xl font-extrabold uppercase leading-[1.05] tracking-tighter text-[#0d0c14] dark:text-white sm:text-7xl md:text-8xl lg:text-[8.5rem] max-w-5xl mx-auto">
-                {data.title}
-              </h1>
-            </div>
-          </div>
-
-          {/* Cover Image (schema's coverImage) — full-bleed, edge to edge */}
-          {data.coverImageUrl && (
-            <div className="relative left-1/2 mt-12 w-screen -translate-x-1/2">
-              <img
-                src={data.coverImageUrl}
-                alt={data.coverImageAlt || data.title}
-                loading="lazy"
-                className="w-full h-auto"
-              />
-            </div>
-          )}
-
-          {/* Context Block */}
-          <div
-            style={spacingYStyle}
-            className={`w-full bg-[#fcfcfb] ${contentSpacingY ? "" : "py-16 md:py-24"}`}
-          >
-            <div
-              style={horizontalPaddingStyle}
-              className="mx-auto w-full max-w-[85rem] px-4 sm:px-6 md:px-8 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16"
-            >
-              {/* Left Context Info */}
-              <div className="md:col-span-7 flex flex-col justify-between">
-                <div>
-                  <h2 className="font-display text-4xl font-extrabold tracking-tight uppercase mb-6 text-[#0d0c14]">
-                    Context
-                  </h2>
-                  <p className="font-sans text-base md:text-lg normal-case leading-relaxed text-[#0d0c14]/80 max-w-2xl">
-                    {data.shortDescription}
-                  </p>
-                </div>
-                {/* tags */}
-                <div className="flex flex-wrap gap-2.5 mt-8">
-                  {data.tags.map((tag) => (
-                    <span key={tag} className="border border-[#6ca57c]/60 rounded-full px-4 py-1 text-[10px] font-bold tracking-wider text-[#3b5d45] uppercase">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Right Metadata Rows */}
-              <div className="md:col-span-5 flex flex-col pt-8 md:pt-0 md:pl-12">
-                {data.projectInfoRows.map((item) => (
-                  <div key={item.label} className="grid grid-cols-[140px_1fr] py-3.5 border-b border-neutral-200/60 items-center last:border-b-0">
-                    <span className="font-display text-xs font-bold tracking-wide text-[#0d0c14]">
-                      {item.label}
-                    </span>
-                    <span className="font-display text-xs md:text-sm normal-case tracking-wide text-neutral-500 font-medium">
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
+            )}
+            {/* Hero Section */}
+            <div className="w-full pt-10 pb-0 text-center">
+              <div style={horizontalPaddingStyle} className="mx-auto w-full max-w-[85rem] px-4 sm:px-6 md:px-8">
+                <span className="font-display text-xs font-bold tracking-widest text-[#0d0c14]/60 dark:text-white/60">
+                  {data.eyebrow}
+                </span>
+                <h1 className="mt-4 font-display text-5xl font-extrabold uppercase leading-[1.05] tracking-tighter text-[#0d0c14] dark:text-white sm:text-7xl md:text-8xl lg:text-[8.5rem] max-w-5xl mx-auto">
+                  {data.title}
+                </h1>
               </div>
             </div>
-          </div>
 
-          {/* Process / Approach (Sanity Portable Text support) */}
-          {project.bodyContent?.length > 0 && (
+            {/* Context Block */}
             <div
               style={spacingYStyle}
-              className={`w-full bg-[#fbfbf9] ${contentSpacingY ? "" : "py-16 md:py-24"}`}
+              className={`w-full bg-[#fcfcfb] dark:bg-[#0c0a14] transition-colors duration-300 ${contentSpacingY ? "" : "py-16 md:py-24"}`}
             >
               <div
                 style={horizontalPaddingStyle}
-                className="mx-auto w-full max-w-4xl px-6 sm:px-10 md:px-14"
+                className="mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0 py-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16"
               >
-                <div className="normal-case">
-                  <PortableText
-                    value={project.bodyContent}
-                    components={portableTextComponents}
-                  />
+                {/* Left Context Info */}
+                <div className="md:col-span-7 flex flex-col justify-between">
+                  <div>
+                    <h2 className="font-display text-4xl font-extrabold tracking-tight uppercase mb-6 text-[#0d0c14] dark:text-white">
+                      Overview
+                    </h2>
+                    <p className="font-sans text-base md:text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 max-w-2xl">
+                      {data.shortDescription}
+                    </p>
+                  </div>
+                  {/* tags */}
+                  <div className="flex flex-wrap gap-2.5 mt-8">
+                    {data.tags.map((tag) => (
+                      <span key={tag} className="border border-[#6ca57c]/60 px-4 py-1 text-[10px] font-bold tracking-wider text-[#3b5d45] dark:text-[#6ca57c] uppercase">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Right Metadata Rows */}
+                <div className="md:col-span-5 flex flex-col pt-8 md:pt-0 md:pl-12">
+                  {data.projectInfoRows.map((item) => (
+                    <div key={item.label} className="grid grid-cols-[140px_1fr] py-3.5 border-b border-neutral-200/60 dark:border-white/10 items-center last:border-b-0">
+                      <span className="font-display text-xs font-bold tracking-wide text-[#474747] dark:text-white">
+                        {item.label}
+                      </span>
+                      <span className="font-display text-xs md:text-sm normal-case tracking-wide text-neutral-500 dark:text-white/60 font-medium">
+                        {item.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          )}
 
-          {/* Next Case Study */}
-          {data.nextProject && (() => {
-            const nextIsExternal =
-              data.nextProject.projectType === "external" ||
-              (!data.nextProject.projectType && Boolean(data.nextProject.externalLink));
-            const NextTag = nextIsExternal && data.nextProject.externalLink ? "a" : Link;
-            const nextProps = nextIsExternal && data.nextProject.externalLink
-              ? { href: data.nextProject.externalLink, target: "_blank", rel: "noopener noreferrer" }
-              : { to: `/projects/${data.nextProject.slug}`, "data-transition-label": data.nextProject.title };
+            {/* Cover Image (schema's coverImage) — full-bleed, edge to edge */}
+            {data.coverImageUrl && (
+              <div className="relative left-1/2 mt-12 w-screen -translate-x-1/2">
+                <img
+                  src={data.coverImageUrl}
+                  alt={data.coverImageAlt || data.title}
+                  loading="lazy"
+                  className="w-full h-auto"
+                />
+              </div>
+            )}
 
-            return (
-              <NextTag
-                {...nextProps}
-                className="group relative flex w-full items-center justify-center overflow-hidden border-t border-neutral-200"
+            {/* Process / Approach (Sanity Portable Text support) */}
+            {project.bodyContent?.length > 0 && (
+              <div
+                style={spacingYStyle}
+                className={`w-full bg-[#fbfbf9] ${contentSpacingY ? "" : "py-16 md:py-24"}`}
               >
-                {data.nextProject.mainImage && (
-                  <img
-                    src={imageUrl(data.nextProject.mainImage, 1200)}
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full scale-105 object-cover opacity-15 transition-transform duration-700 group-hover:scale-110"
-                  />
-                )}
-                <div className="relative z-10 flex flex-col items-center gap-3 px-6 py-20 text-center sm:py-28">
-                  <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-[#0d0c14]/60 dark:text-white/60">
-                    Next {nextIsExternal ? "Project" : "Case Study"}
-                  </p>
-                  <h3 className="font-display text-4xl font-black uppercase leading-[1.02] tracking-tight text-[#0d0c14] dark:text-white sm:text-6xl md:text-7xl">
-                    {data.nextProject.title}
-                  </h3>
-                  <span className="mt-2 font-display text-sm font-bold uppercase tracking-widest text-[#114AFC] transition-transform group-hover:translate-x-1">
-                    {nextIsExternal ? "View project ↗" : "View project →"}
-                  </span>
+                <div
+                  style={horizontalPaddingStyle}
+                  className="mx-auto w-full max-w-4xl px-6 sm:px-10 md:px-14"
+                >
+                  <div className="normal-case">
+                    <PortableText
+                      value={project.bodyContent}
+                      components={portableTextComponents}
+                    />
+                  </div>
                 </div>
-              </NextTag>
-            );
-          })()}
+              </div>
+            )}
+
+            {/* Next Case Study */}
+            {data.nextProject && (() => {
+              const nextIsExternal =
+                data.nextProject.projectType === "external" ||
+                (!data.nextProject.projectType && Boolean(data.nextProject.externalLink));
+              const NextTag = nextIsExternal && data.nextProject.externalLink ? "a" : Link;
+              const nextProps = nextIsExternal && data.nextProject.externalLink
+                ? { href: data.nextProject.externalLink, target: "_blank", rel: "noopener noreferrer" }
+                : { to: `/projects/${data.nextProject.slug}`, "data-transition-label": data.nextProject.title };
+
+              return (
+                <NextTag
+                  {...nextProps}
+                  className="group relative flex w-full items-center justify-center overflow-hidden border-t border-neutral-200"
+                >
+                  {data.nextProject.mainImage && (
+                    <img
+                      src={imageUrl(data.nextProject.mainImage, 1200)}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full scale-105 object-cover opacity-15 transition-transform duration-700 group-hover:scale-110"
+                    />
+                  )}
+                  <div className="relative z-10 flex flex-col items-center gap-3 px-6 py-20 text-center sm:py-28">
+                    <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-[#0d0c14]/60 dark:text-white/60">
+                      Next {nextIsExternal ? "Project" : "Case Study"}
+                    </p>
+                    <h3 className="font-display text-4xl font-black uppercase leading-[1.02] tracking-tight text-[#0d0c14] dark:text-white sm:text-6xl md:text-7xl">
+                      {data.nextProject.title}
+                    </h3>
+                    <span className="mt-2 font-display text-sm font-bold uppercase tracking-widest text-[#114AFC] transition-transform group-hover:translate-x-1">
+                      {nextIsExternal ? "View project ↗" : "View project →"}
+                    </span>
+                  </div>
+                </NextTag>
+              );
+            })()}
           </main>
         )
       )}
