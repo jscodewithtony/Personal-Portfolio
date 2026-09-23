@@ -166,6 +166,14 @@ export default {
         }),
     },
     {
+      name: "liveUrl",
+      title: "Live Page URL",
+      description: 'Optional. If set, shows a "View Live Page" link on this case study\'s own page (opens in a new tab). Unrelated to External Link above — this project still renders its full case study either way.',
+      type: "url",
+      group: "overview",
+      validation: (Rule) => Rule.uri({ scheme: ["http", "https"] }),
+    },
+    {
       name: "caseStudyLinkLabel",
       title: "Case Study Link Label",
       description: 'Overrides the "View Case Study" link text shown on this project\'s card (Work index and gallery templates). Leave blank to use the default.',

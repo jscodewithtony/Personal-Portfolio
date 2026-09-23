@@ -5,6 +5,7 @@ import { PortableText } from "@portabletext/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Header from "../components/Header";
+import DirectionHover from "../components/DirectionHover";
 import { useSanityQuery } from "../sanity/useSanityQuery";
 import { projectBySlugQuery } from "../sanity/queries";
 import { imageUrl } from "../sanity/client";
@@ -565,6 +566,7 @@ function CaseStudy({ theme, onToggleTheme }) {
   const data = status === "ready" && project ? {
     title: project.title || FALLBACK_PROJECT.title,
     eyebrow: project.eyebrow || FALLBACK_PROJECT.eyebrow,
+    liveUrl: project.liveUrl,
     coverImageUrl: imageUrl(project.coverImage, 2400),
     coverImageAlt: project.coverImage?.alt,
     shortDescription: project.shortDescription || FALLBACK_PROJECT.shortDescription,
@@ -746,14 +748,28 @@ function CaseStudy({ theme, onToggleTheme }) {
             `}</style>
             )}
             {/* Hero Section */}
-            <div className="w-full pt-10 pb-0 text-center">
-              <div style={horizontalPaddingStyle} className="mx-auto w-full max-w-[85rem] px-4 sm:px-6 md:px-8">
-                <span className="font-display text-xs font-bold tracking-widest text-[#0d0c14]/60 dark:text-white/60">
-                  {data.eyebrow}
-                </span>
-                <h1 className="mt-4 font-display text-5xl font-extrabold uppercase leading-[1.05] tracking-tighter text-[#0d0c14] dark:text-white sm:text-7xl md:text-8xl lg:text-[8.5rem] max-w-5xl mx-auto">
-                  {data.title}
-                </h1>
+            <div className="w-full pt-10 pb-0">
+              <div style={horizontalPaddingStyle} className="w-full max-w-none md:max-w-[92vw] border-b border-neutral-200/60 mx-auto px-4 sm:px-6 md:px-0">
+                <div className="flex items-start justify-between gap-6">
+                  <div>
+                    <span className="font-display text-xs font-bold tracking-widest text-[#0d0c14]/60 dark:text-white/60">
+                      {data.eyebrow}
+                    </span>
+                    <h1 className="mt-4 font-display text-5xl font-extrabold uppercase leading-[1.05] tracking-tighter text-[#0d0c14] dark:text-white sm:text-7xl md:text-8xl lg:text-[8.5rem] max-w-5xl">
+                      {data.title}
+                    </h1>
+                  </div>
+                  {data.liveUrl && (
+                    <a
+                      href={data.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 shrink-0 whitespace-nowrap border-b border-primary font-display text-sm normal-case tracking-tight text-primary dark:border-white dark:text-white sm:text-base"
+                    >
+                      <DirectionHover>View Live Page ↗</DirectionHover>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -822,7 +838,7 @@ function CaseStudy({ theme, onToggleTheme }) {
               >
                 <div
                   style={horizontalPaddingStyle}
-                  className="mx-auto w-full max-w-none md:max-w-[92vw]  px-6 sm:px-10 md:px-14"
+                  className="mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0"
                 >
                   <div className="normal-case">
                     <PortableText
@@ -847,7 +863,7 @@ function CaseStudy({ theme, onToggleTheme }) {
               return (
                 <NextTag
                   {...nextProps}
-                  className="group relative flex w-full items-center justify-center overflow-hidden border-t border-neutral-200"
+                  className="group relative flex w-full overflow-hidden border-t border-neutral-200"
                 >
                   {data.nextProject.mainImage && (
                     <img
@@ -858,7 +874,7 @@ function CaseStudy({ theme, onToggleTheme }) {
                       className="absolute inset-0 h-full w-full scale-105 object-cover opacity-15 transition-transform duration-700 group-hover:scale-110"
                     />
                   )}
-                  <div className="relative z-10 flex flex-col items-center gap-3 px-6 py-20 text-center sm:py-28">
+                  <div className="relative z-10 mx-auto flex w-full max-w-none flex-col items-start gap-3 px-4 py-20 sm:px-6 sm:py-28 md:max-w-[92vw] md:px-0">
                     <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-[#0d0c14]/60 dark:text-white/60">
                       Next {nextIsExternal ? "Project" : "Case Study"}
                     </p>

@@ -118,6 +118,7 @@ export const projectBySlugQuery = /* groq */ `*[_type == "project" && slug.curre
   role,
   projectType,
   externalLink,
+  liveUrl,
   isPasswordProtected,
   caseStudyPassword,
   bodyContent,
