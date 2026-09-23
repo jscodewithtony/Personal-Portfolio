@@ -180,13 +180,12 @@ const MULTI_COLUMN_COUNT_CLASSES = {
 //   same color identity while staying genuinely dark enough for white
 //   text on top.
 // Light mode is unchanged (already correct, confirmed working).
-// Padding matches the Professional Experience card's own mobile
-// padding scale (AboutPage.jsx `p-5 xs:p-6 sm:p-8`) for consistency
-// with an existing similarly-weighted content panel.
+// Tint only — no padding baked in here. Padding is the editor's own
+// explicit choice via the block's paddingLeft/paddingRight fields.
 const MULTI_COLUMN_BACKGROUND_CLASSES = {
   none: "",
-  muted: "bg-ink/5 dark:bg-[#141418] p-5 xs:p-6 sm:p-8",
-  accent: "bg-primary/10 dark:bg-[#141c3a] p-5 xs:p-6 sm:p-8",
+  muted: "bg-ink/5 dark:bg-[#141418]",
+  accent: "bg-primary/10 dark:bg-[#141c3a]",
 };
 
 // One column slot: image or text, per its own `contentType`. Text
@@ -306,9 +305,15 @@ const portableTextComponents = {
           ? MULTI_COLUMN_RATIO_CLASSES[value.columnRatio] || MULTI_COLUMN_RATIO_CLASSES["50-50"]
           : MULTI_COLUMN_COUNT_CLASSES[count] || MULTI_COLUMN_COUNT_CLASSES[2];
       const bgClass = MULTI_COLUMN_BACKGROUND_CLASSES[value.backgroundStyle] || "";
+      const style = {
+        ...getBlockSpacingStyle(value.blockSpacing, "3.5rem"),
+        ...(typeof value.paddingLeft === "number" ? { paddingLeft: `${value.paddingLeft}px` } : {}),
+        ...(typeof value.paddingRight === "number" ? { paddingRight: `${value.paddingRight}px` } : {}),
+        ...(typeof value.columnGap === "number" ? { gap: `${value.columnGap}px` } : {}),
+      };
       return (
         <div
-          style={getBlockSpacingStyle(value.blockSpacing, "3.5rem")}
+          style={style}
           className={`reveal-on-scroll grid gap-x-8 gap-y-8 ${gridClass} ${bgClass}`}
         >
           {columns.map((column, i) => (

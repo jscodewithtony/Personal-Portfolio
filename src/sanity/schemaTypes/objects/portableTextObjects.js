@@ -195,6 +195,27 @@ export const multiColumn = {
       },
       initialValue: "none",
     },
+    {
+      name: "paddingLeft",
+      title: "Padding — Left (px)",
+      description: "Optional. Leave blank for no left padding.",
+      type: "number",
+      validation: (Rule) => Rule.min(0).max(200).error("Must be between 0 and 200px."),
+    },
+    {
+      name: "paddingRight",
+      title: "Padding — Right (px)",
+      description: "Optional. Leave blank for no right padding.",
+      type: "number",
+      validation: (Rule) => Rule.min(0).max(200).error("Must be between 0 and 200px."),
+    },
+    {
+      name: "columnGap",
+      title: "Column Gap (px)",
+      description: "Space between columns. Leave blank to use the default gap (32px).",
+      type: "number",
+      validation: (Rule) => Rule.min(0).max(200).error("Must be between 0 and 200px."),
+    },
     blockSpacingField,
   ],
   preview: {
