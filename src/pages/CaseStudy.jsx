@@ -239,7 +239,7 @@ const portableTextComponents = {
       return (
         <figure
           style={getBlockSpacingStyle(value.blockSpacing, "0rem")}
-          className="reveal-on-scroll relative left-1/2 w-screen -translate-x-1/2 overflow-hidden"
+          className="reveal-on-scroll overflow-hidden"
         >
           <div className="parallax-image-wrap overflow-hidden">
             {/* No forced height/object-cover — the image renders at its
@@ -253,7 +253,7 @@ const portableTextComponents = {
             />
           </div>
           {value.caption && (
-            <figcaption className="mx-auto mt-3 max-w-4xl px-6 font-display text-xs uppercase tracking-wider text-ink/50 dark:text-white/50 sm:px-10 md:px-14">
+            <figcaption className="mt-3 font-display text-xs uppercase tracking-wider text-ink/50 dark:text-white/50">
               {value.caption}
             </figcaption>
           )}
@@ -818,9 +818,9 @@ function CaseStudy({ theme, onToggleTheme }) {
               </div>
             </div>
 
-            {/* Cover Image (schema's coverImage) — full-bleed, edge to edge */}
+            {/* Cover Image (schema's coverImage) */}
             {data.coverImageUrl && (
-              <div className="relative left-1/2 mt-12 w-screen -translate-x-1/2">
+              <div className="mt-12 w-full max-w-none md:max-w-[92vw] mx-auto px-4 sm:px-6 md:px-0">
                 <img
                   src={data.coverImageUrl}
                   alt={data.coverImageAlt || data.title}
