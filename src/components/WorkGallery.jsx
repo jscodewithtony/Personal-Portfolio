@@ -214,6 +214,9 @@ function WorkGallery() {
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     if (isTouch) return;
 
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
     const section = sectionRef.current;
     if (!section) return;
 

@@ -287,6 +287,8 @@ function WorkIndex() {
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     if (isTouch) return;
 
+    if (reduceMotionRef.current) return;
+
     const section = sectionRef.current;
     if (!section) return;
 

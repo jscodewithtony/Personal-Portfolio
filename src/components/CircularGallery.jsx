@@ -243,6 +243,19 @@ export default function CircularGallery({
     let raf = null;
     let last = 0;
 
+    // Static arranged state — skip the scroll-in reveal so the ring
+    // starts already settled (entry: 1, weight: 0), which also zeroes
+    // out the per-card fly-in offsets and the mouse-parallax stage tilt
+    // below, since both are scaled by that same weight. Ring rotation
+    // still responds to further user scroll (direct interaction, not
+    // autoplay), just without eased smoothing lag.
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      scene.current.progressTarget = frame.current.entryFraction;
+      scene.current.progressCurrent = frame.current.entryFraction;
+      scene.current.entry = 1;
+    }
+
     const paint = () => {
       const config = frame.current;
       const state = scene.current;
@@ -286,7 +299,7 @@ export default function CircularGallery({
       const state = scene.current;
       syncCards(state, config.count);
 
-      const sk = 1 - Math.pow(1 - config.scrollLerp, dt * 60);
+      const sk = reduceMotion ? 1 : 1 - Math.pow(1 - config.scrollLerp, dt * 60);
       state.progressCurrent += (state.progressTarget - state.progressCurrent) * sk;
 
       const lapEnd = config.entryFraction + config.lapProgress;
@@ -303,7 +316,7 @@ export default function CircularGallery({
           : 0;
       state.entry = entry;
 
-      const k = 1 - Math.pow(1 - HOVER_LERP, dt * 60);
+      const k = reduceMotion ? 1 : 1 - Math.pow(1 - HOVER_LERP, dt * 60);
       const p = state.parallax;
       p.currentX += (p.targetX - p.currentX) * k;
       p.currentY += (p.targetY - p.currentY) * k;

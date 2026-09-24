@@ -114,17 +114,6 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
 
     if (allSecondary.length === 0) return;
 
-    // Initial state: collapse secondary cards behind center hero
-    gsap.set(allSecondary, {
-      xPercent: -50,
-      yPercent: -50,
-      x: 0,
-      y: 0,
-      z: -700,
-      scale: 0.2,
-      opacity: 0,
-    });
-
     // Make sure center card has initial centered state set explicitly by GSAP (starts visible at scale 1, opacity 1)
     gsap.set(t0, {
       xPercent: -50,
@@ -134,6 +123,42 @@ export const AntiGravityGallery = ({ cards = DEFAULT_CARDS, headline }) => {
       z: 0,
       scale: 1,
       opacity: 1,
+    });
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion) {
+      // No pinned scroll choreography — jump straight to the fully
+      // fanned-out arrangement (same end state the timeline below would
+      // scrub to) so every card stays viewable instead of stuck
+      // collapsed/invisible behind the center card.
+      allSecondary.forEach((el) => {
+        const card = cards.find((c) => String(c.id) === el.dataset.id);
+        gsap.set(el, {
+          xPercent: -50,
+          yPercent: -50,
+          x: ((card?.xPercent || 0) / 100) * window.innerWidth,
+          y: ((card?.yPercent || 0) / 100) * window.innerHeight,
+          z: card?.z || 0,
+          scale: 1,
+          opacity: 1,
+        });
+      });
+      // Matches the timeline's own end state, where the headline has
+      // already faded out by the time the tiers are fully fanned out.
+      gsap.set(headlineEl, { opacity: 0 });
+      return;
+    }
+
+    // Initial state: collapse secondary cards behind center hero
+    gsap.set(allSecondary, {
+      xPercent: -50,
+      yPercent: -50,
+      x: 0,
+      y: 0,
+      z: -700,
+      scale: 0.2,
+      opacity: 0,
     });
 
     // Make sure headline is visible initially

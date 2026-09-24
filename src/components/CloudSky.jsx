@@ -301,6 +301,10 @@ function __OriginkitBase_CloudSky(props) {
         let leanX = 0
         let leanY = 0
 
+        // Static cloud frame under reduced motion — same intent as
+        // NightSky's static stars: draw once, never re-drift.
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
         const render = (now) => {
             if (!isVisible) {
                 raf = 0
@@ -311,15 +315,17 @@ function __OriginkitBase_CloudSky(props) {
             const v = vRef.current
             const p = ptrRef.current
 
-            const k = 1 - Math.exp(-v.damping * 0.12 * dt)
-            leanX += ((p.inside ? p.x : 0) - leanX) * k
-            leanY += ((p.inside ? p.y : 0) - leanY) * k
+            if (!reduceMotion) {
+                const k = 1 - Math.exp(-v.damping * 0.12 * dt)
+                leanX += ((p.inside ? p.x : 0) - leanX) * k
+                leanY += ((p.inside ? p.y : 0) - leanY) * k
 
-            const gust = 1 + leanX * v.wind
-            const rate = v.speed * gust
-            nearX = (nearX - NEAR_DRIFT * rate * dt) % 1000
-            farX = (farX - FAR_DRIFT * rate * dt) % 1000
-            cirrusX = (cirrusX - CIRRUS_DRIFT * rate * dt) % 1000
+                const gust = 1 + leanX * v.wind
+                const rate = v.speed * gust
+                nearX = (nearX - NEAR_DRIFT * rate * dt) % 1000
+                farX = (farX - FAR_DRIFT * rate * dt) % 1000
+                cirrusX = (cirrusX - CIRRUS_DRIFT * rate * dt) % 1000
+            }
 
             const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
             const cw = sizeRef.current.w || canvas.clientWidth || 1200
@@ -354,7 +360,7 @@ function __OriginkitBase_CloudSky(props) {
             gl.uniform4f(u("uGlow"), glow[0], glow[1], glow[2], glow[3])
 
             gl.drawArrays(gl.TRIANGLES, 0, 3)
-            raf = requestAnimationFrame(render)
+            raf = reduceMotion ? 0 : requestAnimationFrame(render)
         }
 
         const track = (e) => {

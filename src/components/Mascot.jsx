@@ -51,10 +51,7 @@ function Mascot({ faceRef, hideBody = false, blink = false }) {
   });
 
   useEffect(() => {
-    const isA11y = document.documentElement.classList.contains("a11y-mode");
-    const reduceMotion =
-      isA11y ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // Natural blink parameters: quick ~150ms duration with rapid close, brief hold, snappy reopen
     const canBlink = blink && !reduceMotion;
