@@ -152,7 +152,11 @@ function PageTransitionOverlay() {
         ease: SWEEP_IN_EASE,
       })
         .call(() => {
-          window.scrollTo(0, 0);
+          if (window.lenis) {
+            window.lenis.scrollTo(0, { immediate: true });
+          } else {
+            window.scrollTo(0, 0);
+          }
           navigate(navHref);
           setShowHeadline(true);
         })

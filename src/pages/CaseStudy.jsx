@@ -671,13 +671,6 @@ function CaseStudy({ theme, onToggleTheme }) {
         ...(paddingBottom ? { paddingBottom: "var(--cs-padding-bottom)" } : {}),
       }
       : undefined;
-  const horizontalPaddingStyle =
-    paddingLeft || paddingRight
-      ? {
-        ...(paddingLeft ? { paddingLeft: "var(--cs-padding-left)" } : {}),
-        ...(paddingRight ? { paddingRight: "var(--cs-padding-right)" } : {}),
-      }
-      : undefined;
   const spacingYStyle = contentSpacingY
     ? { paddingTop: "var(--cs-content-spacing)", paddingBottom: "var(--cs-content-spacing)" }
     : undefined;
@@ -752,9 +745,19 @@ function CaseStudy({ theme, onToggleTheme }) {
               }
             `}</style>
             )}
+            {(paddingLeft || paddingRight) && (
+              <style>{`
+                @media (min-width: 768px) {
+                  .cs-section-container {
+                    ${paddingLeft ? `padding-left: var(--cs-padding-left) !important;` : ""}
+                    ${paddingRight ? `padding-right: var(--cs-padding-right) !important;` : ""}
+                  }
+                }
+              `}</style>
+            )}
             {/* Hero Section */}
             <div className="w-full pt-10 pb-0">
-              <div style={horizontalPaddingStyle} className="w-full max-w-none md:max-w-[92vw] border-b border-neutral-200/60 mx-auto px-4 sm:px-6 md:px-0">
+              <div className="cs-section-container w-full max-w-none md:max-w-[92vw] border-b border-neutral-200/60 mx-auto px-4 sm:px-6 md:px-0">
                 <div className="flex items-start justify-between gap-6">
                   <div>
                     <span className="font-display text-xs font-bold tracking-widest text-[#0d0c14]/60 dark:text-white/60">
@@ -784,8 +787,7 @@ function CaseStudy({ theme, onToggleTheme }) {
               className={`w-full bg-[#fcfcfb] dark:bg-[#0c0a14] transition-colors duration-300 ${contentSpacingY ? "" : "py-16 md:py-24"}`}
             >
               <div
-                style={horizontalPaddingStyle}
-                className="mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0 py-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16"
+                className="cs-section-container mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0 py-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16"
               >
                 {/* Left Context Info */}
                 <div className="md:col-span-7 flex flex-col justify-between">
@@ -800,7 +802,7 @@ function CaseStudy({ theme, onToggleTheme }) {
                   {/* tags */}
                   <div className="flex flex-wrap gap-2.5 mt-8">
                     {data.tags.map((tag) => (
-                      <span key={tag} className="border border-[#6ca57c]/60 px-4 py-1 text-[10px] font-bold tracking-wider text-[#3b5d45] dark:text-[#6ca57c] uppercase">
+                      <span key={tag} className="border border-[#6ca57c]/60 px-4 py-1 text-[12px] font-bold tracking-wider text-[#3b5d45] dark:text-[#6ca57c] uppercase">
                         {tag}
                       </span>
                     ))}
@@ -842,8 +844,7 @@ function CaseStudy({ theme, onToggleTheme }) {
                 className={`w-full bg-[#fcfcfb] dark:bg-[#0c0a14] ${contentSpacingY ? "" : "py-16 md:py-24"}`}
               >
                 <div
-                  style={horizontalPaddingStyle}
-                  className="mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0"
+                  className="cs-section-container mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0"
                 >
                   <div className="normal-case">
                     <PortableText

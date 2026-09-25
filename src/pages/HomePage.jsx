@@ -49,7 +49,11 @@ function HomePage({ theme, onToggleTheme }) {
     if (!location.hash || !introFinished) return;
     const id = location.hash.slice(1);
     const timer = setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "instant" });
+      if (window.lenis) {
+        window.lenis.scrollTo(`#${id}`);
+      } else {
+        document.getElementById(id)?.scrollIntoView({ behavior: "instant" });
+      }
     }, 350);
     return () => clearTimeout(timer);
   }, [location.hash, introFinished]);
