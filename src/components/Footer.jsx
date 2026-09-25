@@ -644,7 +644,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
 
       {/* --- FOOTER INTERACTIVE ELEMENT (PIANO KEYBOARD, FLAP MINI-GAME, OR SLICE BLADE) --- */}
       {isFlap && (
-        <div className="relative w-full overflow-hidden border-t border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
+        <div className="relative w-full overflow-hidden border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
           <div className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] w-full">
             <Flap />
           </div>
@@ -652,7 +652,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       )}
 
       {isSlice && (
-        <div className="relative w-full overflow-hidden border-t border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
+        <div className="relative w-full overflow-hidden border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
           <div className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] w-full">
             <SliceBlade />
           </div>
@@ -660,7 +660,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
       )}
 
       {isStack && (
-        <div className="relative w-full overflow-hidden border-t border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
+        <div className="relative w-full overflow-hidden border-b border-black/10 bg-bg transition-colors duration-300 dark:border-white/10 dark:bg-[#0c0a14]">
           <div className="relative h-64 sm:h-80 md:h-[24rem] lg:h-[28rem] xl:h-[32rem] w-full">
             <StackTower />
           </div>
@@ -669,7 +669,7 @@ function Footer({ variant = "site", contactContent, signalMount = false }) {
 
       {isPiano && (
         <div
-          className="relative w-full overflow-hidden border-t border-b shadow-2xl border-black/40 bg-[#161616] dark:border-white/20 dark:bg-[#12101b]"
+          className="relative w-full overflow-hidden border-b shadow-2xl border-black/40 bg-[#161616] dark:border-white/20 dark:bg-[#12101b]"
         >
           <div className="overflow-x-auto overflow-y-hidden no-scrollbar w-full">
             <div
