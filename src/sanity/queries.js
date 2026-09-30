@@ -31,7 +31,9 @@ export const homepageContentQuery = /* groq */ `*[_type == "homepageContent"][0]
   aboutPortraitDark,
   aboutPortraitDarkAlt,
   statementHeadline,
-  statementTrailingLine
+  statementTrailingLine,
+  bookCallButtonLabel,
+  bookCallButtonUrl
 }`;
 
 export const aboutPageQuery = /* groq */ `*[_type == "aboutPage"][0]{

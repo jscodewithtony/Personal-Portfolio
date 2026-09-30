@@ -4,7 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import TestimonialCard from "./TestimonialCard";
 import DirectionHover from "./DirectionHover";
 import { useSanityQuery } from "../sanity/useSanityQuery";
-import { testimonialsQuery } from "../sanity/queries";
+import { testimonialsQuery, homepageContentQuery } from "../sanity/queries";
 import { urlFor } from "../sanity/client";
 import { useSignalSectionMounted } from "../hooks/useSectionMountRefresh";
 
@@ -86,12 +86,27 @@ function mapSanityTestimonial(doc, index) {
   };
 }
 
+const BOOK_CALL_FALLBACK = {
+  bookCallButtonLabel: "Book a Call With Me",
+  bookCallButtonUrl: "mailto:Tony2742000@gmail.com",
+};
+
 function MentorshipTestimonials() {
   const { data: docs, status } = useSanityQuery(testimonialsQuery, {}, []);
   const TESTIMONIALS =
     status === "ready" && docs?.length
       ? docs.slice(0, 5).map(mapSanityTestimonial)
       : FALLBACK_TESTIMONIALS;
+
+  const { data: content, status: contentStatus } = useSanityQuery(
+    homepageContentQuery,
+    {},
+    null
+  );
+  const bookCall = {
+    label: (contentStatus === "ready" && content?.bookCallButtonLabel) || BOOK_CALL_FALLBACK.bookCallButtonLabel,
+    url: (contentStatus === "ready" && content?.bookCallButtonUrl) || BOOK_CALL_FALLBACK.bookCallButtonUrl,
+  };
 
   useSignalSectionMounted("mentorship-testimonials");
 
@@ -289,11 +304,11 @@ function MentorshipTestimonials() {
       {/* Book a Call Button */}
       <div className="absolute bottom-6 sm:bottom-8 md:bottom-10 left-0 right-0 z-30 flex justify-center pointer-events-none">
         <a
-          href="mailto:Tony2742000@gmail.com"
+          href={bookCall.url}
           ref={buttonRef}
           className="pointer-events-auto select-none px-6 py-3.5 font-display text-sm font-bold uppercase tracking-tight transition-colors sm:px-8 sm:py-4 sm:text-base md:text-lg bg-primary text-white hover:bg-primary-dark active:bg-primary-active dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2] shadow-lg"
         >
-          <DirectionHover>Book a call with me</DirectionHover>
+          <DirectionHover>{bookCall.label}</DirectionHover>
         </a>
       </div>
     </section>

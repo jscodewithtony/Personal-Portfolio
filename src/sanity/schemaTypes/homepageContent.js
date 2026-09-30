@@ -6,6 +6,7 @@ export default {
     { name: "hero", title: "Hero" },
     { name: "about", title: "About" },
     { name: "statement", title: "Statement" },
+    { name: "mentorship", title: "Mentorship" },
   ],
   fields: [
     {
@@ -129,6 +130,29 @@ export default {
       initialValue: "Don't have to make one.",
       placeholder: "Don't have to make one.",
       validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "bookCallButtonLabel",
+      title: "\"Book a Call\" button label",
+      description: 'Shown on the mentorship testimonials section. Optional — falls back to "Book a Call With Me" if left blank.',
+      type: "string",
+      group: "mentorship",
+      placeholder: "Book a Call With Me",
+    },
+    {
+      name: "bookCallButtonUrl",
+      title: "\"Book a Call\" button URL",
+      description: "Optional — falls back to the mailto link (Tony2742000@gmail.com) if left blank.",
+      type: "string",
+      group: "mentorship",
+      placeholder: "https://topmate.io/...",
+      validation: (Rule) =>
+        Rule.custom((value) => {
+          if (!value) return true;
+          const isMailto = value.startsWith("mailto:");
+          const isValidUrl = /^https?:\/\/.+/.test(value);
+          return isMailto || isValidUrl || "Must be a valid URL (or a mailto: link).";
+        }),
     },
   ],
   preview: {
