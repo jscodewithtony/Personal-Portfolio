@@ -305,6 +305,8 @@ function MentorshipTestimonials() {
       <div className="absolute bottom-6 sm:bottom-8 md:bottom-10 left-0 right-0 z-30 flex justify-center pointer-events-none">
         <a
           href={bookCall.url}
+          target="_blank"
+          rel="noopener noreferrer"
           ref={buttonRef}
           className="pointer-events-auto select-none px-6 py-3.5 font-display text-sm font-bold uppercase tracking-tight transition-colors sm:px-8 sm:py-4 sm:text-base md:text-lg bg-primary text-white hover:bg-primary-dark active:bg-primary-active dark:bg-[#114AFC] dark:hover:bg-[#022CDB] dark:active:bg-[#0013B2] shadow-lg"
         >
