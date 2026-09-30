@@ -136,13 +136,16 @@ const multiColumnSlotFields = [
   {
     name: "text",
     title: "Text",
-    description: "Normal and Quote styles only — a half-width column is too narrow for a page-level heading.",
+    description: "Same block styles as the main body content, including headings.",
     type: "array",
     of: [
       {
         type: "block",
         styles: [
           { title: "Normal", value: "normal" },
+          { title: "H2", value: "h2" },
+          { title: "H3", value: "h3" },
+          { title: "H4", value: "h4" },
           { title: "Quote", value: "blockquote" },
         ],
       },

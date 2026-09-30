@@ -193,14 +193,28 @@ const MULTI_COLUMN_BACKGROUND_CLASSES = {
 // (nested PortableText with the same components map) rather than a
 // second copy of the normal/blockquote JSX.
 function MultiColumnSlot({ column }) {
-  if (!column) return null;
+  if (!column) return <div />;
   if (column.contentType === "image" && column.image) {
     return <ImageWithCaption image={column.image} widthPx={1200} />;
   }
   if (column.contentType === "text" && column.text?.length > 0) {
-    return <PortableText value={column.text} components={portableTextComponents} />;
+    // Wrapped so a column's blocks (e.g. a heading + a paragraph) stay
+    // one grid item together — PortableText renders multiple blocks as
+    // flat siblings, which without this wrapper spill across the
+    // parent grid's own auto-placed tracks instead of stacking inside
+    // this column's own cell.
+    return (
+      <div>
+        <PortableText value={column.text} components={portableTextComponents} />
+      </div>
+    );
   }
-  return null;
+  // An empty column must still occupy its own grid cell — returning
+  // null here would make the grid collapse the next populated column
+  // into this one's track (e.g. right-column-only content sliding
+  // into the left track), the actual cause of the reported alignment
+  // bug.
+  return <div />;
 }
 
 const portableTextComponents = {
