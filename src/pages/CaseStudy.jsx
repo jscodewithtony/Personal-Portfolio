@@ -192,10 +192,34 @@ const MULTI_COLUMN_BACKGROUND_CLASSES = {
 // reuses the exact same block-style renderers as the rest of the body
 // (nested PortableText with the same components map) rather than a
 // second copy of the normal/blockquote JSX.
+// Reads a column's innerPadding.mobile/desktop into the CSS custom
+// properties .mc-inner-padding (index.css) consumes — only sides the
+// editor actually set are included, so unset sides fall through to
+// that class's own 0px/mobile-value fallback chain.
+function getInnerPaddingStyle(innerPadding) {
+  const m = innerPadding?.mobile || {};
+  const d = innerPadding?.desktop || {};
+  const style = {};
+  if (typeof m.top === "number") style["--mc-pad-top-mobile"] = `${m.top}px`;
+  if (typeof m.bottom === "number") style["--mc-pad-bottom-mobile"] = `${m.bottom}px`;
+  if (typeof m.left === "number") style["--mc-pad-left-mobile"] = `${m.left}px`;
+  if (typeof m.right === "number") style["--mc-pad-right-mobile"] = `${m.right}px`;
+  if (typeof d.top === "number") style["--mc-pad-top-desktop"] = `${d.top}px`;
+  if (typeof d.bottom === "number") style["--mc-pad-bottom-desktop"] = `${d.bottom}px`;
+  if (typeof d.left === "number") style["--mc-pad-left-desktop"] = `${d.left}px`;
+  if (typeof d.right === "number") style["--mc-pad-right-desktop"] = `${d.right}px`;
+  return style;
+}
+
 function MultiColumnSlot({ column }) {
   if (!column) return <div />;
+  const innerPaddingStyle = getInnerPaddingStyle(column.innerPadding);
   if (column.contentType === "image" && column.image) {
-    return <ImageWithCaption image={column.image} widthPx={1200} />;
+    return (
+      <div className="mc-inner-padding" style={innerPaddingStyle}>
+        <ImageWithCaption image={column.image} widthPx={1200} />
+      </div>
+    );
   }
   if (column.contentType === "text" && column.text?.length > 0) {
     // Wrapped so a column's blocks (e.g. a heading + a paragraph) stay
@@ -204,7 +228,7 @@ function MultiColumnSlot({ column }) {
     // parent grid's own auto-placed tracks instead of stacking inside
     // this column's own cell.
     return (
-      <div>
+      <div className="mc-inner-padding" style={innerPaddingStyle}>
         <PortableText value={column.text} components={portableTextComponents} />
       </div>
     );

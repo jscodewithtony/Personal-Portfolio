@@ -450,3 +450,25 @@ select:-webkit-autofill:focus {
     height: var(--spacer-h-desktop, var(--spacer-h-tablet, var(--spacer-h-mobile, 40px)));
   }
 }
+
+/* multiColumn column "Inner Padding" (CaseStudy.jsx's MultiColumnSlot)
+   — same CSS-custom-property pattern as .pt-spacer above, since these
+   per-side px values come from Sanity data at runtime. 768px matches
+   this project's md: breakpoint, used for the "mobile vs desktop"
+   split this field offers (no separate tablet tier here). Desktop
+   falls back to the mobile value when left blank, mobile falls back
+   to 0 when unset — same fallback chaining as .pt-spacer. */
+.mc-inner-padding {
+  padding-top: var(--mc-pad-top-mobile, 0px);
+  padding-bottom: var(--mc-pad-bottom-mobile, 0px);
+  padding-left: var(--mc-pad-left-mobile, 0px);
+  padding-right: var(--mc-pad-right-mobile, 0px);
+}
+@media (min-width: 768px) {
+  .mc-inner-padding {
+    padding-top: var(--mc-pad-top-desktop, var(--mc-pad-top-mobile, 0px));
+    padding-bottom: var(--mc-pad-bottom-desktop, var(--mc-pad-bottom-mobile, 0px));
+    padding-left: var(--mc-pad-left-desktop, var(--mc-pad-left-mobile, 0px));
+    padding-right: var(--mc-pad-right-desktop, var(--mc-pad-right-mobile, 0px));
+  }
+}

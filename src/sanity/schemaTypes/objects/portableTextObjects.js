@@ -152,6 +152,40 @@ const multiColumnSlotFields = [
     ],
     hidden: ({ parent }) => parent?.contentType !== "text",
   },
+  {
+    name: "innerPadding",
+    title: "Inner Padding",
+    description: "Padding between this column's own edge and its content (image or text). Independent of the block's outer Padding Left/Right, which space the whole multiColumn block from the page.",
+    type: "object",
+    options: { collapsible: true, collapsed: true },
+    fields: [
+      {
+        name: "mobile",
+        title: "Mobile (px)",
+        type: "object",
+        options: { columns: 2 },
+        fields: [
+          { name: "top", title: "Top", type: "number", validation: (Rule) => Rule.min(0).max(200) },
+          { name: "bottom", title: "Bottom", type: "number", validation: (Rule) => Rule.min(0).max(200) },
+          { name: "left", title: "Left", type: "number", validation: (Rule) => Rule.min(0).max(200) },
+          { name: "right", title: "Right", type: "number", validation: (Rule) => Rule.min(0).max(200) },
+        ],
+      },
+      {
+        name: "desktop",
+        title: "Desktop (px)",
+        description: "Leave blank to reuse the mobile values above.",
+        type: "object",
+        options: { columns: 2 },
+        fields: [
+          { name: "top", title: "Top", type: "number", validation: (Rule) => Rule.min(0).max(200) },
+          { name: "bottom", title: "Bottom", type: "number", validation: (Rule) => Rule.min(0).max(200) },
+          { name: "left", title: "Left", type: "number", validation: (Rule) => Rule.min(0).max(200) },
+          { name: "right", title: "Right", type: "number", validation: (Rule) => Rule.min(0).max(200) },
+        ],
+      },
+    ],
+  },
 ];
 
 export const multiColumn = {
