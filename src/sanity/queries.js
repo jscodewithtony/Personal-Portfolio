@@ -197,6 +197,7 @@ export const siteSettingsQuery = /* groq */ `*[_type == "siteSettings"][0]{
   showBackgroundGrid,
   customCursorEnabled,
   workPageTemplate,
+  caseStudyTemplate,
   footerInteractive
 }`;
 

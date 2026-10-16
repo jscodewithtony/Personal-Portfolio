@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Header from "../components/Header";
 import DirectionHover from "../components/DirectionHover";
 import { useSanityQuery } from "../sanity/useSanityQuery";
-import { projectBySlugQuery } from "../sanity/queries";
+import { projectBySlugQuery, siteSettingsQuery } from "../sanity/queries";
 import { imageUrl } from "../sanity/client";
 import { useSeo } from "../hooks/useSeo";
 import { isProjectUnlocked, unlockProject } from "../utils/unlockedProjects";
@@ -510,6 +510,117 @@ function CaseStudyPasswordGate({ project, onUnlock }) {
   );
 }
 
+// Two-column "split" template (siteSettings.caseStudyTemplate === "split").
+// Only ever mounted via the ternary in CaseStudy's own render — never
+// alongside the single-column layout, so bodyContent's PortableText,
+// the password gate, and the GSAP reveal/parallax setup in CaseStudy
+// are never mounted twice. md+-only: the wrapping grid has no column
+// classes below md, so it stacks as one plain column there (CSS
+// breakpoint, not a JS viewport check) — title, button, Overview,
+// tags, info rows, then cover image + body content, same section
+// order as the single-column template.
+//
+// Left column is a plain (stretched) grid item so its height matches
+// the taller right column; the actual `sticky` positioning lives on
+// an inner wrapper, which is what lets the sticky pin travel within
+// that tall box and release cleanly once the grid ends — a bare
+// `sticky` directly on an `items-start`/content-sized grid item would
+// have no room to travel at all.
+function CaseStudySplitLayout({ data, project, spacingYStyle, contentSpacingY, headerHeightPx }) {
+  const stickyTop = `calc(${headerHeightPx ? `${headerHeightPx}px` : "6.5rem"} + 1.5rem)`;
+  const stickyMaxHeight = `calc(100dvh - ${headerHeightPx ? `${headerHeightPx}px` : "6.5rem"} - 1.5rem - 2rem)`;
+
+  return (
+    <div
+      style={spacingYStyle}
+      className={`w-full ${contentSpacingY ? "" : "pt-10 pb-16 md:pb-24"}`}
+    >
+      <div className="cs-section-container w-full max-w-none md:max-w-[92vw] mx-auto px-4 sm:px-6 md:px-0 md:grid md:grid-cols-[40fr_60fr] md:gap-x-12 lg:gap-x-16">
+        {/* Left column — project info. Plain grid item (default stretch)
+            so it's as tall as the right column; sticky lives on the
+            inner div below. No transforms here or on any ancestor. */}
+        <div>
+          <div
+            className="md:sticky overflow-y-auto"
+            style={{ top: stickyTop, maxHeight: stickyMaxHeight }}
+          >
+            <span className="font-display text-xs font-bold tracking-widest text-[#0d0c14]/60 dark:text-white/60">
+              {data.eyebrow}
+            </span>
+            <h1 className="mt-4 font-display text-4xl font-extrabold uppercase leading-[1.05] tracking-tighter text-[#0d0c14] dark:text-white sm:text-5xl lg:text-6xl">
+              {data.title}
+            </h1>
+            {data.liveUrl && (
+              <a
+                href={data.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-block shrink-0 whitespace-nowrap border-b border-primary font-display text-sm normal-case tracking-tight text-primary dark:border-white dark:text-white"
+              >
+                <DirectionHover>View Live Page ↗</DirectionHover>
+              </a>
+            )}
+
+            <h2 className="mt-12 font-display text-2xl font-extrabold tracking-tight uppercase text-[#0d0c14] dark:text-white">
+              Overview
+            </h2>
+            <p className="mt-4 font-sans text-base normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80">
+              {data.shortDescription}
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2.5">
+              {data.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="border border-[#6ca57c]/60 px-4 py-1 text-[12px] font-bold tracking-wider text-[#3b5d45] dark:text-[#6ca57c] uppercase"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-10 border-t border-neutral-200/60 pt-2 dark:border-white/10">
+              {data.projectInfoRows.map((item) => (
+                <div
+                  key={item.label}
+                  className="grid grid-cols-[120px_1fr] items-center border-b border-neutral-200/60 py-3.5 last:border-b-0 dark:border-white/10"
+                >
+                  <span className="font-display text-xs font-bold tracking-wide text-[#474747] dark:text-white">
+                    {item.label}
+                  </span>
+                  <span className="font-display text-xs normal-case tracking-wide text-neutral-500 dark:text-white/60 font-medium">
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right column — case study content. Scrolls normally; this is
+            where .reveal-panel/.parallax-visual-driven content belongs
+            if/when those are ever used (currently unused sitewide —
+            see the GSAP effect above; not added here to avoid
+            introducing new motion). */}
+        <div className="mt-12 md:mt-0">
+          {data.coverImageUrl && (
+            <img
+              src={data.coverImageUrl}
+              alt={data.coverImageAlt || data.title}
+              loading="lazy"
+              className="w-full h-auto"
+            />
+          )}
+          {project.bodyContent?.length > 0 && (
+            <div className="mt-16 normal-case">
+              <PortableText value={project.bodyContent} components={portableTextComponents} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CaseStudy({ theme, onToggleTheme }) {
   const { slug } = useParams();
   const { data: project, status } = useSanityQuery(
@@ -523,6 +634,36 @@ function CaseStudy({ theme, onToggleTheme }) {
   const [unlockedNonce, setUnlockedNonce] = useState(0);
   const isUnlocked = isProjectUnlocked(slug) || unlockedNonce > 0;
   const isLocked = Boolean(project?.isPasswordProtected && !isUnlocked);
+
+  // Two-column "split" template (siteSettings.caseStudyTemplate) — falls
+  // back to the single-column layout below while loading, on error, when
+  // unset, and (via CSS breakpoints on the markup itself, not this flag)
+  // below the md viewport. This is purely a template CHOICE, not a
+  // responsive concern, so branching on it in JS here is not the "JS
+  // resize listener" the mobile fallback is required to avoid.
+  const { data: siteSettings, status: siteSettingsStatus } = useSanityQuery(
+    siteSettingsQuery,
+    {},
+    null
+  );
+  const useSplitTemplate =
+    siteSettingsStatus === "ready" && siteSettings?.caseStudyTemplate === "split";
+
+  // Sticky left column's top offset clears Header's actual rendered
+  // height (never a hardcoded px guess) — Header itself is untouched;
+  // this only reads its live DOM height from here. Re-measured on
+  // resize since Header's own responsive py-6/py-8 changes its height
+  // across breakpoints.
+  const [headerHeightPx, setHeaderHeightPx] = useState(null);
+  useEffect(() => {
+    const measure = () => {
+      const h = document.querySelector("header")?.getBoundingClientRect().height;
+      if (h) setHeaderHeightPx(h);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   // Each SEO field falls back to its Overview counterpart. Runs on
   // every render (hook rules), but the effect inside only fires when
@@ -603,7 +744,7 @@ function CaseStudy({ theme, onToggleTheme }) {
     }, pageContainerRef);
 
     return () => ctx.revert();
-  }, [status, project, isLocked]);
+  }, [status, project, isLocked, useSplitTemplate]);
 
   // Merge Sanity query results with Syncrio defaults/fallback data
   const data = status === "ready" && project ? {
@@ -793,105 +934,117 @@ function CaseStudy({ theme, onToggleTheme }) {
                 }
               `}</style>
             )}
-            {/* Hero Section */}
-            <div className="w-full pt-10 pb-0">
-              <div className="cs-section-container w-full max-w-none md:max-w-[92vw] border-b border-neutral-200/60 mx-auto px-4 sm:px-6 md:px-0">
-                <div className="flex items-start justify-between gap-6">
-                  <div>
-                    <span className="font-display text-xs font-bold tracking-widest text-[#0d0c14]/60 dark:text-white/60">
-                      {data.eyebrow}
-                    </span>
-                    <h1 className="mt-4 font-display text-5xl font-extrabold uppercase leading-[1.05] tracking-tighter text-[#0d0c14] dark:text-white sm:text-7xl md:text-8xl lg:text-[8.5rem] max-w-5xl">
-                      {data.title}
-                    </h1>
-                  </div>
-                  {data.liveUrl && (
-                    <a
-                      href={data.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 shrink-0 whitespace-nowrap border-b border-primary font-display text-sm normal-case tracking-tight text-primary dark:border-white dark:text-white sm:text-base"
-                    >
-                      <DirectionHover>View Live Page ↗</DirectionHover>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Context Block */}
-            <div
-              style={spacingYStyle}
-              className={`w-full bg-[#fcfcfb] dark:bg-[#0c0a14] transition-colors duration-300 ${contentSpacingY ? "" : "py-16 md:py-24"}`}
-            >
-              <div
-                className="cs-section-container mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0 py-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16"
-              >
-                {/* Left Context Info */}
-                <div className="md:col-span-7 flex flex-col justify-between">
-                  <div>
-                    <h2 className="font-display text-4xl font-extrabold tracking-tight uppercase mb-6 text-[#0d0c14] dark:text-white">
-                      Overview
-                    </h2>
-                    <p className="font-sans text-base md:text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 max-w-2xl">
-                      {data.shortDescription}
-                    </p>
-                  </div>
-                  {/* tags */}
-                  <div className="flex flex-wrap gap-2.5 mt-8">
-                    {data.tags.map((tag) => (
-                      <span key={tag} className="border border-[#6ca57c]/60 px-4 py-1 text-[12px] font-bold tracking-wider text-[#3b5d45] dark:text-[#6ca57c] uppercase">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Right Metadata Rows */}
-                <div className="md:col-span-5 flex flex-col pt-8 md:pt-0 md:pl-12">
-                  {data.projectInfoRows.map((item) => (
-                    <div key={item.label} className="grid grid-cols-[140px_1fr] py-3.5 border-b border-neutral-200/60 dark:border-white/10 items-center last:border-b-0">
-                      <span className="font-display text-xs font-bold tracking-wide text-[#474747] dark:text-white">
-                        {item.label}
-                      </span>
-                      <span className="font-display text-xs md:text-sm normal-case tracking-wide text-neutral-500 dark:text-white/60 font-medium">
-                        {item.value}
-                      </span>
+            {useSplitTemplate ? (
+              <CaseStudySplitLayout
+                data={data}
+                project={project}
+                spacingYStyle={spacingYStyle}
+                contentSpacingY={contentSpacingY}
+                headerHeightPx={headerHeightPx}
+              />
+            ) : (
+              <>
+                {/* Hero Section */}
+                <div className="w-full pt-10 pb-0">
+                  <div className="cs-section-container w-full max-w-none md:max-w-[92vw] border-b border-neutral-200/60 mx-auto px-4 sm:px-6 md:px-0">
+                    <div className="flex items-start justify-between gap-6">
+                      <div>
+                        <span className="font-display text-xs font-bold tracking-widest text-[#0d0c14]/60 dark:text-white/60">
+                          {data.eyebrow}
+                        </span>
+                        <h1 className="mt-4 font-display text-5xl font-extrabold uppercase leading-[1.05] tracking-tighter text-[#0d0c14] dark:text-white sm:text-7xl md:text-8xl lg:text-[8.5rem] max-w-5xl">
+                          {data.title}
+                        </h1>
+                      </div>
+                      {data.liveUrl && (
+                        <a
+                          href={data.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 shrink-0 whitespace-nowrap border-b border-primary font-display text-sm normal-case tracking-tight text-primary dark:border-white dark:text-white sm:text-base"
+                        >
+                          <DirectionHover>View Live Page ↗</DirectionHover>
+                        </a>
+                      )}
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Cover Image (schema's coverImage) */}
-            {data.coverImageUrl && (
-              <div className="mt-12 w-full max-w-none md:max-w-[92vw] mx-auto px-4 sm:px-6 md:px-0">
-                <img
-                  src={data.coverImageUrl}
-                  alt={data.coverImageAlt || data.title}
-                  loading="lazy"
-                  className="w-full h-auto"
-                />
-              </div>
-            )}
-
-            {/* Process / Approach (Sanity Portable Text support) */}
-            {project.bodyContent?.length > 0 && (
-              <div
-                style={spacingYStyle}
-                className={`w-full bg-[#fcfcfb] dark:bg-[#0c0a14] ${contentSpacingY ? "" : "py-16 md:py-24"}`}
-              >
+                {/* Context Block */}
                 <div
-                  className="cs-section-container mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0"
+                  style={spacingYStyle}
+                  className={`w-full bg-[#fcfcfb] dark:bg-[#0c0a14] transition-colors duration-300 ${contentSpacingY ? "" : "py-16 md:py-24"}`}
                 >
-                  <div className="normal-case">
-                    <PortableText
-                      value={project.bodyContent}
-                      components={portableTextComponents}
+                  <div
+                    className="cs-section-container mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0 py-24 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16"
+                  >
+                    {/* Left Context Info */}
+                    <div className="md:col-span-7 flex flex-col justify-between">
+                      <div>
+                        <h2 className="font-display text-4xl font-extrabold tracking-tight uppercase mb-6 text-[#0d0c14] dark:text-white">
+                          Overview
+                        </h2>
+                        <p className="font-sans text-base md:text-lg normal-case leading-relaxed text-[#0d0c14]/80 dark:text-white/80 max-w-2xl">
+                          {data.shortDescription}
+                        </p>
+                      </div>
+                      {/* tags */}
+                      <div className="flex flex-wrap gap-2.5 mt-8">
+                        {data.tags.map((tag) => (
+                          <span key={tag} className="border border-[#6ca57c]/60 px-4 py-1 text-[12px] font-bold tracking-wider text-[#3b5d45] dark:text-[#6ca57c] uppercase">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right Metadata Rows */}
+                    <div className="md:col-span-5 flex flex-col pt-8 md:pt-0 md:pl-12">
+                      {data.projectInfoRows.map((item) => (
+                        <div key={item.label} className="grid grid-cols-[140px_1fr] py-3.5 border-b border-neutral-200/60 dark:border-white/10 items-center last:border-b-0">
+                          <span className="font-display text-xs font-bold tracking-wide text-[#474747] dark:text-white">
+                            {item.label}
+                          </span>
+                          <span className="font-display text-xs md:text-sm normal-case tracking-wide text-neutral-500 dark:text-white/60 font-medium">
+                            {item.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cover Image (schema's coverImage) */}
+                {data.coverImageUrl && (
+                  <div className="mt-12 w-full max-w-none md:max-w-[92vw] mx-auto px-4 sm:px-6 md:px-0">
+                    <img
+                      src={data.coverImageUrl}
+                      alt={data.coverImageAlt || data.title}
+                      loading="lazy"
+                      className="w-full h-auto"
                     />
                   </div>
-                </div>
-              </div>
+                )}
+
+                {/* Process / Approach (Sanity Portable Text support) */}
+                {project.bodyContent?.length > 0 && (
+                  <div
+                    style={spacingYStyle}
+                    className={`w-full bg-[#fcfcfb] dark:bg-[#0c0a14] ${contentSpacingY ? "" : "py-16 md:py-24"}`}
+                  >
+                    <div
+                      className="cs-section-container mx-auto w-full max-w-none md:max-w-[92vw] px-4 sm:px-6 md:px-0"
+                    >
+                      <div className="normal-case">
+                        <PortableText
+                          value={project.bodyContent}
+                          components={portableTextComponents}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Next Case Study */}

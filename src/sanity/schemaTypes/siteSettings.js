@@ -61,6 +61,20 @@ export default {
       initialValue: "classic",
     },
     {
+      name: "caseStudyTemplate",
+      title: "Case study page template",
+      description: "Which layout renders case study detail pages. \"Two Column (40/60)\" pins project info in a sticky left column while the case study content scrolls on the right (desktop only — always stacks below md). Defaults to Single Column — nothing changes until this is switched.",
+      type: "string",
+      options: {
+        list: [
+          { title: "Single column", value: "single" },
+          { title: "Two column (40/60)", value: "split" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "single",
+    },
+    {
       name: "footerInteractive",
       title: "Footer interactive element",
       description:
